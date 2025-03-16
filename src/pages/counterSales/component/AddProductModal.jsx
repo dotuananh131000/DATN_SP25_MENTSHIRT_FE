@@ -1,14 +1,25 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import ReactPaginate from "react-paginate";
 import HoaDonService from "../services/HoaDonService";
 import { toast } from "react-toastify";
+import ModalSPCT from "./ModalSPCT";
 
-export default function AddProductModal({
+function AddProductModal({
   spcts,
   isOpen,
   isClose,
   hoaDon,
   handleDaTa,
+  totalPages,
+  page,
+  setPage,
+  size,
+  setSize,
+  setSearch,
+  isModalChitietSP,
+  setIsModalChitietSP,
+  quantity,
+  setQuantity,
 }) {
   const [chatLieus, setChatLieus] = useState([]);
   const [coAos, setCoAos] = useState([]);
@@ -17,10 +28,7 @@ export default function AddProductModal({
   const [tayAos, setTayAos] = useState([]);
   const [thuongHieus, setThuongHieus] = useState([]);
   const [xuatXus, setXuatXus] = useState([]);
-
   const [indexSPCT, setIndexSPCT] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [isModalChitietSP, setIsModalChitietSP] = useState(false);
   const [HDCTRequest, setHDCTRequest] = useState({
     idHoaDon: null,
     idSPCT: null,
@@ -101,7 +109,6 @@ export default function AddProductModal({
   if (!isOpen) {
     return;
   }
-
   return (
     <div className="modal modal-open">
       <div className="modal-box relative max-w-5xl w-full">
@@ -117,8 +124,9 @@ export default function AddProductModal({
         <div className="flex flex-1 p-4 mt-4">
           <input
             type="text"
+            onChange={(e)=>{setSearch(e.target.value)}}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-            placeholder="Tìm sản phẩm theo mã"
+            placeholder="Tìm kiếm sản phẩm "
           />
         </div>
         <div className="flex flex-col">
@@ -148,28 +156,27 @@ export default function AddProductModal({
             </tr>
           </thead>
           <tbody>
-            {spcts.map((spct, i) => (
+            {spcts.map((spct, i)=>(
               <tr key={spct.id} className="hover:bg-gray-100 text-center">
-                <td className="border p-2">{i + 1}</td>
-                <td className="border p-2">
+                <td className="border p-2">{i+1}</td>
+                <td className="border p-2 flex justify-center">
                   <img
                     className="skeleton w-[50px] h-[50px] object-cover"
                     src={spct.hinhAnh}
                     alt="Đây là ảnh SP"
                   />
                 </td>
-                <td className="border p-2">{spct.tenSanPham}</td>
-                <td className="border p-2">{spct.tenCoAo}</td>
-                <td className="border p-2">{spct.tenTayAo}</td>
-                <td className="border p-2">{spct.tenChatLieu}</td>
+                <td className="border p-2">{spct.sanPham.tenSanPham}</td>
+                <td className="border p-2">{spct.coAo.tenCoAo}</td>
+                <td className="border p-2">{spct.tayAo.tenTayAo}</td>
+                <td className="border p-2">{spct.chatLieu.tenChatLieu}</td>
                 <td className="border p-2">{spct.soLuong}</td>
-                <td className="border p-2">
-                  {new Intl.NumberFormat("vi-VN", {
+                <td className="border p-2">{
+                  new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                  }).format(spct?.donGia)}
-                </td>
-                <td className="border p-2">
+                  }).format(spct?.donGia)}</td>
+                  <td className="border p-2">
                   <button
                     onClick={() => handleGetIdSPCT(i)}
                     className="btn bg-orange-600 hover:bg-orange-700 text-white"
@@ -179,28 +186,28 @@ export default function AddProductModal({
                 </td>
               </tr>
             ))}
+           
           </tbody>
         </table>
         <div className="flex justify-between mt-4 ">
           <select
-            // value={size}
-            // onChange={(e) => onSizeChange(Number(e.target.value))}
+            value={size}
+            onChange={(e)=>setSize(e.target.value)}
             className="w-[90px] px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold"
           >
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-            <option>100</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
           </select>
           <ReactPaginate
             previousLabel="<"
             nextLabel=">"
             breakLabel="..."
-            pageCount="{totalPages}"
+            pageCount={totalPages}
             marginPagesDisplayed={2}
             pageRangeDisplayed={5}
-            // onPageChange={(e) => onPageChange(e.selected)}
-            // forcePage={currentPage}
+            onPageChange={(e) => setPage(e.selected)}
+            forcePage={page}
             containerClassName="flex justify-center items-center space-x-2"
             pageClassName="border border-gray-300 rounded"
             pageLinkClassName="px-3 py-1"
@@ -212,65 +219,14 @@ export default function AddProductModal({
         </div>
       </div>
       {isModalChitietSP && (
-        <div className="modal modal-open">
-          <div className="modal-box relative h-[310px]">
-            <h1 className="text-sm text-red-500 text-left font-bold mb-4">
-              Chi tiết sản phẩm
-            </h1>
-            <button
-              onClick={() => setIsModalChitietSP(false)}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
-            >
-              ✖
-            </button>
-
-            <div className="flex space-x-4">
-              <img
-                className="skeleton w-[160px] h-[180px] object-cover rounded-lg"
-                src={spcts[indexSPCT]?.hinhAnh}
-                alt="Đây là ảnh sản phẩm"
-              />
-              <div>
-                <h1 className="text-2xl font-bold">
-                  {spcts[indexSPCT]?.tenSanPham}
-                  <br />[{spcts[indexSPCT]?.tenMauSac} -
-                  {spcts[indexSPCT]?.tenKichThuoc}]
-                </h1>
-                <p className="my-4">
-                  Giá:{" "}
-                  <strong className="text-red-500 ">
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(spcts[indexSPCT]?.donGia)}
-                  </strong>
-                </p>
-                <div className="flex flex-wrap align-center">
-                  <p className="w-1/3 px-2 py-2">Số lượng :</p>
-                  <input
-                    type="number"
-                    className="w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 "
-                    min={1}
-                    value={quantity}
-                    onChange={(e) => {
-                      setQuantity(Number(e.target.value));
-                    }}
-                  />
-                </div>
-                <div className="flex flex-1 mt-4">
-                  <div className="w-full"></div>
-                  <button
-                    onClick={() => handleSetHDCTRequest()}
-                    className="btn bg-orange-500 hover:bg-orange-600 text-white w-1/3"
-                  >
-                    Xác nhận
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ModalSPCT spct={spcts[indexSPCT]}
+        setIsModalChitietSP={setIsModalChitietSP}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        handleSetHDCTRequest={handleSetHDCTRequest}
+        />
       )}
     </div>
   );
 }
+export default memo(AddProductModal)

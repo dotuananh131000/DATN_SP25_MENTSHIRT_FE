@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/ReactToastify.css";
+import { toast } from "react-toastify";
 import HoaDonService from "./services/HoaDonService";
 import AddProductModal from "./component/AddProductModal";
 import SanPhamChiTietService from "./services/SanPhamChiTietService";
@@ -15,6 +14,8 @@ import axios from "axios";
 import PhieuGiamGiaService from "./services/PhieuGiamGiaService";
 import { useDispatch, useSelector } from "react-redux";
 import { setMultipleProductPrices } from "../../features/ProducSlice";
+import QRCodeScanner from "../../containers/QRCodeScanner";
+import QRProduct from "./component/QRProduct";
 
 export default function CounterSale() {
   const [newBill, setNewBill] = useState({
@@ -51,10 +52,76 @@ export default function CounterSale() {
   const [listPhieuGIamGiaKH, setListPhieuGiamGiaKH] = useState([]);
   const [phieuGiamGiaTN, setPhieuGiamGiaTN] = useState({});
   const [hdHienTai, setHdHienTai] = useState(billToday[0]);
+  const [isQRScanner, setIsQRScanner] = useState(false);
+  const [totalPageSP, setTotalPageSP] = useState(0);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [isModalChitietSP, setIsModalChitietSP] = useState(false);
+  const [spQR, setSPQR] = useState({});
+  const [isSpQR, setIsSPQR] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [addSPQR, setAddSPQR] = useState({ idHoaDon: null, idSPCT: null, soLuong: 1,});
+
+  const handleScan =async (decodedText) => {
+    console.log(decodedText);
+     
+    if(decodedText){
+      try{
+        const response = await SanPhamChiTietService.GetById(decodedText)
+        setSPQR(response);
+        setIsSPQR(true);
+      }catch(error){
+        console.log("Qr không nhận được dữ liệu", error);
+        toast.error("Mã Qr không đúng");
+      }
+    }
+    setIsQRScanner(false);
+   };
+
+   useEffect(() => {
+    if (addSPQR.soLuong !== null && addSPQR.idSPCT) {
+      const handleAddSPQR = async () => {
+        if (addSPQR.soLuong > 100000) {
+          toast.warning("Vui lòng nhập số lượng hợp lệ");
+          return;
+        } else if (addSPQR.soLuong > spQR?.soLuong) {
+          toast.warning(
+            "Số lượng bạn nhập vượt quá số lượng sản phẩm có trong cửa hàng"
+          );
+          return;
+        }
+        try {
+          await HoaDonService.ThemSPVaoGioHang(addSPQR);
+          handleDaTa();
+          toast.success("Đã Thêm sản phẩm vào giỏ hàng");
+        } catch (err) {
+          console.log("Lỗi khi gọi APi Thêm sản phẩm", err);
+          toast.error("Thêm vào giỏ hàng thất bại. Vui lòng thử lại");
+        }
+      };
+      handleAddSPQR();
+    }
+  }, [addSPQR]);
+
+  const handleSetSPQR = () => {
+    if (!idHD) {
+      toast.warning("Vui lòng tạo hóa đơn trước khi thêm sản phẩm.");
+      return;
+    }
+    setAddSPQR((prev) => ({
+      ...prev,
+      idHoaDon: idHD,
+      idSPCT: spQR?.id,
+      soLuong: Number(quantity),
+    }));
+    setIsSPQR(false);
+  };
+
+
   useEffect(() => {
     setHdHienTai(billToday[selectedTab]);
   }, [selectedTab, billToday]);
-  // console.log(hdHienTai);
 
   const dispatch = useDispatch();
   const productPrices = useSelector((state) => state.productPrices);
@@ -235,7 +302,7 @@ export default function CounterSale() {
     setIsConfirmTaoHoaDon(false);
     setTimeout(() => {
       window.location.reload(); // Tải lại trang sau một khoảng thời gian
-    }, 1000); // Thời gian chờ là 2000ms (2 giây)
+    }, 500); // Thời gian chờ là 2000ms (2 giây)
   };
   //Gọi API Tahy đổi khách hàng của Hóa đơn
   const handleUpdateKhOfHd = (idKH) => {
@@ -264,8 +331,9 @@ export default function CounterSale() {
   };
   const fetchSanPhamChiTiet = async () => {
     try {
-      const response = await SanPhamChiTietService.GetAll();
-      setSpct(response);
+      const response = await SanPhamChiTietService.GetAll(page, size, search);
+      setSpct(response.content);
+      setTotalPageSP(response.totalPages)
     } catch (error) {
       console.log("khong thể tải được danh sách san phẩm chi tiết", error);
     }
@@ -326,7 +394,6 @@ export default function CounterSale() {
       );
     }
   };
-
   const handleDeleteKH = () => {
     if (!billToday[selectedTab]?.id) {
       return;
@@ -340,8 +407,8 @@ export default function CounterSale() {
   }, [selectedTab]);
 
   useEffect(() => {
-    fetchSanPhamChiTiet();
-  }, [sanPhamGioHang]);
+      fetchSanPhamChiTiet();
+  }, [sanPhamGioHang, page, size, search]);
 
   useEffect(() => {
     if (typeof billToday[selectedTab]?.id === "undefined") {
@@ -524,6 +591,16 @@ export default function CounterSale() {
       );
     }
   };
+
+const validateThemSP = ()=>{
+  if(billToday.length ===0){
+    toast.info("Vui lòng tạo hóa đơn khi thêm sản phẩm.")
+    return;
+  }else{
+    setIsProductModal(true)
+  }
+}
+
   const tabHD = () => {
     if (billToday.length < 0) {
       return (
@@ -569,17 +646,19 @@ export default function CounterSale() {
               </p>
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setIsProductModal(true)}
+                  onClick={()=> validateThemSP()}
                   className="btn px-4 py-1 border border-orange-500 rounded-lg bg-orange-500 hover:bg-orange-600 text-white"
                 >
                   Thêm sản phẩm
                 </button>
-                <button className="btn px-4 py-1 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white">
+                <button onClick={()=> setIsQRScanner(true)} 
+                className="btn px-4 py-1 border border-orange-500 bg-orange-500 text-white rounded-lg hover:bg-orange-500 hover:text-white">
                   Quét QR
                 </button>
               </div>
             </div>
           </div>
+          {isQRScanner && <QRCodeScanner onScan={handleScan} onClose={()=>setIsQRScanner(false)}/>}
         </>
       );
     }
@@ -801,6 +880,16 @@ export default function CounterSale() {
         isClose={setIsProductModal}
         hoaDon={idHD}
         handleDaTa={handleDaTa}
+        totalPages={totalPageSP}
+        page={page}
+        setPage={ setPage}
+        size={size}
+        setSize={setSize}
+        setSearch={setSearch}
+        isModalChitietSP={isModalChitietSP}
+        setIsModalChitietSP={setIsModalChitietSP}
+        quantity={quantity}
+        setQuantity={setQuantity}
       />
       {isConfirm && (
         <ConfirmModal
@@ -817,6 +906,13 @@ export default function CounterSale() {
         />
       )}
       {thongTinKH()}
+
+      {isSpQR && ( <QRProduct spct={spQR} 
+      quantity={quantity} 
+      setQuantity={setQuantity}
+      setIsSPQR={setIsSPQR}
+      handleSetSPQR={handleSetSPQR} />)
+      }
       <Payment
         billToday={billToday}
         selectedTab={selectedTab}
@@ -831,19 +927,6 @@ export default function CounterSale() {
         hdHienTai={hdHienTai}
       />
       {isConfirmTaoHoaDon && confirmXacNhan()}
-
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
     </div>
   );
 }
