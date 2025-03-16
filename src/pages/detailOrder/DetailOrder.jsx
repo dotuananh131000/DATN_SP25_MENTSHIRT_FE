@@ -5,7 +5,7 @@ import HoaDonService from "./service/HoaDonService";
 import ChiTietHoaDon from "./component/ChiTietHoaDon";
 import CreateProduct from "./component/AddProduct";
 import SanPhamChiTietService from "./service/SanPhamChiTietService";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import HoaDonChiTietService from "./service/HoaDonChiTietService";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -70,12 +70,12 @@ export default function DetailBill() {
       console.log("Lỗi khi thực hiện thay đổi trạng thái đơn hàng");
     }
   };
-  useEffect(() => {
-    if (!hoaDon?.id) {
-      return;
-    }
-    fectUpdateTrạngThaiDonHang();
-  });
+  // useEffect(() => {
+  //   if (!hoaDon?.id) {
+  //     return;
+  //   }
+  //   fectUpdateTrạngThaiDonHang();
+  // });
 
   const handleGetIdHDCT = (id) => {
     setIDHDCT(id);
@@ -318,18 +318,6 @@ export default function DetailBill() {
         hoaDon={hoaDon}
         spcts={spcts}
         handleDaTa={handleDaTa}
-      />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
       />
       {isConfirm && (
         <ConfirmModal

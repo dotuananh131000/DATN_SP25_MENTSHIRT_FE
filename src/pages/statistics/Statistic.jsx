@@ -63,25 +63,6 @@ export default function Statistic() {
       console.log("Không thể lấy được top danh sách sản phẩm bán chạy");
     }
   };
-
-  // const handleSetTime = (time) => {
-  //   setSelectedTime(time);
-  //   if (time === 1) {
-  //     setNgayBatDau(dayjs().format("DD/MM/YYYY"));
-  //     setNgayKetThuc(dayjs().format("DD/MM/YYYY"));
-  //   } else if (time === 2) {
-  //     setNgayBatDau(dayjs().startOf("week").format("DD/MM/YYYY"));
-  //     setNgayKetThuc(dayjs().endOf("week").format("DD/MM/YYYY"));
-  //   } else if (time === 3) {
-  //     setNgayBatDau(dayjs().startOf("month").format("DD/MM/YYYY"));
-  //     setNgayKetThuc(dayjs().endOf("month").format("DD/MM/YYYY"));
-  //   } else if (time === 4) {
-  //     setNgayBatDau(dayjs().startOf("year").format("DD/MM/YYYY"));
-  //     setNgayKetThuc(dayjs().endOf("year").format("DD/MM/YYYY"));
-  //   }
-
-  //   fetchCountDonHang();
-  // };
   const fetchCountDonHang = async () => {
     try {
       const response = await ThongKeService.countDonHang(

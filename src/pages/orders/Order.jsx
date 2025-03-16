@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import OrderTable from "./components/OrderTable";
 import SearchFilter from "./components/SearchFilter";
@@ -123,7 +123,6 @@ function Order() {
         size={size}
         onSizeChange={setSize}
       />
-      <ToastContainer />
     </div>
   );
 }
