@@ -1,9 +1,10 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 const SanPhamChiTietService = {
   async GetAll() {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/san-pham-chi-tiet/hien-thi`
+      const response = await apiClients.get(
+        `/san-pham-chi-tiet/hien-thi`
       );
       return response.data;
     } catch (error) {

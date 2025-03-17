@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const Week = {
   async DoanhThuTrongTuan() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/doanh-thu-trong-tuan"
+      const response = await apiClients.get(
+        "/thong-ke/doanh-thu-trong-tuan"
       );
       return response.data;
     } catch (error) {
@@ -14,8 +15,8 @@ const Week = {
   },
   async SoLuongSPDaBanTrongTuan() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/so-luong-da-ban-trong-tuan"
+      const response = await apiClients.get(
+        "/thong-ke/so-luong-da-ban-trong-tuan"
       );
       return response.data;
     } catch (error) {
@@ -25,8 +26,8 @@ const Week = {
   },
   async SoLuongHoaDonTrongTuan() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/so-luong-hoa-don-trong-tuan"
+      const response = await apiClients.get(
+        "/thong-ke/so-luong-hoa-don-trong-tuan"
       );
       return response.data;
     } catch (error) {

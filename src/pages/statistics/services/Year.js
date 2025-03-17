@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const Year = {
   async DoanhThuTrongnam() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/doanh-thu-trong-nam"
+      const response = await apiClients.get(
+        "/thong-ke/doanh-thu-trong-nam"
       );
       return response.data;
     } catch (error) {
@@ -14,8 +15,8 @@ const Year = {
   },
   async SoLuongSPDaBanTrongNam() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/so-luong-da-ban-trong-nam"
+      const response = await apiClients.get(
+        "/thong-ke/so-luong-da-ban-trong-nam"
       );
       return response.data;
     } catch (error) {
@@ -25,8 +26,8 @@ const Year = {
   },
   async SoLuongHoaDonTrongNam() {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/thong-ke/so-luong-hoa-don-trong-nam"
+      const response = await apiClients.get(
+        "/thong-ke/so-luong-hoa-don-trong-nam"
       );
       return response.data;
     } catch (error) {

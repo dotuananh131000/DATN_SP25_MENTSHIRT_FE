@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const MapGiaSanPham = {
   async MapProduct() {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/ban-hang/mapGiaSPCT`
+      const response = await apiClients.get(
+        `/ban-hang/mapGiaSPCT`
       );
       return response.data;
     } catch (error) {

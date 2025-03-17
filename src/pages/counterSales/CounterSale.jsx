@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMultipleProductPrices } from "../../features/ProducSlice";
 import QRCodeScanner from "../../containers/QRCodeScanner";
 import QRProduct from "./component/QRProduct";
+import apiClients from "../../api/ApiClient";
 
 export default function CounterSale() {
   const [newBill, setNewBill] = useState({
@@ -128,15 +129,15 @@ export default function CounterSale() {
 
   const fecthProductPrices = useCallback(async () => {
     try {
-      localStorage.clear();
+      localStorage.removeItem("productPrices");
       const storeData = localStorage.getItem("productPrices");
       if (storeData) {
         dispatch(setMultipleProductPrices(JSON.parse(storeData)));
         return;
       }
 
-      const response = await axios.get(
-        `http://localhost:8080/api/ban-hang/mapGiaSPCT`
+      const response = await apiClients.get(
+        `/ban-hang/mapGiaSPCT`
       );
       const data = response.data;
       // chuyển đổi map từ API sang redux object nếu cần
@@ -530,8 +531,8 @@ export default function CounterSale() {
   };
   //hàm thay đổi idHD
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/hdct/count")
+    apiClients
+      .get("/hdct/count")
       .then((response) => {
         setBillDetailsCount(response.data);
       })

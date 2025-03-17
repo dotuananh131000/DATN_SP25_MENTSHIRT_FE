@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const HoaDonPhuongThucThanhToan = {
   async getList(idHD) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/hdpttt/${idHD}`
+      const response = await apiClients.get(
+        `/hdpttt/${idHD}`
       );
       return response.data;
     } catch (error) {
@@ -14,8 +15,8 @@ const HoaDonPhuongThucThanhToan = {
   },
   async AdHDPTTT(data) {
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/hdpttt/add`,
+      const response = await apiClients.post(
+        `/hdpttt/add`,
         data
       );
       return response.data;

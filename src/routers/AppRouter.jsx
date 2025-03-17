@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import Layout from "../components/Layout";
 import adminRoutes from "./AdminRouter";
+import Login from "../auth/login";
+
 function AppRouter() {
   return (
     <Router>
@@ -14,8 +16,10 @@ function AppRouter() {
         <Routes>
           <Route
             path="/"
-            element={<Navigate to="/admin/statistic" replace />}
+            element={<Navigate to="/login" replace />}
           />
+          <Route path="/login" element={<Login/>}/>
+
           <Route path="/admin" element={<Layout />}>
             {adminRoutes.map((route, index) => (
               <Route

@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const ProductDetailService = {
 
     async createProductDetail(productDetailData) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham-chi-tiet`, productDetailData,
+            const response = await apiClients.post(`/san-pham-chi-tiet`, productDetailData,
                 {
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -17,7 +18,7 @@ const ProductDetailService = {
 
     async generateProductDetails(generateModel) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham-chi-tiet/generate`, generateModel,
+            const response = await apiClients.post(`/san-pham-chi-tiet/generate`, generateModel,
                 {
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -33,7 +34,7 @@ const ProductDetailService = {
 
     async createSanPham(newSanPham) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham`, newSanPham,
+            const response = await apiClients.post(`/san-pham`, newSanPham,
                 {
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -46,7 +47,7 @@ const ProductDetailService = {
 
     async getSanPham(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham`, {
+            const response = await apiClients.get(`/san-pham`, {
                 params: {
                     page,
                     size,
@@ -62,7 +63,7 @@ const ProductDetailService = {
 
     async getThuongHieu(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/thuong-hieu`, {
+            const response = await apiClients.get(`/thuong-hieu`, {
                 params: {
                     page,
                     size,
@@ -79,7 +80,7 @@ const ProductDetailService = {
 
     async getChatLieu(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/chat-lieu`, {
+            const response = await apiClients.get(`/chat-lieu`, {
                 params: {
                     page,
                     size,
@@ -97,7 +98,7 @@ const ProductDetailService = {
 
     async getCoAo(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/co-ao`, {
+            const response = await apiClients.get(`/co-ao`, {
                 params: {
                     page,
                     size,
@@ -115,7 +116,7 @@ const ProductDetailService = {
 
     async getKichThuoc(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/kich-thuoc`, {
+            const response = await apiClients.get(`/kich-thuoc`, {
                 params: {
                     page,
                     size,
@@ -133,7 +134,7 @@ const ProductDetailService = {
 
     async getMauSac(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/mau-sac`, {
+            const response = await apiClients.get(`/mau-sac`, {
                 params: {
                     page,
                     size,
@@ -151,7 +152,7 @@ const ProductDetailService = {
 
     async getTayAo(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/tay-ao`, {
+            const response = await apiClients.get(`/tay-ao`, {
                 params: {
                     page,
                     size,
@@ -168,7 +169,7 @@ const ProductDetailService = {
 
     async getXuatXu(page = 0, size = 1000, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/xuat-xu`, {
+            const response = await apiClients.get(`/xuat-xu`, {
                 params: {
                     page,
                     size,
@@ -185,7 +186,7 @@ const ProductDetailService = {
 
     async addBrand(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/thuong-hieu`, data);
+            const response = await apiClients.post(`/thuong-hieu`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -195,7 +196,7 @@ const ProductDetailService = {
 
     async addCollar(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/co-ao`, data);
+            const response = await apiClients.post(`/co-ao`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -205,7 +206,7 @@ const ProductDetailService = {
 
     async addColor(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/mau-sac`, data);
+            const response = await apiClients.post(`/mau-sac`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -215,7 +216,7 @@ const ProductDetailService = {
 
     async addMaterial(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/chat-lieu`, data);
+            const response = await apiClients.post(`/chat-lieu`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -225,7 +226,7 @@ const ProductDetailService = {
 
     async addOrigin(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/xuat-xu`, data);
+            const response = await apiClients.post(`/xuat-xu`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -235,7 +236,7 @@ const ProductDetailService = {
 
     async addSize(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/kich-thuoc`, data);
+            const response = await apiClients.post(`/kich-thuoc`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -245,7 +246,7 @@ const ProductDetailService = {
 
     async addSleeve(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/tay-ao`, data);
+            const response = await apiClients.post(`/tay-ao`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);

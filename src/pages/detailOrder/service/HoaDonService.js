@@ -1,9 +1,10 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 const HoaDonService = {
   async getHoaDon(maHoaDon) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/hoa-don/${maHoaDon}`
+      const response = await apiClients.get(
+        `/hoa-don/${maHoaDon}`
       );
       return response.data;
     } catch (error) {
@@ -13,8 +14,8 @@ const HoaDonService = {
   },
   async ThemSPVaoGioHang(data) {
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/ban-hang/addHdct`,
+      const response = await apiClients.post(
+        `/ban-hang/addHdct`,
         data
       );
       return response.data;
@@ -25,8 +26,8 @@ const HoaDonService = {
   },
   async UpdateTrangThaiDonHang(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-trang-thai-don-hang/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/update-trang-thai-don-hang/${id}`
       );
       if (response.status == 200) {
         return response.data;

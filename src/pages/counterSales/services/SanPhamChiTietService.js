@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 const SanPhamChiTietService = {
   async GetAll(page = 0, size = 10, search = '', filters = {}) {
     try {
@@ -14,8 +15,8 @@ const SanPhamChiTietService = {
         mauSacIds: filters.mauSacIds ? filters.mauSacIds.join(',') : '',
         kichThuocIds: filters.kichThuocIds ? filters.kichThuocIds.join(',') : '',
     };
-      const response = await axios.get(
-        `http://localhost:8080/api/san-pham-chi-tiet`,
+      const response = await apiClients.get(
+        `/san-pham-chi-tiet`,
         {params}
       );
       return response.data.data;
@@ -26,7 +27,7 @@ const SanPhamChiTietService = {
   },
   async GetById(id){
     try{
-      const response = await axios.get(`http://localhost:8080/api/san-pham-chi-tiet/${id}`);
+      const response = await apiClients.get(`/san-pham-chi-tiet/${id}`);
       return response.data.data
     }catch(error){
       console.log("Lỗi khi gọi api sản phẩm chi tiết", error);

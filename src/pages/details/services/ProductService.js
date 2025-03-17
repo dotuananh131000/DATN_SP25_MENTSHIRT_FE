@@ -1,9 +1,10 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const ProductService = {
     async getAllProducts(page = 0, size = 10, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham`, {
+            const response = await apiClients.get(`/san-pham`, {
                 params: {
                     page,
                     size,
@@ -20,7 +21,7 @@ const ProductService = {
 
     async getProductById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham/${id}`);
+            const response = await apiClients.get(`/san-pham/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -30,7 +31,7 @@ const ProductService = {
 
     async getDetailByProductId(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham/${id}`);
+            const response = await apiClients.get(`/san-pham/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -40,7 +41,7 @@ const ProductService = {
 
     async createProduct(productData) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham`, productData);
+            const response = await apiClients.post(`/san-pham`, productData);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -50,7 +51,7 @@ const ProductService = {
 
     async updateProduct(id, productData) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/san-pham/${id}`, productData);
+            const response = await apiClients.put(`/san-pham/${id}`, productData);
             return response.data;
         } catch (error) {
             console.error("Error updating product:", error);
@@ -60,7 +61,7 @@ const ProductService = {
 
     async toggleProductStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/san-pham/${id}`);
+            const response = await apiClients.patch(`/san-pham/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error toggling product status:", error);
@@ -70,7 +71,7 @@ const ProductService = {
 
     async deleteProduct(id) {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/san-pham/${id}`);
+            const response = await apiClients.delete(`/san-pham/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting product:", error);

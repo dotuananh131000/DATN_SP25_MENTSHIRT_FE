@@ -1,9 +1,10 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const SizeService = {
     async getAll(page = 0, size = 10, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/kich-thuoc`, {
+            const response = await apiClients.get(`/kich-thuoc`, {
                 params: {
                     page,
                     size,
@@ -21,7 +22,7 @@ const SizeService = {
 
     async getById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/kich-thuoc/${id}`);
+            const response = await apiClients.get(`/kich-thuoc/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -31,7 +32,7 @@ const SizeService = {
 
     async add(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/kich-thuoc`, data);
+            const response = await apiClients.post(`/kich-thuoc`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -41,7 +42,7 @@ const SizeService = {
 
     async update(id, data) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/kich-thuoc/${id}`, data);
+            const response = await apiClients.put(`/kich-thuoc/${id}`, data);
             return response.data;
         } catch (error) {
             console.error("Error updating product:", error);
@@ -51,7 +52,7 @@ const SizeService = {
 
     async toggleStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/kich-thuoc/${id}`);
+            const response = await apiClients.patch(`/kich-thuoc/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error toggling product status:", error);
@@ -61,7 +62,7 @@ const SizeService = {
 
     async delete(id) {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/kich-thuoc/${id}`);
+            const response = await apiClients.delete(`/kich-thuoc/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting product:", error);
