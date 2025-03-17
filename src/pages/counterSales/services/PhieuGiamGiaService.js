@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const PhieuGiamGiaService = {
   async getAllPhieuGiamGia() {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/ban-hang/phieu-giam-gia`
+      const response = await apiClients.get(
+        `/ban-hang/phieu-giam-gia`
       );
       return response.data;
     } catch (error) {
@@ -14,8 +15,8 @@ const PhieuGiamGiaService = {
   },
   async getPhieuGiamGiaKH(idKH) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/ban-hang/phieu-giam-gia-khach-hang/${idKH}`
+      const response = await apiClients.get(
+        `/ban-hang/phieu-giam-gia-khach-hang/${idKH}`
       );
       return response.data;
     } catch (error) {

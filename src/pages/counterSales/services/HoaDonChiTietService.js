@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const HoaDonChiTietService = {
   async getSPCTByIDHoaDon(idHoaDon) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/hdct/${idHoaDon}`
+      const response = await apiClients.get(
+        `/hdct/${idHoaDon}`
       );
       return response.data;
     } catch (error) {
@@ -16,8 +17,8 @@ const HoaDonChiTietService = {
   async updateSoLuongHDCT(idHDCT, newQuantity) {
     try {
       // Gửi yêu cầu PUT với số lượng mới được đóng gói trong một đối tượng JSON
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-quantity/${idHDCT}`,
+      const response = await apiClients.put(
+        `/ban-hang/update-quantity/${idHDCT}`,
         // Đảm bảo gửi số lượng mới dưới dạng một đối tượng JSON
         JSON.stringify(newQuantity),
         {
@@ -42,8 +43,8 @@ const HoaDonChiTietService = {
 
   async deleteHDCT(id) {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/ban-hang/deleteHDCT/${id}`
+      const response = await apiClients.delete(
+        `/ban-hang/deleteHDCT/${id}`
       );
       return response.data;
     } catch (error) {
@@ -53,8 +54,8 @@ const HoaDonChiTietService = {
   },
   async reloadHDCT(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/reloadHDCT/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/reloadHDCT/${id}`
       );
       return response.data;
     } catch (error) {

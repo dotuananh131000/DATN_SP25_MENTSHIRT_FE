@@ -1,9 +1,10 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const ColorService = {
     async getAll(page = 0, size = 10, search = '', sortKey = 'id', sortDirection = 'desc') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/mau-sac`, {
+            const response = await apiClients.get(`/mau-sac`, {
                 params: {
                     page,
                     size,
@@ -21,7 +22,7 @@ const ColorService = {
 
     async getById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/mau-sac/${id}`);
+            const response = await apiClients.get(`/mau-sac/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -31,7 +32,7 @@ const ColorService = {
 
     async add(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/mau-sac`, data);
+            const response = await apiClients.post(`/mau-sac`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -41,7 +42,7 @@ const ColorService = {
 
     async update(id, data) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/mau-sac/${id}`, data);
+            const response = await apiClients.put(`/mau-sac/${id}`, data);
             return response.data;
         } catch (error) {
             console.error("Error updating product:", error);
@@ -51,7 +52,7 @@ const ColorService = {
 
     async toggleStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/mau-sac/${id}`);
+            const response = await apiClients.patch(`/mau-sac/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error toggling product status:", error);
@@ -61,7 +62,7 @@ const ColorService = {
 
     async delete(id) {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/mau-sac/${id}`);
+            const response = await apiClients.delete(`/mau-sac/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting product:", error);

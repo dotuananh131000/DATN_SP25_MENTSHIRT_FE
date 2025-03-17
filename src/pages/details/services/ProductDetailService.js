@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const ProductDetailService = {
     async getAllProductDetails(page = 0, size = 10, search = '', sortField = 'id', sortDirection = 'desc', filters = {}) {
@@ -19,7 +20,7 @@ const ProductDetailService = {
                 maxPrice: filters.maxPrice ?? ''   
             };
     
-            const response = await axios.get(`http://localhost:8080/api/san-pham-chi-tiet`, { params });
+            const response = await apiClients.get(`/san-pham-chi-tiet`, { params });
             return response.data.data;
         } catch (error) {
             console.error("Error fetching product details:", error);
@@ -30,7 +31,7 @@ const ProductDetailService = {
 
     async getDetailByProductId(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham/${id}`);
+            const response = await apiClients.get(`/san-pham/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching product data:", error);
@@ -40,7 +41,7 @@ const ProductDetailService = {
 
     async getProductDetailById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/san-pham-chi-tiet/${id}`);
+            const response = await apiClients.get(`/san-pham-chi-tiet/${id}`);
             return response.data.data;
         } catch (error) {
             console.error("Error fetching product detail:", error);
@@ -50,7 +51,7 @@ const ProductDetailService = {
 
     async createProductDetail(productDetailData) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham-chi-tiet`, productDetailData);
+            const response = await apiClients.post(`/san-pham-chi-tiet`, productDetailData);
             return response.data.data;
         } catch (error) {
             console.error("Error creating product detail:", error);
@@ -60,7 +61,7 @@ const ProductDetailService = {
 
     async updateProductDetail(id, productDetailData) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/san-pham-chi-tiet/${id}`, productDetailData);
+            const response = await apiClients.put(`/san-pham-chi-tiet/${id}`, productDetailData);
             return response.data.data;
         } catch (error) {
             console.error("Error updating product detail:", error);
@@ -70,7 +71,7 @@ const ProductDetailService = {
 
     async toggleProductDetailStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/san-pham-chi-tiet/${id}/toggle`);
+            const response = await apiClients.patch(`/san-pham-chi-tiet/${id}/toggle`);
             return response.data.data;
         } catch (error) {
             console.error("Error toggling product detail status:", error);
@@ -80,7 +81,7 @@ const ProductDetailService = {
 
     async deleteProductDetail(id) {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/san-pham-chi-tiet/${id}`);
+            const response = await apiClients.delete(`/san-pham-chi-tiet/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting product detail:", error);
@@ -90,7 +91,7 @@ const ProductDetailService = {
 
     async generateProductDetails(generateModel) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/san-pham-chi-tiet/generate`, generateModel);
+            const response = await apiClients.post(`/san-pham-chi-tiet/generate`, generateModel);
             return response.data.data;
         } catch (error) {
             console.error("Error generating product details:", error);
@@ -100,7 +101,7 @@ const ProductDetailService = {
 
     async getThuongHieu(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/thuong-hieu`, {
+            const response = await apiClients.get(`/thuong-hieu`, {
                 params: {
                     page,
                     size,
@@ -116,7 +117,7 @@ const ProductDetailService = {
 
     async getChatLieu(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/chat-lieu`, {
+            const response = await apiClients.get(`/chat-lieu`, {
                 params: {
                     page,
                     size,
@@ -132,7 +133,7 @@ const ProductDetailService = {
 
     async getCoAo(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/co-ao`, {
+            const response = await apiClients.get(`/co-ao`, {
                 params: {
                     page,
                     size,
@@ -148,7 +149,7 @@ const ProductDetailService = {
 
     async getKichThuoc(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/kich-thuoc`, {
+            const response = await apiClients.get(`/kich-thuoc`, {
                 params: {
                     page,
                     size,
@@ -164,7 +165,7 @@ const ProductDetailService = {
 
     async getMauSac(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/mau-sac`, {
+            const response = await apiClients.get(`/mau-sac`, {
                 params: {
                     page,
                     size,
@@ -180,7 +181,7 @@ const ProductDetailService = {
 
     async getTayAo(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/tay-ao`, {
+            const response = await apiClients.get(`/tay-ao`, {
                 params: {
                     page,
                     size,
@@ -196,7 +197,7 @@ const ProductDetailService = {
 
     async getThuongHieu(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/thuong-hieu`, {
+            const response = await apiClients.get(`/thuong-hieu`, {
                 params: {
                     page,
                     size,
@@ -212,7 +213,7 @@ const ProductDetailService = {
 
     async getXuatXu(page = 0, size = 1000, search = '') {
         try {
-            const response = await axios.get(`http://localhost:8080/api/xuat-xu`, {
+            const response = await apiClients.get(`/xuat-xu`, {
                 params: {
                     page,
                     size,

@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const HoaDonService = {
   async AddHoaDon(data) {
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/ban-hang`,
+      const response = await apiClients.post(
+        `/ban-hang`,
         data
       );
       return response.data;
@@ -15,8 +16,8 @@ const HoaDonService = {
   },
   async UpdateKhachHang(id, idKH) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-hoa-don/${id}`,
+      const response = await apiClients.put(
+        `/ban-hang/update-hoa-don/${id}`,
         JSON.stringify(idKH),
         {
           headers: {
@@ -38,8 +39,8 @@ const HoaDonService = {
 
   async UpdateTrangThaiHD(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-trang-thai/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/update-trang-thai/${id}`
       );
       if (response.status == 200) {
         return response.data;
@@ -54,8 +55,8 @@ const HoaDonService = {
   },
   async UpdateLoaiDonOnline(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-loai-don-online/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/update-loai-don-online/${id}`
       );
       if (response.status == 200) {
         return response.data;
@@ -70,8 +71,8 @@ const HoaDonService = {
   },
   async UpdateLoaiDonOffline(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-loai-don-offline/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/update-loai-don-offline/${id}`
       );
       if (response.status == 200) {
         return response.data;
@@ -86,8 +87,8 @@ const HoaDonService = {
   },
   async UpdateTrangThaiDonHang(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/update-trang-thai-don-hang/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/update-trang-thai-don-hang/${id}`
       );
       if (response.status == 200) {
         return response.data;
@@ -103,8 +104,8 @@ const HoaDonService = {
 
   async HoaDonHomNay() {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/ban-hang/hoa-don-hom-nay`
+      const response = await apiClients.get(
+        `/ban-hang/hoa-don-hom-nay`
       );
       return response.data;
     } catch (error) {
@@ -114,8 +115,8 @@ const HoaDonService = {
   },
   async ThemSPVaoGioHang(data) {
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/ban-hang/addHdct`,
+      const response = await apiClients.post(
+        `/ban-hang/addHdct`,
         data
       );
       return response.data;
@@ -126,8 +127,8 @@ const HoaDonService = {
   },
   async AutoPhieuGiamGiaTotNhat(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/auto-pggtn/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/auto-pggtn/${id}`
       );
       if (response.status == 200) {
         // console.log(response.data);
@@ -143,8 +144,8 @@ const HoaDonService = {
   },
   async deleteKhachHang(id) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/deleteKhachHang/${id}`
+      const response = await apiClients.put(
+        `/ban-hang/deleteKhachHang/${id}`
       );
       if (response.status === 200) {
         return response.data;
@@ -158,8 +159,8 @@ const HoaDonService = {
   },
   async updateThongTinDonHang(id, data) {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/ban-hang/updateThongTinDonHang/${id}`,
+      const response = await apiClients.put(
+        `/ban-hang/updateThongTinDonHang/${id}`,
         data
       );
       if (response.status === 200) {

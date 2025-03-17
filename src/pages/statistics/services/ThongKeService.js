@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const ThongKeService = {
   async TopSelling(page) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/thong-ke/top-san-pham`,
+      const response = await apiClients.get(
+        `/thong-ke/top-san-pham`,
         {
           params: {
             page: page || 0,
@@ -20,8 +21,8 @@ const ThongKeService = {
   },
   async SanPhamGanHet(page) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/thong-ke/san-pham-gan-het`,
+      const response = await apiClients.get(
+        `/thong-ke/san-pham-gan-het`,
         {
           params: {
             page: page || 0,
@@ -38,8 +39,8 @@ const ThongKeService = {
   async countDonHang(ngayBatDau, ngayKetThuc) {
     // console.log(ngayBatDau, ngayKetThuc);
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/thong-ke/so-luong-trang-thai-don-hang`,
+      const response = await apiClients.get(
+        `/thong-ke/so-luong-trang-thai-don-hang`,
         {
           params: {
             ngayBatDau: ngayBatDau,

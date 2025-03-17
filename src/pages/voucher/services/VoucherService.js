@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const VoucherService = {
     async getAll(page = 0, size = 10, keyword = '', startTime = null, endTime = null, loaiGiam = null, sortKey = 'id', sortDirection = 'desc') {
@@ -22,7 +23,7 @@ const VoucherService = {
                 sortDirection
             };
     
-            const response = await axios.get(`http://localhost:8080/api/phieu-giam-gia`, { params });
+            const response = await apiClients.get(`/phieu-giam-gia`, { params });
             return response.data.data;
         } catch (error) {
             console.error("Error fetching vouchers:", error);
@@ -34,7 +35,7 @@ const VoucherService = {
 
     async getById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/phieu-giam-gia/${id}`);
+            const response = await apiClients.get(`/phieu-giam-gia/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching voucher:", error);
@@ -44,7 +45,7 @@ const VoucherService = {
 
     async add(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/phieu-giam-gia`, data);
+            const response = await apiClients.post(`/phieu-giam-gia`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating voucher:", error);
@@ -54,7 +55,7 @@ const VoucherService = {
 
     async update(id, data) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/phieu-giam-gia/${id}`, data);
+            const response = await apiClients.put(`/phieu-giam-gia/${id}`, data);
             return response.data;
         } catch (error) {
             console.error("Error updating voucher:", error);
@@ -65,7 +66,7 @@ const VoucherService = {
 
     async toggleStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/phieu-giam-gia/toggle-trang-thai/${id}`);
+            const response = await apiClients.patch(`/phieu-giam-gia/toggle-trang-thai/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error toggling voucher status:", error);

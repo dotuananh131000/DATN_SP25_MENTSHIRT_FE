@@ -1,10 +1,11 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const DiaChiKhacHangService = {
   async diaChi(id) {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/dia-chi/khach-hang/${id}`
+      const response = await apiClients.get(
+        `/dia-chi/khach-hang/${id}`
       );
       return response.data;
     } catch (error) {

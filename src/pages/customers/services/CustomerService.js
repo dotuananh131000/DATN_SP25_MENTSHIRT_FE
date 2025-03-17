@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClients from "../../../api/ApiClient";
 
 const EmployeeService = {
     async getAll(page = 0, size = 10, keyword = '', trangThai = null, sortKey = 'id', sortDirection = 'desc') {
@@ -20,7 +21,7 @@ const EmployeeService = {
                 params.trangThai = parseInt(trangThai, 10);
             }
     
-            const response = await axios.get(`http://localhost:8080/api/khach-hang`, { params });
+            const response = await apiClients.get(`/khach-hang`, { params });
             console.log(response);
 
             return response.data.data;
@@ -32,7 +33,7 @@ const EmployeeService = {
 
     async getById(id) {
         try {
-            const response = await axios.get(`http://localhost:8080/api/khach-hang/${id}`);
+            const response = await apiClients.get(`/khach-hang/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error fetching employee data:", error);
@@ -42,7 +43,7 @@ const EmployeeService = {
 
     async add(data) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang`, data);
+            const response = await apiClients.post(`/khach-hang`, data);
             return response.data;
         } catch (error) {
             console.error("Error creating employee:", error);
@@ -52,7 +53,7 @@ const EmployeeService = {
 
     async update(id, data) {
         try {
-            const response = await axios.put(`http://localhost:8080/api/khach-hang/${id}`, data);
+            const response = await apiClients.put(`/khach-hang/${id}`, data);
             return response.data;
         } catch (error) {
             console.error("Error updating employee:", error);
@@ -62,7 +63,7 @@ const EmployeeService = {
 
     async toggleStatus(id) {
         try {
-            const response = await axios.patch(`http://localhost:8080/api/khach-hang/toggle-trang-thai/${id}`);
+            const response = await apiClients.patch(`/khach-hang/toggle-trang-thai/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error toggling employee status:", error);
@@ -72,7 +73,7 @@ const EmployeeService = {
 
     async delete(id) {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/khach-hang/${id}`);
+            const response = await apiClients.delete(`/khach-hang/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting employee:", error);
@@ -82,7 +83,7 @@ const EmployeeService = {
 
     async resetPassword(id) {
         try {
-            const response = await axios.post(`http://localhost:8080/api/khach-hang/reset-password/${id}`);
+            const response = await apiClients.post(`/khach-hang/reset-password/${id}`);
             return response.data;
         } catch (error) {
             console.error("Error resetting password:", error);
