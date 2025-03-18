@@ -19,9 +19,10 @@ import QRProduct from "./component/QRProduct";
 import apiClients from "../../api/ApiClient";
 
 export default function CounterSale() {
+  const nhanVienID = useSelector((state)=> state.auth.user.id) 
   const [newBill, setNewBill] = useState({
     idKhachHang: null,
-    idNhanVien: 1,
+    idNhanVien: nhanVienID,
     idPhieuGiamGia: null,
     ghiChu: "",
     hoTenNguoiNhan: "",
