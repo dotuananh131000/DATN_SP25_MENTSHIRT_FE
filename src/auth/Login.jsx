@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import login from "../api/Auth";
 import { loginSuccess } from "../features/AuthSlice";
+import axios from "axios";
 function Login(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -19,9 +20,21 @@ function Login(){
         setError(null);
     
         try {
-          const response = await login.CheckLogin(email, password)
-          dispatch( loginSuccess(response.data)); // Lưu token vào context
-          navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
+            const response = await login.CheckLogin(email, password)
+            //   console.log(response.data.token);
+            const token = response.data.token;
+
+            const userRes = await axios.get(`http://localhost:8080/api/nhan-vien/myAccount`,
+                {
+                    headers:{Authorization: `Bearer ${token}`}
+                }
+            );
+            const userInfo ={
+                token: token,
+                ...userRes.data.data
+            }
+            dispatch( loginSuccess(userInfo)); // Lưu token vào context
+            navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
         } catch (err) {
             if (err.response) {
                 setError(err.response.data.message || "Lỗi đăng nhập từ server!");

@@ -9,7 +9,6 @@ const login = {
                     password,
                 }
             )
-            console.log(response.data)
             return response.data
         }catch(error){
             throw error.response?.data || "Lỗi đăng nhập";
