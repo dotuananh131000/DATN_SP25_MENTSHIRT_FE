@@ -11,6 +11,7 @@ import HoaDonChiTietService from "./service/HoaDonChiTietService";
 import { FaRegTrashAlt } from "react-icons/fa";
 import ConfirmModal from "./component/ConfirmModal";
 import AcceptDonHang from "./component/AcceptDonHang";
+import LichSUThanhToan from "./service/LichSuThanhToan";
 
 export default function DetailBill() {
   const { id } = useParams();
@@ -20,6 +21,7 @@ export default function DetailBill() {
   const [sanPhamGioHang, setSanPhamGioHang] = useState([]);
   const [isConfirm, setIsConfirm] = useState(false);
   const [idHDCT, setIDHDCT] = useState(0);
+  const [LichSuThanhToan, setLichSuthanhToan] = useState([]);
 
   const fetchHoaDonByMa = async () => {
     try {
@@ -49,6 +51,21 @@ export default function DetailBill() {
       );
     }
   };
+  const fetchLichSuThanhToan = async()=>{
+    try{
+      if(!hoaDon?.id){
+        return;
+      }
+      const response = await LichSUThanhToan.getAll(hoaDon?.id);
+      setLichSuthanhToan(response);
+    }catch(error){
+      console.log("Lỗi khi gọi API lịch sử hóa đơn", error);
+    }
+  }
+  useEffect(()=>{
+    fetchLichSuThanhToan();
+  },[hoaDon])
+  console.log(LichSuThanhToan);
   const fetchDelete = async (id) => {
     try {
       const response = await HoaDonChiTietService.deleteHDCT(id);
@@ -70,13 +87,12 @@ export default function DetailBill() {
       console.log("Lỗi khi thực hiện thay đổi trạng thái đơn hàng");
     }
   };
-  // useEffect(() => {
-  //   if (!hoaDon?.id) {
-  //     return;
-  //   }
-  //   fectUpdateTrạngThaiDonHang();
-  // });
-
+  //Chuyển trạng thái hóa đơn
+  const chuyenTrangThaiHoaDon = ()=>{
+    fectUpdateTrạngThaiDonHang();
+    fetchHoaDonByMa()
+    toast.success("Đã cập nhật trạng thái đơn hàng.")
+  }
   const handleGetIdHDCT = (id) => {
     setIDHDCT(id);
     setIsConfirm(true);
@@ -162,8 +178,7 @@ export default function DetailBill() {
     }
   };
 
-  // console.log(sanPhamGioHang);
-  // console.log(hoaDon.id);
+  console.log(hoaDon)
 
   const sanPhamTable = () => {
     if (sanPhamGioHang.length === 0) {
@@ -186,18 +201,21 @@ export default function DetailBill() {
     } else {
       return (
         <>
-          <div className="flex flex-1 justify-between items-center">
-            <h1 className="w-full text-2xl text-orange-600 text-center font-bold pl-[160px] ">
+          <div className="relative mb-8">
+            <h1 className="w-full text-2xl text-orange-600 text-center font-bold ">
               Giỏ hàng
             </h1>
-            <button
-              onClick={() => setIsShowModalProduct(true)}
-              className="btn text-base font-normal bg-orange-600 hover:bg-orange-700 text-white "
-            >
-              + Thêm sản phẩm
-            </button>
+           {hoaDon?.trangThai === 0 && ( //Nếu hóa đơn chưa thanh toán thì hiện
+             <button
+             onClick={() => setIsShowModalProduct(true)}
+             className="btn absolute right-4 top-0 bg-orange-500 text-white hover:bg-orange-600 
+             hover:scale-105 duration-200"
+           >
+             + Thêm sản phẩm
+           </button>
+           )}
           </div>
-          <table className="table table-auto min-h-[300px] w-full bg-white rounded-lg shadow overflow-hidden text-center text-xs mt-4">
+          <table className="table">
             <thead>
               <tr className="bg-gray-100 text-center">
                 <th className="px-4 py-2">STT</th>
@@ -235,12 +253,14 @@ export default function DetailBill() {
                     </p>
                   </td>
                   <td className="px-4 py-2">
-                    <button
+                    {hoaDon?.trangThai === 0 && (
+                      <button
                       onClick={() => handlePrevQuantity(sp)}
                       className="btn hover:bg-orange-500 py-2 px-4"
                     >
                       -
                     </button>
+                    )}
                     <input
                       type="text"
                       value={sp?.soLuong}
@@ -248,12 +268,15 @@ export default function DetailBill() {
                       className="input w-[80px] mx-2"
                       readOnly
                     />
-                    <button
-                      onClick={() => handleIncreQuantity(sp)}
-                      className="btn hover:bg-orange-500 py-2 px-4"
-                    >
-                      +
-                    </button>
+                    {hoaDon?.trangThai === 0 && (
+                       <button
+                       onClick={() => handleIncreQuantity(sp)}
+                       className="btn hover:bg-orange-500 py-2 px-4"
+                     >
+                       +
+                     </button>
+                    )}
+                   
                   </td>
                   <td className="px-4 py-2">
                     {new Intl.NumberFormat("vi-VN", {
@@ -262,12 +285,14 @@ export default function DetailBill() {
                     }).format(sp?.thanhTien)}
                   </td>
                   <td className="px-4 py-2">
-                    <button
+                    {hoaDon?.trangThai === 0 && (
+                      <button
                       onClick={() => handleGetIdHDCT(sp?.id)}
                       className="btn bg-white text-orange-500"
                     >
                       <FaRegTrashAlt />
                     </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -285,12 +310,14 @@ export default function DetailBill() {
         <p className="text-gray-400 mt-1">/ Hóa đơn {hoaDon.maHoaDon}</p>
       </div>
       <Link to="/admin/order">
-        <h1 className="btn absolute top-2 right-4 bg-orange-500 text-white hover:bg-orange-600 ">
+        <h1 className="btn absolute top-2 right-4 bg-orange-500 text-white hover:bg-orange-600 hover:scale-105 duration-200">
           Quay lại
         </h1>
       </Link>
       <Stepper hoaDon={hoaDon} />
-      <AcceptDonHang />
+      
+      <AcceptDonHang chuyenTrangThaiHoaDon={chuyenTrangThaiHoaDon} hoaDon={hoaDon} />
+      
       <ChiTietHoaDon hoaDon={hoaDon} />
       <div className="bg-white rounded-lg shadow px-4 py-4 mb-4 min-h-[200px]">
         <div className="text-2xl text-orange-600 text-center font-bold mb-4">
@@ -299,15 +326,33 @@ export default function DetailBill() {
         <table className="table table-auto w-full bg-white rounded-lg shadow overflow-hidden text-center text-xs mt-4">
           <thead>
             <tr className="bg-gray-100 text-center">
-              <th>STT</th>
-              <th>Mã giao dịch</th>
-              <th>Số tiền thanh toán</th>
-              <th>Thời gian</th>
-              <th>Phương thức</th>
-              <th>Loại dịch vụ</th>
+              <th className="px-4 py-2">STT</th>
+              <th className="px-4 py-2">Mã giao dịch</th>
+              <th className="px-4 py-2">Số tiền thanh toán</th>
+              <th className="px-4 py-2">Thời gian</th>
+              <th className="px-4 py-2">Phương thức</th>
+              <th className="px-4 py-2">Người xác nhận</th>
             </tr>
           </thead>
+          <tbody>
+            {LichSuThanhToan.map((lstt, i)=>(
+              <tr>
+                <td className="px-4 py-2">{i+1}</td>
+                <td className="px-4 py-2">Không có</td>
+                <td className="px-4 py-2"> 
+                  {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                  }).format(lstt?.soTienThanhToan)}
+                  </td>
+                  <td className="px-4 py-2">{lstt?.ngayThucHienThanhToan}</td>
+                  <td className="px-4 py-2">{lstt?.tenPhuongThuc}</td>
+                  <td className="px-4 py-2">{lstt?.nguoiXacNhan}</td>
+              </tr>
+            ))}
+        </tbody>
         </table>
+       
       </div>
       <div className="bg-white rounded-lg shadow px-4 py-4 mb-4">
         {sanPhamTable(sanPhamGioHang)}
