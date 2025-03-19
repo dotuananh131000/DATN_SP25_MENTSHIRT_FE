@@ -52,7 +52,7 @@ export default function ChiTietHoaDon({ hoaDon }) {
           )}
         </div>
         <div className="flex justify-between mb-4">
-          <h1 className="text-xl font-bold mt-4">Thông tin khách hàng</h1>
+          <h1 className="text-xl font-bold mt-4">Thông tin người nhận</h1>
           <button className="btn text-base font-normal bg-orange-500 hover:bg-orange-600 text-white ">
             Thay đổi thông tin
           </button>
