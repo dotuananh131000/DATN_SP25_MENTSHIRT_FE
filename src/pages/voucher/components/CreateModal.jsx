@@ -192,7 +192,8 @@ const CreateModal = ({ isOpen, onCancel, setCreateModal, fetchVouchers }) => {
     }
 
     // Số lượng phải là số nguyên dương
-    if (!Number.isInteger(soLuong) || soLuong <= 0) {
+    if (!soLuong || !Number.isInteger(Number(soLuong))|| Number(soLuong) <= 0) {
+      console.log(Number.isInteger(soLuong))
       toast.error(`Số lượng phải là số nguyên dương lớn hơn 0.`);
       return false;
     }

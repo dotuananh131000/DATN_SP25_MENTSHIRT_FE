@@ -22,29 +22,31 @@ export default function Payment({
   phieuGiamGiaTN,
   sanPhamGioHang,
   hdHienTai,
+  thongTinDonHang,
+  setThongTinDongHang,
 }) {
   const [province, setProvince] = useState([]);
   const [district, setDistrict] = useState([]);
   const [ward, setWard] = useState([]);
-  const [provinceID, setProvinceID] = useState();
-  const [districtID, setDistrictID] = useState();
-  const [wardCOde, setWardCode] = useState();
+  const [provinceID, setProvinceID] = useState("");
+  const [provinceName, setProvinceName] = useState("");
+  const [districtID, setDistrictID] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [wardCOde, setWardCode] = useState("");
+  const [wardName, setWardName] = useState("");
   const [isTotal, setIsTotal] = useState(false);
   const [isPGG, setPGG] = useState(false);
   const [serviceId, setServiceId] = useState(0);
   const [fee, setFee] = useState(0);
   const [HDPTTT, setHDPTTT] = useState([]);
-  const [diaChiKH, setDiaChiKH] = useState([]);
+  const [diaChiKH, setDiaChiKH] = useState({});
   const [diaChiCuThe, setDiaChiCuThe] = useState("");
 
   const fetchDiaChiKH = async (id) => {
     try {
       const response = await DiaChiKhacHangService.diaChi(id);
       const diaChi = response.data;
-      setDiaChiKH(diaChi);
-      setProvinceID(diaChi[0]?.tinhThanhId);
-      setDistrictID(diaChi[0]?.quanHuyenId);
-      setWardCode(diaChi[0]?.phuongXaId);
+      setDiaChiKH(diaChi[0]);
     } catch (err) {
       console.log("Không thể lấy địa chỉ khách hàng", err);
     }
@@ -58,39 +60,35 @@ export default function Payment({
 
   // console.log(diaChiKH);
   // console.log(diaChiKH[0]?.diaChiChiTiet);
-
-  const [thongTinDonHang, setThongTinDongHang] = useState({
-    hoTenNguoiNhan: hdHienTai?.tenKhachHang,
-    sdt: "",
-    diaChiNhanHang: "",
-    phiShip: 0,
-  });
-  useEffect(() => {
-    setThongTinDongHang((pre) => ({
-      ...pre,
-      hoTenNguoiNhan: hdHienTai?.tenKhachHang || "",
-      sdt: hdHienTai?.soDienThoai || "",
-    }));
-  }, [hdHienTai]);
-  useEffect(() => {
-    setThongTinDongHang((pre) => ({
-      ...pre,
-      phiShip: Math.round(fee / 500) * 500,
-    }));
-  }, [fee]);
+  
+  //Hàm lấy địa chỉ để đưa vào hóa đơn
+  useEffect(()=>{
+    if(provinceID){
+      const selectProvince = province.find(prov => prov.ProvinceID === Number(provinceID));
+      if(selectProvince){
+        setProvinceName(selectProvince.ProvinceName);
+        if(districtID){
+          const selectDistrict = district.find(dis => dis.DistrictID === Number(districtID));
+          if(selectDistrict){
+            setDistrictName(selectDistrict.DistrictName)
+            if(wardCOde){
+              const selectWard = ward.find(ward => ward.WardCode === wardCOde );
+              if(selectWard){
+                setWardName(selectWard.WardName);
+              }
+            }
+          }
+        }
+      }
+    }
+  },[provinceID, province, districtID, district, ward, wardCOde])
+  // console.log(provinceName)
+  // console.log(districtName)
+  console.log(wardName)
 
   // console.log(thongTinDonHang);
   const handleHoTenNguoiNhan = (e) => {
     const newThongTinNguoiNhan = e.target.value;
-    if (newThongTinNguoiNhan.length >= 50) {
-      toast.warning("Tên người nhận quá dài. Vui lòng nhập lại");
-      return (e.target.value = "");
-    }
-    if (/[0-9]/.test(newThongTinNguoiNhan)) {
-      toast.warning("Tên người nhận không được chứa số.");
-      return;
-    }
-    if (newThongTinNguoiNhan)
       setThongTinDongHang((prev) => ({
         ...prev,
         hoTenNguoiNhan: newThongTinNguoiNhan,
@@ -100,17 +98,13 @@ export default function Payment({
   const handleSDT = (e) => {
     const newSDT = e.target.value;
 
-    // 🛠 Regex kiểm tra số điện thoại: Bắt đầu bằng `0`, có đúng 13 số
-    const phoneRegex = /^0\d{10}$/;
-
-    if (phoneRegex.test(newSDT)) {
       setThongTinDongHang((prev) => ({
         ...prev,
         sdt: newSDT,
       }));
-    } else {
-      toast.warning("Số điện thoại phải bắt đầu bằng 0 và có đúng 13 số.");
-    }
+    // } else {
+    //   toast.warning("Số điện thoại phải bắt đầu bằng 0 và có đúng 13 số.");
+    // }
   };
 
   const fetchHoaDonPhuongThuc = async () => {
@@ -177,26 +171,19 @@ export default function Payment({
   }, [districtID]);
   //Lấy service id giao hàng nhanh
   const fetchFee = async () => {
-    if (!serviceId || !districtID) {
-      return;
-    }
     try {
       const response = await api_giaoHangNhanh.getFeeGHN(
         serviceId,
         Number(districtID),
         wardCOde.toString()
       );
+      console.log(response.data.service_fee)
       setFee(response.data.service_fee);
     } catch (error) {
       console.log("Không thể tính được phí ship.", error);
     }
   };
 
-  useEffect(() => {
-    fetchFee();
-  }, [ward]);
-
-  // console.log(fee);
   //Goi API tính phí ship
   useEffect(() => {
     if (billToday[selectedTab]?.loaiDon === 0) {
@@ -207,6 +194,7 @@ export default function Payment({
   useEffect(() => {
     updateLoaiDon(isChecked);
   }, [isChecked]);
+  console.log(isChecked)
 
   //Goi API province
   const fetchAPIProvince = async () => {
@@ -251,12 +239,59 @@ export default function Payment({
   }, []);
 
   useEffect(() => {
+    setDistrictID(''); 
+    setWardCode('');
+    setDistrictName("");
+    setWardName("");
+    setDiaChiCuThe("");
+    setFee(0);
+    setThongTinDongHang((prev)=>({...prev, phiShip:0, diaChiNhanHang:""}))
+    setDistrict([]); 
+    setWard([]); 
     fetchAPIDistrict();
   }, [provinceID]);
 
   useEffect(() => {
-    fetchAPIWard();
+    if(districtID){
+      setWardCode('');
+      setWardName("");
+      setFee(0);
+      fetchAPIWard();
+    }
   }, [districtID]);
+  useEffect(() => {
+    setThongTinDongHang((pre) => ({
+      ...pre,
+      hoTenNguoiNhan: hdHienTai?.tenKhachHang || "",
+      sdt: hdHienTai?.soDienThoai || "",
+    }));
+  }, [hdHienTai]);
+
+  useEffect(()=>{
+    if (diaChiCuThe && wardName && districtName && provinceName) {
+      setThongTinDongHang((prev) => ({
+        ...prev,
+        diaChiNhanHang: `${diaChiCuThe}, ${wardName}, ${districtName}, ${provinceName}`,
+      }));
+      fetchFee();
+    }
+  },[ provinceID, districtID, district, wardCOde, wardName, ward, diaChiCuThe])
+  
+  useEffect(() => {
+    if(districtID && wardCOde){
+      setThongTinDongHang((pre) => ({
+        ...pre,
+        phiShip: Math.round(fee / 500) * 500,
+      }));
+    }else{
+      setThongTinDongHang((pre) => ({
+        ...pre,
+        phiShip: 0,
+      }));
+    }
+  }, [fee]);
+  console.log(thongTinDonHang);
+
 
   const tongTien = billToday[selectedTab]?.tongTien;
   const discountAmount =
@@ -306,9 +341,6 @@ export default function Payment({
   };
 
   const radioGiaoHang = () => {
-    if (billToday[selectedTab]?.tenKhachHang === null) {
-      return null;
-    } else {
       return (
         <>
           <div className="flex items-center justify-between">
@@ -319,7 +351,6 @@ export default function Payment({
                 checked={isChecked}
                 onChange={handleToggle}
                 className="toggle border-white bg-white [--tglbg:gray] hover:bg-white checked:[--tglbg:green]"
-                defaultChecked
               />
             </div>
           </div>
@@ -329,19 +360,18 @@ export default function Payment({
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
-              }).format(Math.round(fee / 500) * 500)}
+              }).format(thongTinDonHang?.phiShip)}
             </h1>
           </div>
         </>
       );
-    }
   };
 
   const adress = () => {
     if (!isChecked) {
       return <div className=""></div>;
     }
-    if (isChecked && billToday[selectedTab]?.tenKhachHang !== null) {
+    if (isChecked) {
       return (
         <div className="w-full p-4">
           <div className="flex flex-1">
@@ -359,9 +389,9 @@ export default function Payment({
 
               <input
                 id="name"
-                onBlur={(e) => handleHoTenNguoiNhan(e)}
+                onChange={(e) => handleHoTenNguoiNhan(e)}
                 type="text"
-                defaultValue={billToday[selectedTab]?.tenKhachHang}
+                value={thongTinDonHang.hoTenNguoiNhan}
                 placeholder="Họ và Tên"
                 className="input input-bordered w-full max-w-xs"
               />
@@ -393,7 +423,7 @@ export default function Payment({
                 onChange={(e) => setProvinceID(e.target.value)}
                 value={provinceID}
               >
-                <option disabled>Tỉnh / Thành Phố</option>
+                <option defaultChecked>Tỉnh / Thành Phố</option>
                 {province.map((prov) => (
                   <option key={prov.ProvinceID} value={prov.ProvinceID}>
                     {prov.ProvinceName}
@@ -412,7 +442,7 @@ export default function Payment({
                 onChange={(e) => setDistrictID(e.target.value)}
                 value={districtID}
               >
-                <option disabled>Huyện / Quận</option>
+                <option defaultChecked>Huyện / Quận</option>
                 {district.map((dis) => (
                   <option key={dis.DistrictID} value={dis.DistrictID}>
                     {dis.DistrictName}
@@ -431,7 +461,7 @@ export default function Payment({
                 onChange={(e) => setWardCode(e.target.value)}
                 value={wardCOde}
               >
-                <option disabled>Xã / Phường</option>
+                <option defaultChecked>Xã / Phường</option>
                 {ward.map((w) => (
                   <option key={w.WardCode} value={w.WardCode}>
                     {w.WardName}
@@ -501,13 +531,48 @@ export default function Payment({
     setIsTotal(true);
   };
 
+  console.log(hdHienTai?.id);
+  const xacNhanHoaDon= ()=>{
+    if(!wardName || !diaChiCuThe){
+      toast.warn("Vui long nhập thông tin đầy đủ.")
+      return
+    }
+    const phoneRegex = /^0\d{9}$/;
+    // if (phoneRegex.test(newSDT)) {
+    if(!phoneRegex.test(thongTinDonHang.sdt)){
+      toast.warn("Không đúng định dạng số diện thoại.");
+      return;
+    }
+    if (thongTinDonHang.hoTenNguoiNhan.length >= 50) {
+      toast.warning("Tên người nhận quá dài. Vui lòng nhập lại");
+      setThongTinDongHang((pre) => ({
+        ...pre,
+        hoTenNguoiNhan: "",
+      }));
+      return ;
+    }
+    if (/[0-9]/.test(thongTinDonHang.hoTenNguoiNhan)) {
+      toast.warning("Tên người nhận không được chứa số.");
+      setThongTinDongHang((pre) => ({
+        ...pre,
+        hoTenNguoiNhan: "",
+      }));
+      return;
+    }
+    if (soTienConLai > 0) {
+      toast.warning("Vui lòng thanh toán số tiền còn lại");
+      return;
+    }
+    isOpenConfirm(true);
+  }
+
   // console.log(soTienConLai);
   //Check sản phẩm khi thanh toán
   const btnAccetpHD = () => {
     if (isChecked) {
       return (
         <button
-          onClick={() => isOpenConfirm(true)}
+          onClick={xacNhanHoaDon}
           className="btn w-full mb-4 bg-orange-500 hover:bg-orange-600 text-white"
         >
           Xác nhân đơn hàng

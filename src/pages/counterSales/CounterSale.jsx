@@ -64,6 +64,12 @@ export default function CounterSale() {
   const [isSpQR, setIsSPQR] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [addSPQR, setAddSPQR] = useState({ idHoaDon: null, idSPCT: null, soLuong: 1,});
+  const [thongTinDonHang, setThongTinDongHang] = useState({
+    hoTenNguoiNhan: "",
+    sdt: "",
+    diaChiNhanHang: "",
+    phiShip: 0,
+  });
 
   const handleScan =async (decodedText) => {
     console.log(decodedText);
@@ -127,7 +133,6 @@ export default function CounterSale() {
 
   const dispatch = useDispatch();
   const productPrices = useSelector((state) => state.productPrices);
-
   const fecthProductPrices = useCallback(async () => {
     try {
       localStorage.removeItem("productPrices");
@@ -136,7 +141,6 @@ export default function CounterSale() {
         dispatch(setMultipleProductPrices(JSON.parse(storeData)));
         return;
       }
-
       const response = await apiClients.get(
         `/ban-hang/mapGiaSPCT`
       );
@@ -283,6 +287,7 @@ export default function CounterSale() {
       const response = await HoaDonService.AddHoaDon(newBill);
       const createBill = response.data;
       fetchBillToday();
+      setIsChecked(false);
       toast.success("Tạo hóa đơn thành công");
       setSelectedTab(billToday?.length);
     } catch (error) {
@@ -369,6 +374,14 @@ export default function CounterSale() {
       toast.error("Có lỗi xảy ra khi xóa hóa đơn chi tiết.");
     }
   };
+
+  const fetchThongTinDonHang =async ()=>{
+    try{
+      const response = await HoaDonService.updateThongTinDonHang(idHD,thongTinDonHang);
+    }catch(error){
+      console.log("Không thể cập nhật thông tin đơn hàng.");
+    }
+  }
   const fetchDataKhachHang = async () => {
     try {
       const response = await KhachHangService.getAllKH();
@@ -522,6 +535,7 @@ export default function CounterSale() {
 
   const handleTTDH = () => {
     handleUpdateTrangThaiDonHang();
+    fetchThongTinDonHang();
     setIsConfirmTaoHoaDon(false);
   };
 
@@ -927,6 +941,8 @@ const validateThemSP = ()=>{
         phieuGiamGiaTN={phieuGiamGiaTN}
         sanPhamGioHang={sanPhamGioHang}
         hdHienTai={hdHienTai}
+        thongTinDonHang={thongTinDonHang}
+        setThongTinDongHang={setThongTinDongHang}
       />
       {isConfirmTaoHoaDon && confirmXacNhan()}
     </div>
