@@ -8,7 +8,7 @@ function Layout() {
       <SlideBar />
       <div className="right-layout">
         <Header />
-        <main className="layout-main">
+        <main className="layout-main min-h-80">
           <Outlet />
         </main>
       </div>
