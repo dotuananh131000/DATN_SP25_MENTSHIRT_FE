@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import HoaDonPhuongThucThanhToan from "../services/HoaDonPhuongThucThanhToanService";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 export default function TotalModal({
   isClose,
@@ -9,13 +10,16 @@ export default function TotalModal({
   fetchHoaDonPhuongThuc,
   HDPTTT,
 }) {
+  const tenNhanVien = useSelector((state)=> state.auth.user.tenNhanVien) 
   const [idPTTT, setIdPTTT] = useState(1);
   const [soTienNhap, setSoTienNhap] = useState(khachPhaiThanhToan);
   const [newHDPTTT, setHDPTTTOB] = useState({
     hoaDonId: idHD,
     phuongThucThanhToanId: idPTTT,
     soTienThanhToan: soTienNhap,
+    nguoiXacNhan: tenNhanVien,
   });
+  
 
   const fectAddHDPTTT = async () => {
     if (!soTienNhap) {

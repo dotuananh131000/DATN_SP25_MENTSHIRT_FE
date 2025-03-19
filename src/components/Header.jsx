@@ -19,32 +19,32 @@ function Header() {
     {isModal && 
     (
       <div className="relative ">
-        <div className="absolute right-2 top-[-10px] border  grid grid-flow-row-dense justify-center 
-        h-60 w-1/4 px-4 py-3 bg-orange-400 text-gray-100 shadow-sm rounded-lg">
+        <div className="absolute right-10 top-[-10px] border  grid grid-flow-row-dense justify-center 
+        h-60 w-1/6 px-4 py-3 bg-orange-400 text-gray-100 shadow-sm rounded-lg">
           <h1 className="text-center text-xl">Thông tin nhân viên</h1>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Tên nhân viên:</h1>
-            <span>{user.tenNhanVien}</span>
+            <h1 className="text-xs">Tên nhân viên:</h1>
+            <span className="text-xs">{user.tenNhanVien}</span>
           </div>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Mã nhân viên :</h1>
-            <span>{user.maNhanVien}</span>
+            <h1 className="text-xs">Mã nhân viên :</h1>
+            <span className="text-xs">{user.maNhanVien}</span>
           </div>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Email :</h1>
-            <span>{user.email}</span>
+            <h1 className="text-xs">Email :</h1>
+            <span className="text-xs">{user.email}</span>
           </div>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Số điện thoại :</h1>
-            <span>{user.soDienThoai}</span>
+            <h1 className="text-xs">Số điện thoại :</h1>
+            <span className="text-xs">{user.soDienThoai}</span>
           </div>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Giới tính :</h1>
-            <span>{user.gioiTinh ===0?"Nam":"Nữ"}</span>
+            <h1 className="text-xs">Giới tính :</h1>
+            <span className="text-xs">{user.gioiTinh ===0?"Nam":"Nữ"}</span>
           </div>
           <div className="flex justify-start items-center space-x-2">
-            <h1>Vai trò :</h1>
-            <span>{user.vaiTro.maVaiTro}</span>
+            <h1 className="text-xs">Vai trò :</h1>
+            <span className="text-xs">{user.vaiTro.maVaiTro}</span>
           </div>
         </div>
       </div>
