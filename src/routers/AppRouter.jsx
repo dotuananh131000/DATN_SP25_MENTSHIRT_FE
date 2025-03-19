@@ -1,4 +1,8 @@
 import { Suspense } from "react";
+import UserLayout from "../components/UserLayout";
+
+import userRoutes from "./UserRouter";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,6 +18,19 @@ function AppRouter() {
     <Router>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+
+        <Route path="/" element={<UserLayout />}>
+             {userRoutes.map((route, index) => (
+               <Route
+                 key={index}
+                 path={route.path}
+                 element={<route.component />}
+               />
+             ))}
+           </Route>
+
+           
           <Route
             path="/"
             element={<Navigate to="/login" replace />}
