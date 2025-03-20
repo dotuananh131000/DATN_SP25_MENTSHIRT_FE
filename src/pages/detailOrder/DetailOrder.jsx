@@ -303,6 +303,7 @@ export default function DetailBill() {
     }
   };
 
+  console.log(hoaDon)
   return (
     <div className="p-6 bg-gray-50 min-h-screen relative">
       <div className="flex align-center space-x-4 mb-4">

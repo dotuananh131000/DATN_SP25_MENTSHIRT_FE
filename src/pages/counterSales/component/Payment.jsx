@@ -41,24 +41,6 @@ export default function Payment({
   const [HDPTTT, setHDPTTT] = useState([]);
   const [diaChiKH, setDiaChiKH] = useState({});
   const [diaChiCuThe, setDiaChiCuThe] = useState("");
-
-  const fetchDiaChiKH = async (id) => {
-    try {
-      const response = await DiaChiKhacHangService.diaChi(id);
-      const diaChi = response.data;
-      setDiaChiKH(diaChi[0]);
-    } catch (err) {
-      console.log("Không thể lấy địa chỉ khách hàng", err);
-    }
-  };
-  useEffect(() => {
-    if (!hdHienTai?.idKhachHang) {
-      return;
-    }
-    fetchDiaChiKH(hdHienTai?.idKhachHang);
-  }, [hdHienTai]);
-
-  // console.log(diaChiKH);
   // console.log(diaChiKH[0]?.diaChiChiTiet);
   
   //Hàm lấy địa chỉ để đưa vào hóa đơn
@@ -81,10 +63,10 @@ export default function Payment({
         }
       }
     }
-  },[provinceID, province, districtID, district, ward, wardCOde])
+  },[provinceID, province, districtID, districtName, district, ward, wardCOde])
   // console.log(provinceName)
   // console.log(districtName)
-  console.log(wardName)
+  // console.log(wardName)
 
   // console.log(thongTinDonHang);
   const handleHoTenNguoiNhan = (e) => {
@@ -239,11 +221,13 @@ export default function Payment({
   }, []);
 
   useEffect(() => {
+   if(!hdHienTai?.idKhachHang){
     setDistrictID(''); 
     setWardCode('');
     setDistrictName("");
     setWardName("");
     setDiaChiCuThe("");
+   }
     setFee(0);
     setThongTinDongHang((prev)=>({...prev, phiShip:0, diaChiNhanHang:""}))
     setDistrict([]); 
@@ -253,8 +237,10 @@ export default function Payment({
 
   useEffect(() => {
     if(districtID){
-      setWardCode('');
-      setWardName("");
+      if(!hdHienTai?.idKhachHang){
+        setWardCode('');
+        setWardName("");
+      }
       setFee(0);
       fetchAPIWard();
     }
@@ -273,9 +259,22 @@ export default function Payment({
         ...prev,
         diaChiNhanHang: `${diaChiCuThe}, ${wardName}, ${districtName}, ${provinceName}`,
       }));
-      fetchFee();
+      if(isChecked){
+        fetchFee();
+        setThongTinDongHang((pre) => ({
+          ...pre,
+          phiShip: Math.round(fee / 500) * 500,
+        }));
+      }else{
+        setThongTinDongHang((pre) => ({
+          ...pre,
+          diaChiNhanHang:"",
+          phiShip: 0,
+        }));
+      }
+      
     }
-  },[ provinceID, districtID, district, wardCOde, wardName, ward, diaChiCuThe])
+  },[ provinceID, districtID, district, wardCOde, wardName, ward, diaChiCuThe, isChecked, fee])
   
   useEffect(() => {
     if(districtID && wardCOde){
@@ -289,8 +288,49 @@ export default function Payment({
         phiShip: 0,
       }));
     }
+    // if(!hdHienTai?.idKhachHang){
+    //   setThongTinDongHang((pre) => ({
+    //     ...pre,
+    //     phiShip: 0,
+    //   }));
+    // }
   }, [fee]);
   console.log(thongTinDonHang);
+
+  const fetchDiaChiKH = async (id) => {
+    try {
+      const response = await DiaChiKhacHangService.diaChi(id);
+      const diaChi = response.data;
+      console.log("Dữ liệu địa chỉ khách hàng:", diaChi);  // Kiểm tra dữ liệu
+      if (diaChi && diaChi.length > 0) {
+        setDiaChiKH(diaChi[0]);
+  
+        setProvinceID(diaChi[0]?.tinhThanhId);
+        setDistrictID(diaChi[0]?.quanHuyenId);
+        setWardCode(diaChi[0]?.phuongXaId);
+        setDiaChiCuThe(diaChi[0]?.diaChiChiTiet);
+        setProvinceName(diaChi[0]?.tinhThanh);
+        setWardName(diaChi[0]?.phuongXa);
+      }
+    } catch (err) {
+      console.log("Không thể lấy địa chỉ khách hàng", err);
+    }
+  };
+  useEffect(() => {
+    if (!hdHienTai?.idKhachHang) {
+      return;
+    }
+    fetchDiaChiKH(hdHienTai?.idKhachHang);
+  }, [hdHienTai?.idKhachHang]);
+
+  // console.log("Đây là địa chỉ khách hàng",diaChiKH);
+  // console.log("Đây là id province",provinceID);
+  // console.log("Đây là district Id",districtID);
+  // console.log("Đây là wardCode",wardCOde);
+  // console.log("Đây là wardName",wardName);
+  // console.log("Đây là DistricName",districtName);
+  // console.log("Đây là province",provinceName)
+
 
 
   const tongTien = billToday[selectedTab]?.tongTien;
@@ -369,6 +409,7 @@ export default function Payment({
 
   const adress = () => {
     if (!isChecked) {
+      // {setThongTinDongHang((pre)=>({...pre, phiShip: 0}))}
       return <div className=""></div>;
     }
     if (isChecked) {
@@ -531,7 +572,7 @@ export default function Payment({
     setIsTotal(true);
   };
 
-  console.log(hdHienTai?.id);
+  // console.log(hdHienTai?.id);
   const xacNhanHoaDon= ()=>{
     if(!wardName || !diaChiCuThe){
       toast.warn("Vui long nhập thông tin đầy đủ.")
@@ -557,6 +598,10 @@ export default function Payment({
         ...pre,
         hoTenNguoiNhan: "",
       }));
+      return;
+    }
+    if(!thongTinDonHang.hoTenNguoiNhan){
+      toast.warn("Vui lòng nhập đầy đủ tin.");
       return;
     }
     if (soTienConLai > 0) {

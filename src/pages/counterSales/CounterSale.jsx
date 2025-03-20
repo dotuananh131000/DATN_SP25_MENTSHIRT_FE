@@ -537,6 +537,9 @@ export default function CounterSale() {
     handleUpdateTrangThaiDonHang();
     fetchThongTinDonHang();
     setIsConfirmTaoHoaDon(false);
+    setTimeout(() => {
+      window.location.reload(); // Tải lại trang sau một khoảng thời gian
+    }, 500); 
   };
 
   const changeIDHoaDon = (index, id) => {
