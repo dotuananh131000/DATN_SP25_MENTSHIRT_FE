@@ -83,6 +83,8 @@ export default function DetailBill() {
   const fectUpdateTrạngThaiDonHang = async () => {
     try {
       const response = await HoaDonService.UpdateTrangThaiDonHang(hoaDon?.id);
+      fetchHoaDonByMa();
+      toast.success("Đã cập nhật trạng thái đơn hàng.")
     } catch (err) {
       console.log("Lỗi khi thực hiện thay đổi trạng thái đơn hàng");
     }
@@ -90,8 +92,7 @@ export default function DetailBill() {
   //Chuyển trạng thái hóa đơn
   const chuyenTrangThaiHoaDon = ()=>{
     fectUpdateTrạngThaiDonHang();
-    fetchHoaDonByMa()
-    toast.success("Đã cập nhật trạng thái đơn hàng.")
+    
   }
   const handleGetIdHDCT = (id) => {
     setIDHDCT(id);
@@ -100,7 +101,7 @@ export default function DetailBill() {
 
   useEffect(() => {
     fetchHoaDonByMa();
-  }, [id]);
+  }, [id,hoaDon?.trangThaiGiaoHang]);
 
   useEffect(() => {
     fetchSanPhamChiTiet();

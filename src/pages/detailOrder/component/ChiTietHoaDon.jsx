@@ -52,29 +52,34 @@ export default function ChiTietHoaDon({ hoaDon }) {
           )}
         </div>
         <div className="flex justify-between mb-4">
-          <h1 className="text-xl font-bold mt-4">Thông tin người nhận</h1>
+          <h1 className="text-xl font-bold mt-4">Thông tin hóa đơn</h1>
           <button className="btn text-base font-normal bg-orange-500 hover:bg-orange-600 text-white ">
             Thay đổi thông tin
           </button>
         </div>
         <div className="flex space-x-2 ">
           <div className="w-1/2">
-            {itemThongTinKhachHang(
-              "Tên khách hàng",
-              !hoaDon?.tenKhachHang ? "Khách lẻ" : hoaDon?.tenKhachHang
+          {itemThongTinKhachHang(
+          "Tên khách hàng",
+          hoaDon.loaiDon === 0
+              ? (!hoaDon?.hoTenNguoiNhan ? "Khách lẻ" : hoaDon?.hoTenNguoiNhan)
+              : (!hoaDon?.tenKhachHang ? "Khách lẻ" : hoaDon?.tenKhachHang)
             )}
             {itemThongTinKhachHang(
-              "Email",
+              "Email người nhận",
               !hoaDon?.email ? "Không có" : hoaDon?.email
             )}
           </div>
           <div className="w-1/2">
             {itemThongTinKhachHang(
               "Số điện thoại",
-              !hoaDon?.soDienThoai ? "Không có" : hoaDon?.soDienThoai
+              hoaDon?.loaiDon === 0
+              ? (!hoaDon?.soDienThoai ? "Không có" : hoaDon?.soDienThoai)
+              : (hoaDon?.sdtKH)
+              
             )}
             {itemThongTinKhachHang(
-              "Địa chỉ",
+              "Địa chỉ nhận hàng",
               !hoaDon?.diaChiNhanHang ? "Không có" : hoaDon?.diaChiNhanHang
             )}
           </div>

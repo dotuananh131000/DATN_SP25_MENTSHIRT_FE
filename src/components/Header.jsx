@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-
+import { FiLogOut } from "react-icons/fi";
 function Header() {
   const user = useSelector((state)=> state.auth.user);
   const [isModal, setIsModal] = useState(false);
@@ -14,6 +14,7 @@ function Header() {
         <span className="hover:scale-105 duration-300" onClick={()=>setIsModal(!isModal)}>
           {user.tenNhanVien}
           </span>
+         
       </div>
     </div>
     {isModal && 

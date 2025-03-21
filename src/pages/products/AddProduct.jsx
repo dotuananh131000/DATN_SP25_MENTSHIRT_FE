@@ -4,6 +4,7 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import ProductVariants from "./components/ProductVariants";
 import ProductDetailService from "./services/ProductDetailService";
+import { toast } from "react-toastify";
 
 export default function AddProduct() {
   const [sanPhams, setSanPhams] = useState([]);
@@ -145,8 +146,24 @@ export default function AddProduct() {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleSoLuong = (e) => {
     const { name, value } = e.target;
+    if(Number(value)<0){
+      toast.error("Số lượng phải lớn hơn 0.");
+      return;
+    }
+    setGenerateData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleGia = (e) => {
+    const { name, value } = e.target;
+    if(Number(value)<0){
+      toast.error("Giá sản phẩm phải lớn hơn 0");
+      return;
+    }
     setGenerateData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -306,10 +323,10 @@ export default function AddProduct() {
                     type="number"
                     name="soLuong"
                     value={generateData.soLuong}
-                    onChange={handleInputChange}
+                    onChange={handleSoLuong}
                     className="input input-bordered w-full"
                     placeholder="Nhập số lượng"
-                    min={0}
+                    min={1}
                   />
                 </div>
 
@@ -319,10 +336,10 @@ export default function AddProduct() {
                     type="number"
                     name="donGia"
                     value={generateData.donGia}
-                    onChange={handleInputChange}
+                    onChange={handleGia}
                     className="input input-bordered w-full"
                     placeholder="Nhập đơn giá"
-                    min={0}
+                    min={10000}
                     step={10000}
                   />
                 </div>

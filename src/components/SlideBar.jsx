@@ -45,7 +45,7 @@ function SlideBar() {
   ];
 
   return (
-    <div className="w-60 min-h-screen bg-base-200 shadow-lg p-4">
+    <div className="w-60 min-h-screen bg-base-200 shadow-lg p-4 relative ">
       <div className="flex justify-center mb-4">
         <img src="/public/logo.png" alt="Logo" className="w-24" />
       </div>
@@ -148,7 +148,9 @@ function SlideBar() {
             <FaMoneyBill /> Phiếu giảm giá
           </Link>
         </li>
+       
       </ul>
+     
     </div>
   );
 }

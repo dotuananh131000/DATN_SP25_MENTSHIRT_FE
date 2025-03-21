@@ -67,6 +67,7 @@ export default function CounterSale() {
   const [thongTinDonHang, setThongTinDongHang] = useState({
     hoTenNguoiNhan: "",
     sdt: "",
+    email:"",
     diaChiNhanHang: "",
     phiShip: 0,
   });
@@ -513,29 +514,20 @@ export default function CounterSale() {
     }
   };
 
-  const handleUpdateTrangThaiDonHang = async () => {
-    try {
-      if (!billToday[selectedTab]?.id) {
-        return;
-      }
-      const fetchTrangThaiDH = await HoaDonService.UpdateTrangThaiDonHang(
-        billToday[selectedTab]?.id
-      );
-      if (fetchTrangThaiDH) {
-        console.log("Đã xác nhận đơn hàng", fetchTrangThaiDH);
-        toast.success("Xác nhận đơn hàng thành công");
-      } else {
-        console.log("Xác nhân thất bại");
-        toast.error("Xác nhận đơn hàng thất bại, vui lòng thử lại");
-      }
-    } catch (error) {
-      console.log("Đã có lỗi khi gọi API xác nhân đơn hàng", error);
+  const fetchUpdateTTDH = async()=>{
+    try{
+      const response = await HoaDonService.UpdateTrangThaiDonHang(idHD);
+      console.log("Đã update hóa đơn", response);
+      fetchThongTinDonHang();
+      toast.success("Xác nhận đơn hàng thành công");
+    }catch(error){
+      console.log("Không thể update được trạng thái đơn hàng, vui lòng thử lại")
+      toast.error("Xác nhận đơn hàng thất bại, vui lòng thử lại");
     }
-  };
+  }
 
   const handleTTDH = () => {
-    handleUpdateTrangThaiDonHang();
-    fetchThongTinDonHang();
+    fetchUpdateTTDH();
     setIsConfirmTaoHoaDon(false);
     setTimeout(() => {
       window.location.reload(); // Tải lại trang sau một khoảng thời gian
@@ -569,7 +561,7 @@ export default function CounterSale() {
               <p className="py-3 ">Xác nhận tạo đơn hàng mới !</p>
               <div className="modal-action flex justify-center gap-3">
                 <button
-                  onClick={() => handleTTDH()}
+                  onClick={ handleTTDH}
                   className="btn bg-orange-500 hover:bg-orange-600 text-white px-4"
                 >
                   Xác nhận
