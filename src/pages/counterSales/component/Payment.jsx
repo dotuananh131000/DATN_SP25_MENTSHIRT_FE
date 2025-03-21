@@ -84,9 +84,26 @@ export default function Payment({
         ...prev,
         sdt: newSDT,
       }));
-    // } else {
-    //   toast.warning("Số điện thoại phải bắt đầu bằng 0 và có đúng 13 số.");
-    // }
+  };
+
+  const handleEmail = (e) => {
+    const newEmail = e.target.value;
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+  
+    setThongTinDongHang((prev) => ({
+      ...prev,
+      email: newEmail,
+    }));
+  
+    // Validate ngay khi nhập
+    if (!regex.test(newEmail)) {
+      toast.error('Email không hợp lệ!');
+      setThongTinDongHang((prev) => ({
+        ...prev,
+        email: "",
+      }));
+      return;
+    } 
   };
 
   const fetchHoaDonPhuongThuc = async () => {
@@ -250,8 +267,11 @@ export default function Payment({
       ...pre,
       hoTenNguoiNhan: hdHienTai?.tenKhachHang || "",
       sdt: hdHienTai?.soDienThoai || "",
+      email: hdHienTai?.email || ""
     }));
   }, [hdHienTai]);
+
+  console.log(hdHienTai)
 
   useEffect(()=>{
     if (diaChiCuThe && wardName && districtName && provinceName) {
@@ -288,12 +308,6 @@ export default function Payment({
         phiShip: 0,
       }));
     }
-    // if(!hdHienTai?.idKhachHang){
-    //   setThongTinDongHang((pre) => ({
-    //     ...pre,
-    //     phiShip: 0,
-    //   }));
-    // }
   }, [fee]);
   console.log(thongTinDonHang);
 
@@ -322,16 +336,6 @@ export default function Payment({
     }
     fetchDiaChiKH(hdHienTai?.idKhachHang);
   }, [hdHienTai?.idKhachHang]);
-
-  // console.log("Đây là địa chỉ khách hàng",diaChiKH);
-  // console.log("Đây là id province",provinceID);
-  // console.log("Đây là district Id",districtID);
-  // console.log("Đây là wardCode",wardCOde);
-  // console.log("Đây là wardName",wardName);
-  // console.log("Đây là DistricName",districtName);
-  // console.log("Đây là province",provinceName)
-
-
 
   const tongTien = billToday[selectedTab]?.tongTien;
   const discountAmount =
@@ -445,9 +449,24 @@ export default function Payment({
               <input
                 id="sdt"
                 onBlur={(e) => handleSDT(e)}
-                defaultValue={billToday[selectedTab]?.soDienThoai}
+                defaultValue={thongTinDonHang.sdt}
                 type="text"
                 placeholder="Số điện thoại"
+                className="input input-bordered w-full max-w-xs"
+              />
+            </div>
+            <div className="row w-full">
+            <label htmlFor="sdt" className="flex">
+                <p className="text-red-500 text-lg">*</p>
+                <h1>Email</h1>
+              </label>
+              <input
+                id="email"
+                // onBlur={(e) => handleSDT(e)}
+                defaultValue={thongTinDonHang.email}
+                type="email"
+                onBlur={(e)=>handleEmail(e)}
+                placeholder="email"
                 className="input input-bordered w-full max-w-xs"
               />
             </div>
@@ -577,6 +596,11 @@ export default function Payment({
     if(!wardName || !diaChiCuThe){
       toast.warn("Vui long nhập thông tin đầy đủ.")
       return
+    }
+
+    if(!thongTinDonHang.email){
+      toast.error("Vui lòng nhập email.");
+      return;
     }
     const phoneRegex = /^0\d{9}$/;
     // if (phoneRegex.test(newSDT)) {
