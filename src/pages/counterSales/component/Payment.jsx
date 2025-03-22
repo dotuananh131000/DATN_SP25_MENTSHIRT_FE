@@ -271,8 +271,6 @@ export default function Payment({
     }));
   }, [hdHienTai]);
 
-  console.log(hdHienTai)
-
   useEffect(()=>{
     if (diaChiCuThe && wardName && districtName && provinceName) {
       setThongTinDongHang((prev) => ({

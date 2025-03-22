@@ -16,7 +16,7 @@ const SanPhamChiTietService = {
         kichThuocIds: filters.kichThuocIds ? filters.kichThuocIds.join(',') : '',
     };
       const response = await apiClients.get(
-        `/san-pham-chi-tiet`,
+        `/san-pham-chi-tiet/active`,
         {params}
       );
       return response.data.data;
@@ -25,6 +25,7 @@ const SanPhamChiTietService = {
       throw error;
     }
   },
+
   async GetById(id){
     try{
       const response = await apiClients.get(`/san-pham-chi-tiet/${id}`);
