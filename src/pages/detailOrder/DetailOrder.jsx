@@ -12,6 +12,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import ConfirmModal from "./component/ConfirmModal";
 import AcceptDonHang from "./component/AcceptDonHang";
 import LichSUThanhToan from "./service/LichSuThanhToan";
+import ProductDetailService from "../details/services/ProductDetailService";
 
 export default function DetailBill() {
   const { id } = useParams();
@@ -22,6 +23,94 @@ export default function DetailBill() {
   const [isConfirm, setIsConfirm] = useState(false);
   const [idHDCT, setIDHDCT] = useState(0);
   const [LichSuThanhToan, setLichSuthanhToan] = useState([]);
+  const [totalPageSP, setTotalPageSP] = useState(0);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+    thuongHieuIds: [],
+    xuatXuIds: [],
+    chatLieuIds: [],
+    coAoIds: [],
+    tayAoIds: [],
+    mauSacIds: [],
+    kichThuocIds: [],
+  });
+    const [chatLieus, setChatLieus] = useState([]);
+    const [coAos, setCoAos] = useState([]);
+    const [kichThuocs, setKichThuocs] = useState([]);
+    const [mauSacs, setMauSacs] = useState([]);
+    const [tayAos, setTayAos] = useState([]);
+    const [thuongHieus, setThuongHieus] = useState([]);
+    const [xuatXus, setXuatXus] = useState([]);
+
+    const fetchSelectOptions = async () => {
+      try {
+        const chatLieuData = await ProductDetailService.getChatLieu();
+        setChatLieus(chatLieuData);
+  
+        const coAoData = await ProductDetailService.getCoAo();
+        setCoAos(coAoData);
+  
+        const kichThuocData = await ProductDetailService.getKichThuoc();
+        setKichThuocs(kichThuocData);
+  
+        const mauSacData = await ProductDetailService.getMauSac();
+        setMauSacs(mauSacData);
+  
+        const tayAoData = await ProductDetailService.getTayAo();
+        setTayAos(tayAoData);
+  
+        const thuongHieuData = await ProductDetailService.getThuongHieu();
+        setThuongHieus(thuongHieuData);
+  
+        const xuatXuData = await ProductDetailService.getXuatXu();
+        setXuatXus(xuatXuData);
+  
+      } catch (error) {
+        setError("Error fetching select options");
+      }
+    };
+    const handleFilterChange = (field, selectedOptions) => {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [field]: selectedOptions ? selectedOptions.map(option => option.value) : [],
+      }));
+      setPage(0);
+    };
+  useEffect(() => {
+    fetchSelectOptions();
+  }, []);
+
+  const resetFilters = () => {
+    setFilters({
+      thuongHieuIds: [],
+      xuatXuIds: [],
+      chatLieuIds: [],
+      coAoIds: [],
+      tayAoIds: [],
+      mauSacIds: [],
+      kichThuocIds: [],
+      minPrice: 0,
+      maxPrice: 10000000,
+    });
+    setPage(0);
+    // fetchProductDetails();
+  };
+
+  const fetchSanPhamChiTiet = async () => {
+    try {
+      const response = await SanPhamChiTietService.GetAll(page, size, search, filters);
+      setSpct(response.content);
+      setTotalPageSP(response.totalPages)
+    } catch (error) {
+      console.log("khong thể tải được danh sách san phẩm chi tiết", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSanPhamChiTiet();
+}, [sanPhamGioHang, page, size, search, filters]);
 
   const fetchHoaDonByMa = async () => {
     try {
@@ -31,14 +120,14 @@ export default function DetailBill() {
       console.log("Lỗi gọi api hóa đơn theo mã", error);
     }
   };
-  const fetchSanPhamChiTiet = async () => {
-    try {
-      const response = await SanPhamChiTietService.GetAll();
-      setSpct(response);
-    } catch (error) {
-      console.log("khong thể tải được danh sách san phẩm chi tiết", error);
-    }
-  };
+  // const fetchSanPhamChiTiet = async () => {
+  //   try {
+  //     const response = await SanPhamChiTietService.GetAll();
+  //     setSpct(response);
+  //   } catch (error) {
+  //     console.log("khong thể tải được danh sách san phẩm chi tiết", error);
+  //   }
+  // };
   const fecthSanPhamGioHang = async () => {
     try {
       const response = await HoaDonChiTietService.getSPCTByIDHoaDon(hoaDon.id);
@@ -361,10 +450,25 @@ export default function DetailBill() {
       </div>
       <CreateProduct
         isOpen={isShowModalProduct}
-        closeModalProduct={() => setIsShowModalProduct(false)}
+        closeModalProduct={setIsShowModalProduct}
         hoaDon={hoaDon}
         spcts={spcts}
         handleDaTa={handleDaTa}
+        totalPages={totalPageSP}
+        page={page}
+        setPage={ setPage}
+        size={size}
+        setSize={setSize}
+        setSearch={setSearch}
+        thuongHieus={thuongHieus}
+        xuatXus={xuatXus}
+        chatLieus={chatLieus}
+        coAos={coAos}
+        tayAos={tayAos}
+        mauSacs={mauSacs}
+        kichThuocs={kichThuocs}
+        handleFilterChange={handleFilterChange}
+        resetFilters={resetFilters}
       />
       {isConfirm && (
         <ConfirmModal

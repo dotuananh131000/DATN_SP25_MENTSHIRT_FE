@@ -17,6 +17,7 @@ import { setMultipleProductPrices } from "../../features/ProducSlice";
 import QRCodeScanner from "../../containers/QRCodeScanner";
 import QRProduct from "./component/QRProduct";
 import apiClients from "../../api/ApiClient";
+import ProductDetailService from "../details/services/ProductDetailService";
 
 export default function CounterSale() {
   const nhanVienID = useSelector((state)=> state.auth.user.id) 
@@ -71,6 +72,77 @@ export default function CounterSale() {
     diaChiNhanHang: "",
     phiShip: 0,
   });
+
+   const [filters, setFilters] = useState({
+      thuongHieuIds: [],
+      xuatXuIds: [],
+      chatLieuIds: [],
+      coAoIds: [],
+      tayAoIds: [],
+      mauSacIds: [],
+      kichThuocIds: [],
+    });
+      const [chatLieus, setChatLieus] = useState([]);
+      const [coAos, setCoAos] = useState([]);
+      const [kichThuocs, setKichThuocs] = useState([]);
+      const [mauSacs, setMauSacs] = useState([]);
+      const [tayAos, setTayAos] = useState([]);
+      const [thuongHieus, setThuongHieus] = useState([]);
+      const [xuatXus, setXuatXus] = useState([]);
+
+      const fetchSelectOptions = async () => {
+        try {
+          const chatLieuData = await ProductDetailService.getChatLieu();
+          setChatLieus(chatLieuData);
+    
+          const coAoData = await ProductDetailService.getCoAo();
+          setCoAos(coAoData);
+    
+          const kichThuocData = await ProductDetailService.getKichThuoc();
+          setKichThuocs(kichThuocData);
+    
+          const mauSacData = await ProductDetailService.getMauSac();
+          setMauSacs(mauSacData);
+    
+          const tayAoData = await ProductDetailService.getTayAo();
+          setTayAos(tayAoData);
+    
+          const thuongHieuData = await ProductDetailService.getThuongHieu();
+          setThuongHieus(thuongHieuData);
+    
+          const xuatXuData = await ProductDetailService.getXuatXu();
+          setXuatXus(xuatXuData);
+    
+        } catch (error) {
+          setError("Error fetching select options");
+        }
+      };
+      const handleFilterChange = (field, selectedOptions) => {
+        setFilters(prevFilters => ({
+          ...prevFilters,
+          [field]: selectedOptions ? selectedOptions.map(option => option.value) : [],
+        }));
+        setPage(0);
+      };
+    useEffect(() => {
+      fetchSelectOptions();
+    }, []);
+
+    const resetFilters = () => {
+      setFilters({
+        thuongHieuIds: [],
+        xuatXuIds: [],
+        chatLieuIds: [],
+        coAoIds: [],
+        tayAoIds: [],
+        mauSacIds: [],
+        kichThuocIds: [],
+        minPrice: 0,
+        maxPrice: 10000000,
+      });
+      setPage(0);
+      // fetchProductDetails();
+    };
 
   const handleScan =async (decodedText) => {
     console.log(decodedText);
@@ -339,7 +411,7 @@ export default function CounterSale() {
   };
   const fetchSanPhamChiTiet = async () => {
     try {
-      const response = await SanPhamChiTietService.GetAll(page, size, search);
+      const response = await SanPhamChiTietService.GetAll(page, size, search, filters);
       setSpct(response.content);
       setTotalPageSP(response.totalPages)
     } catch (error) {
@@ -424,7 +496,7 @@ export default function CounterSale() {
 
   useEffect(() => {
       fetchSanPhamChiTiet();
-  }, [sanPhamGioHang, page, size, search]);
+  }, [sanPhamGioHang, page, size, search, filters]);
 
   useEffect(() => {
     if (typeof billToday[selectedTab]?.id === "undefined") {
@@ -901,6 +973,15 @@ const validateThemSP = ()=>{
         setIsModalChitietSP={setIsModalChitietSP}
         quantity={quantity}
         setQuantity={setQuantity}
+        thuongHieus={thuongHieus}
+        xuatXus={xuatXus}
+        chatLieus={chatLieus}
+        coAos={coAos}
+        tayAos={tayAos}
+        mauSacs={mauSacs}
+        kichThuocs={kichThuocs}
+        handleFilterChange={handleFilterChange}
+        resetFilters={resetFilters}
       />
       {isConfirm && (
         <ConfirmModal

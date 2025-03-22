@@ -37,7 +37,7 @@ export default function Stepper({ hoaDon }) {
   }, [currentStep, hoaDon]);
 
   console.log(hoaDon?.trangThaiGiaoHang);
-  console.log(currentStep);
+  console.log(hoaDon);
   return (
     <>
       <div className="bg-white w-full h-[200px] mb-4 rounded-lg shadow">

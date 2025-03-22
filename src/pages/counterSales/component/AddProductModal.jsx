@@ -1,8 +1,10 @@
 import { memo, useEffect, useMemo, useState } from "react";
+import Select from 'react-select';
 import ReactPaginate from "react-paginate";
 import HoaDonService from "../services/HoaDonService";
 import { toast } from "react-toastify";
 import ModalSPCT from "./ModalSPCT";
+import SanPhamChiTietService from "../services/SanPhamChiTietService";
 
 function AddProductModal({
   spcts,
@@ -20,14 +22,16 @@ function AddProductModal({
   setIsModalChitietSP,
   quantity,
   setQuantity,
+  thuongHieus,
+  xuatXus,
+  chatLieus,
+  coAos,
+  tayAos,
+  mauSacs,
+  kichThuocs,
+  handleFilterChange,
+  resetFilters
 }) {
-  const [chatLieus, setChatLieus] = useState([]);
-  const [coAos, setCoAos] = useState([]);
-  const [kichThuocs, setKichThuocs] = useState([]);
-  const [mauSacs, setMauSacs] = useState([]);
-  const [tayAos, setTayAos] = useState([]);
-  const [thuongHieus, setThuongHieus] = useState([]);
-  const [xuatXus, setXuatXus] = useState([]);
   const [indexSPCT, setIndexSPCT] = useState(0);
   const [HDCTRequest, setHDCTRequest] = useState({
     idHoaDon: null,
@@ -82,29 +86,12 @@ function AddProductModal({
     setIsModalChitietSP(true);
     setIndexSPCT(i);
   };
+  // console.log(spcts)
 
-  const selectInput = (label, options) => {
-    return (
-      <div className="flex flex-col space-y-1 w-1/3 p-4">
-        <label
-          htmlFor={label}
-          className="text-sm font-medium text-gray-700 mb-1"
-        >
-          {label}
-        </label>
-        <select
-          id={label}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-        >
-          {options.map((option, index) => (
-            <option key={index} value={option.tenChatLieu}>
-              {option.text}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  };
+  const handleClose =()=>{
+    resetFilters();
+    isClose(false);
+  }
 
   if (!isOpen) {
     return;
@@ -113,7 +100,7 @@ function AddProductModal({
     <div className="modal modal-open">
       <div className="modal-box relative max-w-5xl w-full">
         <button
-          onClick={() => isClose(false)}
+          onClick={() => handleClose()}
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
         >
           ✖
@@ -121,7 +108,7 @@ function AddProductModal({
         <h3 className="font-bold text-lg text-orange-600 text-center">
           Danh sách sản phẩm
         </h3>
-        <div className="flex flex-1 p-4 mt-4">
+        <div className="flex flex-1 my-4">
           <input
             type="text"
             onChange={(e)=>{setSearch(e.target.value)}}
@@ -129,17 +116,90 @@ function AddProductModal({
             placeholder="Tìm kiếm sản phẩm "
           />
         </div>
-        <div className="flex flex-col">
-          <div className="flex flex-1">
-            {selectInput("Chất liệu", chatLieus)}
-            {selectInput("Kích cỡ", chatLieus)}
-            {selectInput("Màu sắc", chatLieus)}
-          </div>
-          <div className="flex flex-1">
-            {selectInput("Cổ áo", chatLieus)}
-            {selectInput("Thương hiệu", chatLieus)}
-            {selectInput("Tay áo", chatLieus)}
-          </div>
+        <div className="grid grid-cols-4 gap-3 ">
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Thương hiệu</label>
+                    <Select
+                        name="thuongHieuId"
+                        options={thuongHieus.map(th => ({ value: th.id, label: th.tenThuongHieu }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("thuongHieuIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn thương hiệu"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Xuất xứ</label>
+                    <Select
+                        name="xuatXuId"
+                        options={xuatXus.map(x => ({ value: x.id, label: x.tenXuatXu }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("xuatXuIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn xuất xứ"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Chất liệu</label>
+                    <Select
+                        name="chatLieuId"
+                        options={chatLieus.map(c => ({ value: c.id, label: c.tenChatLieu }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("chatLieuIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn chất liệu"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Cổ áo</label>
+                    <Select
+                        name="coAoId"
+                        options={coAos.map(c => ({ value: c.id, label: c.tenCoAo }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("coAoIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn kiểu cổ áo"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Tay áo</label>
+                    <Select
+                        name="tayAoId"
+                        options={tayAos.map(t => ({ value: t.id, label: t.tenTayAo }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("tayAoIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn kiểu tay áo"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Màu sắc</label>
+                    <Select
+                        name="mauSacId"
+                        options={mauSacs.map(m => ({ value: m.id, label: m.tenMauSac }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("mauSacIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn màu sắc"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">Kích thước</label>
+                    <Select
+                        name="kichThuocId"
+                        options={kichThuocs.map(k => ({ value: k.id, label: k.tenKichThuoc }))}
+                        isMulti
+                        onChange={selectedOptions => handleFilterChange("kichThuocIds", selectedOptions)}
+                        className="text-xs"
+                        placeholder="Chọn kích thước"
+                    />
+                </div>
         </div>
         <table className="table table-auto w-full bg-white rounded-lg shadow overflow-hidden text-center text-xs mt-4">
           <thead>
@@ -147,8 +207,8 @@ function AddProductModal({
               <th className="border p-2">STT</th>
               <th className="border p-2">Ảnh</th>
               <th className="border p-2">Tên</th>
-              <th className="border p-2">Cổ áo</th>
-              <th className="border p-2">Tay áo</th>
+              <th className="border p-2">Màu sắc</th>
+              <th className="border p-2">Kích thước</th>
               <th className="border p-2">Chất liệu</th>
               <th className="border p-2">Số lượng</th>
               <th className="border p-2">Giá</th>
@@ -167,8 +227,8 @@ function AddProductModal({
                   />
                 </td>
                 <td className="border p-2">{spct.sanPham.tenSanPham}</td>
-                <td className="border p-2">{spct.coAo.tenCoAo}</td>
-                <td className="border p-2">{spct.tayAo.tenTayAo}</td>
+                <td className="border p-2">{spct.mauSac.tenMauSac}</td>
+                <td className="border p-2">{spct.kichThuoc.tenKichThuoc}</td>
                 <td className="border p-2">{spct.chatLieu.tenChatLieu}</td>
                 <td className="border p-2">{spct.soLuong}</td>
                 <td className="border p-2">{
