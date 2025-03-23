@@ -4,9 +4,9 @@ import Footer from "./Footer.jsx"; // Assuming you have a Footer component
 
 function UserLayout() {
   return (
-    <div className="user-layout">
+    <div className="user-layout ">
       <Navbar />
-      <main className="layout-main min-h-96">
+      <main className="layout-main min-h-96 ">
         <Outlet />
       </main>
       <Footer />

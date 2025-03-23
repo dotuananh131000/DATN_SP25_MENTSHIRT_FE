@@ -8,18 +8,6 @@ const productPricesSlice = createSlice({
   name: "productPrices",
   initialState: loadFromLocalStorage(),
   reducers: {
-    // setProductPrice: (state, action) => {
-    //   const { productId, price } = action.payload;
-
-    //   if (state[productId]) {
-    //     state[productId].oldPrice = state[productId].price;
-    //   }
-
-    //   state[productId] = { ...state[productId], price };
-
-    //   //Cập nhật lại localStronge
-    //   localStorage.setItem("productPrices", JSON.stringify(state));
-    // },
     setMultipleProductPrices: (state, action) => {
       action.payload.forEach(({ productId, price }) => {
         if (state[productId - 1]) {

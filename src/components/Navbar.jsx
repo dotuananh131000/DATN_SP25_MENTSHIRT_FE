@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <header className="bg-white">
-      <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <header className="bg-white w-full mt-4 ">
+      <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 ">
         <div className="flex h-16 items-center justify-between">
           <div className="flex-1 md:flex md:items-center md:gap-12">
             <Link to="/" className="block text-orange-600">
@@ -97,6 +96,8 @@ function Navbar() {
                       Team settings
                     </Link>
                   </div>
+
+                  {}
 
                   <div className="p-2">
                     <form method="POST" action="#">
