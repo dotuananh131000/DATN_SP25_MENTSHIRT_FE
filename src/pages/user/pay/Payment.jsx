@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 import Voucher from "./service/Voucher";
 import api_giaoHangNhanh from "../../counterSales/services/GiaoHangNhanhService";
+import Order from "./service/hoaDonOnline";
 
 function Payment() {
   const location = useLocation();
@@ -220,16 +221,38 @@ function Payment() {
       [name]: value
     });
   };
-
+  console.log(items)
   // Xử lý submit form
-  const bill = {
+  const handleSubmit = async(e) => {
+    e.preventDefault();
     
-  }
-  const handleSubmit = () => {
-    toast.success("Đặt hàng thành công! Cảm ơn bạn đã mua sắm.");
-    setTimeout(() => {
-      navigate("/");
-    }, 3000);
+    const orderData = {
+      ghiChu: formData.note || "",
+      idKhachHang: null,
+      idPhieuGiamGia: selectedVoucher ? selectedVoucher.id : null ,
+      hoTenNguoiNhan: formData.fullName || "",
+      soDienThoai: formData.phone || "",
+      email: formData.email || "",
+      diaChiNhanHang: formData.diaChi || "",
+      phuongThucThanhToan: paymentMethod === "cod" ? 3 :4,
+      phiShip: shippingFee || "",
+      danhSachChiTiet: items.map((item) => ({
+        sanPhamChiTietId: item.detailId,
+        soLuong: item.quantity,
+      }))
+    };
+
+    try{
+      const response = await Order.createOrder(orderData);
+      // const orderResponse = response?.data;
+      if(response){
+        toast.success("Đặt hàng thành công!");
+      }else{
+        toast.error("Đặt hàng thất bại, vui lòng thử lại.");
+      }
+    }catch (error){
+      console.log("Có lỗi khi đặt hàng", error);
+    }
   };
 
   if (!items || items.length === 0) {
