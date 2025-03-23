@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from "react-router-dom";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState({});
+  const [selectCartItems, setSelectCartItems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -11,6 +15,52 @@ function Cart() {
     const cartData = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
     setCartItems(cartData);
   }, []);
+
+   // Cập nhật trạng thái checkbox cha
+  const allSelected = cartItems.length > 0 && cartItems.every((item) => selectedItems[item.detailId]);
+
+  useEffect(()=>{
+    //Cập nhật trạng thái checkbox nếu giỏ hàng trống
+    if(cartItems.length === 0){
+      setSelectedItems({});
+    }
+  }, [cartItems])
+
+  //Xử lý chọn / bỏ chọn một sản phẩm
+  const handleCheckboxChange = (detailId, item) => {
+    setSelectedItems((prev) => {
+      const updateSelection = { ...prev, [detailId] :  !prev[detailId] };
+
+      if(updateSelection[detailId]){
+        setSelectCartItems((prevProduct) => [...prevProduct, item]);
+      }else{
+        setSelectCartItems((prevProduct) => 
+          prevProduct.filter((product) => product.detailId !== detailId)
+        );
+      }
+
+      return updateSelection;
+    });
+  }
+
+  //Xử lý chọn / bỏ chọn tất cả
+  const handleSelectAll = () => {
+   
+    if(!allSelected) {
+      const newSelected = {};
+
+      cartItems.forEach((item) => {
+        newSelected[item.detailId] = true;
+      });
+      setSelectedItems(newSelected);
+      setSelectCartItems(...cartItems);
+    }else {
+      setSelectedItems({});
+      setSelectCartItems([]);
+    }
+  };
+
+  console.log(selectCartItems)
 
   const handleRemoveItem = (sanPhamId, cartAttributes) => {
     // Remove item from cart
@@ -37,6 +87,16 @@ function Cart() {
     });
     setCartItems(updatedCart);
     Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 }); // Update cookie
+
+    //Cập nhật selectCartItems nếu sản phẩm được chọn
+    setSelectCartItems((prevSelected) => {
+      return prevSelected.map((item) => 
+      item.sanPhamId === sanPhamId && 
+      JSON.stringify(item.cartAttributes) === JSON.stringify(cartAttributes)
+        ? {...item, quantity : updatedCart.find((cartItems) => cartItems.sanPhamId === sanPhamId)?.quantity}
+        : item
+      );
+    });
   };
 
   const formatAttributeName = (key) => {
@@ -54,16 +114,16 @@ function Cart() {
 
   const proceedToPayment = () => {
     // Tính tổng tiền
-    const totalAmount = cartItems.reduce(
+    const totalAmount = selectCartItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
     
     // Truyền dữ liệu cần thiết sang trang thanh toán
     const checkoutState = {
-      items: cartItems, 
+      items: selectCartItems, 
       totalAmount: totalAmount,
-      totalItems: cartItems.reduce((total, item) => total + item.quantity, 0)
+      totalItems: selectCartItems.reduce((total, item) => total + item.quantity, 0)
     };
     
     console.log("Checkout State:", checkoutState); // Kiểm tra state trước khi navigate
@@ -123,6 +183,12 @@ function Cart() {
 
               {/* Cart items */}
               <div className="divide-y divide-gray-200">
+                <div className="px-6 py4">
+                  <FormControlLabel
+                    label="Chọn tất cả"
+                    control={<Checkbox checked={allSelected} onChange={handleSelectAll} />}
+                  />
+                </div>
                 {cartItems.map((item, index) => (
                   <div
                     key={`${item.sanPhamId}-${index}`}
@@ -130,6 +196,12 @@ function Cart() {
                   >
                     <div className="flex flex-col md:flex-row md:items-center">
                       {/* Product info */}
+                      <div className="mr-4">
+                        <Checkbox 
+                          checked={!!selectedItems[item.detailId]}
+                          onChange={() => handleCheckboxChange(item.detailId, item)}
+                        />
+                      </div>
                       <div className="flex items-center w-full md:w-2/5 mb-4 md:mb-0">
                         <div className="flex-shrink-0 h-24 w-24 bg-gray-100 rounded-md overflow-hidden border border-gray-200">
                           <img

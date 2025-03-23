@@ -110,14 +110,15 @@ function ProductDetail() {
   };  
 
   const isSameProduct = (item1, item2) => {
-    if (!item1 || !item2 || !item1.selectedAttributes || !item2.selectedAttributes) {
+    if (!item1 || !item2 || !item1.cartAttributes || !item2.cartAttributes) {
+      console.log("Bị lỗi đoạn này");
       return false;
     }
     
     return (
-      item1.sanPhamId === item2.sanPhamId &&
-      Object.keys(item1.selectedAttributes).every(
-        (key) => item1.selectedAttributes[key] === item2.selectedAttributes[key]
+      item1.detailId === item2.detailId &&
+      Object.keys(item1.cartAttributes).every(
+        (key) => item1.cartAttributes[key] === item2.cartAttributes[key]
       )
     );
   };
@@ -130,6 +131,7 @@ function ProductDetail() {
     }
   
     const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
+    console.log("Đây là đối tượng sản phẩm",cart)
   
     const newItem = {
       sanPhamId,
@@ -142,6 +144,7 @@ function ProductDetail() {
     };
   
     const existingItem = cart.find((item) => isSameProduct(item, newItem));
+    console.log(existingItem);
   
     if (existingItem) {
       existingItem.quantity = Math.min(existingItem.quantity + quantity, productDetail.soLuong);

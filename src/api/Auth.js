@@ -13,6 +13,19 @@ const login = {
         }catch(error){
             throw error.response?.data || "Lỗi đăng nhập";
         }
-    }
+    },
+    async CheckLoginClient(email, password){
+        try{
+            const response = await axios.post(`http://localhost:8080/api/auth/token/khach-hang`,
+                {
+                    email,
+                    password,
+                }
+            )
+            return response.data
+        }catch(error){
+            throw error.response?.data || "Lỗi đăng nhập";
+        }
+    },
 }
 export default login;

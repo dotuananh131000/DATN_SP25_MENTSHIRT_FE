@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify"; 
 import "react-toastify/dist/ReactToastify.css"; 
+import Voucher from "./service/Voucher";
+import api_giaoHangNhanh from "../../counterSales/services/GiaoHangNhanhService";
 
 function Payment() {
   const location = useLocation();
@@ -20,36 +21,196 @@ function Payment() {
     fullName: "",
     phone: "",
     email: "",
-    note: ""
+    note: "",
+    diaChi: "" ,
   });
 
+  /// * phần xử lys voucher
+  const [listVoucher, setListVoucher] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState({});
+
+  //Lấy ra danh sách voucher
+  useEffect(() => {
+    const fetchListVoucher =async ()=>{
+      try {
+        const response = await Voucher.lisVoucher();
+        setListVoucher(response);
+      }catch (error){
+        console.log("Không thể lấy được danh sách voucher");
+      }
+    }
+    fetchListVoucher();
+  },[])
+
+  const handleGetVoucher = (voucher) =>{
+    if(!voucher){
+      setSelectedVoucher({})
+      return;
+    }
+    setSelectedVoucher(voucher);
+
+  }
+
   // Phí vận chuyển cố định (có thể thay đổi thành tính toán động)
-  const shippingFee = 30000;
+  // const shippingFee = 30000;
+
   
-  // Danh sách voucher mẫu
-  const voucherOptions = [
-    { value: "NONE", label: "Không sử dụng voucher", discount: 0 },
-    { value: "WELCOME10", label: "WELCOME10 - Giảm 10% tối đa 50K", discount: Math.min(totalAmount * 0.1, 50000) },
-    { value: "FREESHIP", label: "FREESHIP - Miễn phí vận chuyển", discount: shippingFee },
-    { value: "SALE100K", label: "SALE100K - Giảm 100K cho đơn từ 1 triệu", discount: totalAmount >= 1000000 ? 100000 : 0 }
-  ];
-
-  // Danh sách địa chỉ mẫu
-  const addressOptions = [
-    { value: "home", label: "Nhà riêng - 123 Nguyễn Văn Linh, Q.7, TP.HCM" },
-    { value: "office", label: "Văn phòng - 456 Lê Lợi, Q.1, TP.HCM" },
-    { value: "other", label: "Địa chỉ khác" }
-  ];
-
-  // State cho voucher và địa chỉ đã chọn
-  const [selectedVoucher, setSelectedVoucher] = useState(voucherOptions[0]);
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [customAddress, setCustomAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
 
+  // * Xử lý phần địa chỉ
+  const [provinces, setProvinces] = useState([]);
+  const [provinceID, setProvinceID] = useState("");
+  const [districts, setDistricts] = useState([]);
+  const [districtID, setDistrictID] = useState("");
+  const [ward, setWard] = useState([]);
+  const [wardID, setWardID] = useState("");
+  const [provinceName, setProvinceName] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [wardName, setWardName] = useState("");
+  const [specific, setSpecific] = useState("");
+  const [serviceID, setServiceID] = useState("");
+  const [shippingFee, setShippingFee] = useState(0);
+  //phần tỉnh
+ 
+  useEffect(() => {
+    const fetchProvince = async() => {
+      try {
+        const response = await api_giaoHangNhanh.getProvince();
+        setProvinces(response);
+      } catch (error) {
+        console.log("Lỗi khi gọi API Tỉnh");
+      }
+    }
+    fetchProvince();
+  },[])
+
+  //Phần huyện
+  useEffect(() => {
+    const fetchDistrict = async() => {
+      if(!provinceID) return;
+      try {
+        const response = await api_giaoHangNhanh.getDistrict(Number(provinceID));
+        setDistricts(response);
+      } catch (error) {
+        console.log("Lỗi khi gọi API huyện")
+      }
+    }
+    fetchDistrict();
+  },[provinceID])
+ 
+   //Phần xã
+   useEffect(() => {
+    const fetchWard = async() => {
+      if(!districtID) return;
+      try {
+        const response = await api_giaoHangNhanh.getWard(Number(districtID));
+        setWard(response);
+      } catch (error) {
+        console.log("Lỗi khi gọi API xã", error)
+      }
+    }
+    fetchWard();
+  },[districtID])
+
+  //Gọi API service để tính phí ship
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        if(!districtID) return;
+
+        const response = await api_giaoHangNhanh.getServiceId(Number(districtID));
+        setServiceID(response.data[0].service_id)
+      }catch (error){
+        console.log("Lỗi khi gọi API service", error);
+      }
+    }
+    fetchService();
+  },[districtID])
+  
+  const fetchShippingFee = async() => {
+    try{
+      const response = await api_giaoHangNhanh.getFeeGHN(Number(serviceID), Number(districtID), wardID);
+      setShippingFee(response.data.service_fee);
+    } catch (error) {
+      console.log("Lỗi khi gọi API tính phí ship", error);
+    }
+  }
+
+  //Xử lý khi tỉnh thay đổi
+  useEffect(() => {
+    setDistrictID("");
+    setWard([]);
+    setWardID("");
+    setShippingFee(0);
+    setServiceID("");
+    setDistrictName("");
+    setWardName("");
+  },[provinceID])
+
+  //Xủa lý khi thay đổi huyện
+  useEffect(() => {
+    setWardID("")
+    setWardName("")
+  },[districts,districtID])
+
+  //Hàm lấy địa chỉ để đưa vào hóa đơn
+  useEffect(()=>{
+    if(provinceID){
+      const selectProvince = provinces.find(prov => prov.ProvinceID === Number(provinceID));
+      if(selectProvince){
+        setProvinceName(selectProvince.ProvinceName);
+        if(districtID){
+          const selectDistrict = districts.find(dis => dis.DistrictID === Number(districtID));
+          if(selectDistrict){
+            setDistrictName(selectDistrict.DistrictName)
+            if(wardID){
+              const selectWard = ward.find(ward => ward.WardCode === wardID );
+              if(selectWard){
+                setWardName(selectWard.WardName);
+              }
+            }
+          }
+        }
+      }
+    }
+  },[provinceID, districtID, districts, ward, wardID])
+
+  //Hàm lấy địa chỉ và tính phí ship
+  useEffect(() => {
+   if(provinceName && districtName && wardName && specific){
+    setFormData((prev) => ({
+      ...prev,
+      diaChi : `${specific}, ${wardName}, ${districtName}, ${provinceName}.`
+    }))
+    fetchShippingFee();
+   }else {
+    setFormData((prev) => ({
+      ...prev,
+      diaChi : ""
+    }))
+   }
+  },[districts, districtID, ward, wardID, specific, wardName])
+  console.log(formData);
+
   // Tính toán tổng tiền sau khi áp dụng voucher
-  const voucherDiscount = selectedVoucher ? selectedVoucher.discount : 0;
-  const finalTotal = totalAmount + shippingFee - voucherDiscount;
+  const caculatorDiscount = (voucher, totalAmount) => {
+    if(!voucher) return 0;
+
+    if(voucher.hinhThucGiamGia === 1){
+      //Giảm theo số tiền
+      return Math.min(voucher.giaTriGiam, voucher.soTienGiamToiDa);
+    } else if (voucher.hinhThucGiamGia === 0){
+      //Giảm theo phần trăm
+      const discountAmount = (totalAmount * voucher.giaTriGiam) / 100;
+      return Math.min(discountAmount, voucher.soTienGiamToiDa);
+    }
+
+    return 0;
+  }
+  const voucherDiscount = caculatorDiscount(selectedVoucher, totalAmount);
+  const finalTotal = totalAmount + shippingFee - voucherDiscount ;
+
+
 
   // Xử lý thay đổi input
   const handleInputChange = (e) => {
@@ -61,7 +222,10 @@ function Payment() {
   };
 
   // Xử lý submit form
-  const handleSubmit = (e) => {
+  const bill = {
+    
+  }
+  const handleSubmit = () => {
     toast.success("Đặt hàng thành công! Cảm ơn bạn đã mua sắm.");
     setTimeout(() => {
       navigate("/");
@@ -154,32 +318,81 @@ function Payment() {
                 <span className="bg-orange-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">2</span>
                 Địa chỉ giao hàng
               </h2>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Chọn địa chỉ <span className="text-red-500">*</span></label>
-                <Select
-                  options={addressOptions}
-                  value={selectedAddress}
-                  onChange={(option) => setSelectedAddress(option)}
-                  placeholder="Chọn địa chỉ giao hàng"
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                  isClearable
-                />
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                 <div className="">
+                    <label htmlFor="tinh" className="flex">
+                      <p className="text-red-500 text-lg">*</p>
+                      <h1 className="block text-sm font-medium text-gray-700 mb-1">Tỉnh / Thành phố</h1>
+                    </label>
+                    <select
+                    id="tinh"
+                    className="select select-bordered w-full max-w-xs"
+                    onChange={(e) => setProvinceID(e.target.value)}
+                    value={provinceID}
+                    >
+                      <option defaultChecked>Tỉnh / Thành phố</option>
+                      {provinces.map((pro) => (
+                        <option key={pro.ProvinceID} value={pro.ProvinceID}>
+                        {pro.ProvinceName}
+                      </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="">
+                    <label htmlFor="huyen" className="flex">
+                      <p className="text-red-500 text-lg">*</p>
+                      <h1 className="block text-sm font-medium text-gray-700 mb-1">Huyện / Quận</h1>
+                    </label>
+                    <select
+                    id="huyen"
+                    className="select select-bordered w-full max-w-xs"
+                    onChange={(e) => setDistrictID(e.target.value)}
+                    value={districtID}
+                    >
+                      <option defaultChecked>Huyện / Quận</option>
+                      {districts.map((dis) => (
+                        <option key={dis.DistrictID} value={dis.DistrictID}>
+                        {dis.DistrictName}
+                      </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="">
+                    <label htmlFor="xa" className="flex">
+                      <p className="text-red-500 text-lg">*</p>
+                      <h1 className="block text-sm font-medium text-gray-700 mb-1">Xã / Phường</h1>
+                    </label>
+                    <select
+                    id="xa"
+                    className="select select-bordered w-full max-w-xs"
+                    onChange={(e) => setWardID(e.target.value)}
+                    value={wardID}
+                    >
+                      <option defaultChecked>Xã / Phường</option>
+                      {ward.map((w) => (
+                        <option key={w.WardCode} value={w.WardCode}>
+                        {w.WardName}
+                      </option>
+                      ))}
+                    </select>
+                  </div>
               </div>
-              
-              {(!selectedAddress || selectedAddress.value === "other") && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ chi tiết <span className="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    value={customAddress}
-                    onChange={(e) => setCustomAddress(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder="Nhập địa chỉ giao hàng chi tiết"
-                    required
-                  />
-                </div>
-              )}
+              <div className="my-4">
+                <label htmlFor="place" className="flex">
+                  <p className="text-red-500 text-lg">*</p>
+                  <h1 className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ cụ thể</h1>
+                </label>
+                <input
+                  id="place"
+                  value={specific}
+                  onChange={(e) => setSpecific(e.target.value)}
+                  type="text"
+                  placeholder="Địa chỉ cụ thể"
+                  className="input input-bordered w-[400px]"
+                />
+          </div>
               
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
@@ -289,16 +502,62 @@ function Payment() {
               </div>
               
               {/* Mã giảm giá */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mã giảm giá</label>
-                <Select
-                  options={voucherOptions}
-                  value={selectedVoucher}
-                  onChange={(option) => setSelectedVoucher(option)}
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                />
+              <label htmlFor="" className="text-sm">Phiếu giảm giá</label>
+              <div className="flex space-x-2 mb-4">
+                    <input type="text" value={selectedVoucher?.maPhieuGiamGia|| ""} className="input" disabled />
+                    <button className="btn"   onClick={()=>document.getElementById('my_modal_2').showModal()}>Khác</button>
               </div>
+              <dialog id="my_modal_2" className="modal">
+                  <div className="modal-box w-1/2 h-full max-w-none relative">
+                      <h1 className="text-center mb-4 text-lg">Phiếu giảm giá</h1>
+                      <button className="absolute top-3 right-3 px-4 py-2 text-white bg-orange-400 rounded-lg 
+                      hover:scale-105 duration-200"
+                      onClick={() => handleGetVoucher()}>
+                        Không áp dụng phiếu giảm gía
+                      </button>
+                      <table className="table">
+                        <thead className="table-header-group">
+                          <tr >
+                            <th className="px-4 py-3 text-center">Mã phiếu</th>
+                            <th className="px-4 py-3 text-center">Tên</th>
+                            <th className="px-4 py-3 text-center">Chi tiết</th>
+                            <th className="px-4 py-3 text-center">Chọn</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-row-group">
+                          {listVoucher.map((voucher) => (
+                            <tr className={`${voucher?.id === selectedVoucher?.id ?"text-red-600 font-bold":""}`} 
+                            key={voucher.id || ""}>
+                              <td className="px-4 py-3 text-center">{voucher?.maPhieuGiamGia || ""}</td>
+                              <td className="px-4 py-3 text-center">{voucher?.tenPhieuGiamGia || ""}</td>
+                              <td className="px-4 py-3 text-center">
+                                {`Giảm ${voucher?.hinhThucGiamGia ===1 
+                                          ?`${voucher?.giaTriGiam} đ`
+                                          :`${voucher?.giaTriGiam} %`
+                                        }
+                                  Với đơn hàng tối thiếu ${voucher?.soTienToiThieuHd} đ
+                                  và tối đa ${voucher?.soTienGiamToiDa} đ
+                                `}
+                              </td>
+                              {(totalAmount >= voucher.soTienToiThieuHd) &&
+                              (<td>
+                                <button className="px-4 py-2 bg-gray-300 rounded-lg hover:scale-105 duration-150"
+                                onClick={() => handleGetVoucher(voucher)}
+                                >
+                                  chọn
+                                </button>
+                              </td>)
+                              }
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                  </div>
+                  <form method="dialog" className="modal-backdrop">
+                          {/* if there is a button in form, it will close the modal */}
+                          <button>✕</button>
+                  </form>
+              </dialog>
               
               {/* Tính toán chi phí */}
               <div className="space-y-2 py-3 border-t border-b">
@@ -310,9 +569,11 @@ function Payment() {
                   <span className="text-sm text-gray-600">Phí vận chuyển:</span>
                   <span className="text-sm font-medium">{shippingFee.toLocaleString()}đ</span>
                 </div>
-                {selectedVoucher && selectedVoucher.discount > 0 && (
+                {selectedVoucher && voucherDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span className="text-sm">Giảm giá ({selectedVoucher.value}):</span>
+                    <span className="text-sm">Giảm giá ({selectedVoucher.hinhThucGiamGia ===1
+                                                        ?`${selectedVoucher.giaTriGiam.toLocaleString()} đ`
+                                                        :`${selectedVoucher.giaTriGiam.toLocaleString()} %`}):</span>
                     <span className="text-sm font-medium">-{voucherDiscount.toLocaleString()}đ</span>
                   </div>
                 )}
@@ -327,9 +588,9 @@ function Payment() {
               {/* Nút đặt hàng */}
               <button
                 onClick={handleSubmit}
-                disabled={!formData.fullName || !formData.phone || (!selectedAddress && !customAddress)}
+                disabled={!formData.fullName || !formData.phone || !formData.diaChi}
                 className={`w-full py-3 px-4 rounded-md text-white text-base font-medium shadow-md 
-                  ${(!formData.fullName || !formData.phone || (!selectedAddress && !customAddress)) 
+                  ${(!formData.fullName || !formData.phone || !formData.email) 
                     ? 'bg-gray-400 cursor-not-allowed' 
                     : 'bg-orange-600 hover:bg-orange-700 transition-colors'}`}
               >
