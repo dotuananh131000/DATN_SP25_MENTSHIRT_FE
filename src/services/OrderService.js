@@ -2,6 +2,27 @@ import apiClient from "../api/ApiClient";
 import API_ENDPOINTS from "../api/endPoints";
 
 const OrderService = {
+  async hoaDons(page = 0, size = 10, filters = {}){
+    try {
+      const params ={
+        page,
+        size,
+        ngayBatDau: filters.ngayBatDau ? filters.ngayBatDau : "",
+        ngayKetThuc: filters.ngayKetThuc ? filters.ngayKetThuc : "",
+        keyword: filters.keyword ? filters.keyword : "",
+        loaiDon: filters.loaiDon ? filters.loaiDon : "",
+        trangThaiGiaoHang: filters.trangThaiGiaoHang ? filters.trangThaiGiaoHang : "",
+      }
+      const response = await apiClient.get("/hoa-don",
+        {params}
+      )
+
+      return response.data.data;
+    }catch(error) {
+      throw error;
+    }
+  },
+
   getOrders: async (
     page = 0,
     size = 10,

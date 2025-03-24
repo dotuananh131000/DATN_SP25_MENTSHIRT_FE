@@ -1,29 +1,19 @@
 import { useEffect, useState } from "react";
 
-export default function Tabs({ value, onChange, orderCounts }) {
+export default function Tabs({ value, onChange, orderCounts, setPage }) {
   const [trangThai, setTrangThai] = useState(0);
 
   useEffect(() => {
     setTrangThai(value.trangThai || 0);
   }, [value.trangThai]);
 
-  const getTodayDateRange = () => {
-    const today = new Date();
-    const startOfDay = today.toISOString().split("T")[0]; // YYYY-MM-DD
-    const endOfDay = startOfDay; // lấy YYYY-MM-DD vì chỉ cần hiển thị ngày
-    return { ngayBatDau: startOfDay, ngayKetThuc: endOfDay };
-  };
-
   const handleClick = (id) => {
     setTrangThai(id);
-    const { ngayBatDau, ngayKetThuc } =
-      value.ngayBatDau && value.ngayKetThuc ? value : getTodayDateRange();
-
+    setPage(0);
+   
     onChange({
       ...value,
-      trangThai: id === 0 ? null : id,
-      ngayBatDau,
-      ngayKetThuc,
+      trangThaiGiaoHang: id === 0 ? null : id,
     });
   };
   const tabs = [

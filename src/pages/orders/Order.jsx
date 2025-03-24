@@ -1,16 +1,39 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import OrderTable from "./components/OrderTable";
 import SearchFilter from "./components/SearchFilter";
+import PhanTrang from "./components/PhanTrang"
 import Tabs from "./components/Tabs";
 import OrderService from "../../services/OrderService";
 import QRCodeScanner from "../../containers/QRCodeScanner";
 import { saveAs } from "file-saver";
+import dayjs from "dayjs";
 
 function Order() {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [size, setSize] = useState(10); // Số lượng bản ghi mỗi trang
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPageSP] = useState(0);
+  const [hoaDons, setHoaDons] = useState([]);
   const [isQRScan, setQrScan] = useState(false);
+  const [filters, setFilters] = useState({
+    ngayBatDau: null,
+    ngayKetThuc: null,
+    keyword: "",
+    loaiDon: null,
+    trangThaiGiaoHang: null
+  });
+
+  // Hàm cập nhật ngày mặc định
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ngayBatDau: prevFilters.ngayBatDau || dayjs().format("YYYY-MM-DD"),
+      ngayKetThuc: prevFilters.ngayKetThuc || dayjs().format("YYYY-MM-DD")
+    }));
+  }, []);
 
   const handleScan = (decodedText) => {
     console.log(decodedText);
@@ -23,15 +46,7 @@ function Order() {
     });
     setQrScan(false);
   };
-
-  const [filters, setFilters] = useState({
-    trangThai: null,
-    ngayBatDau: null,
-    ngayKetThuc: null,
-    loaiDon: null,
-    keyword: "",
-  });
-
+ 
   const [orderCounts, setOrderCounts] = useState({
     tong: 0,
     cho_xac_nhan: 0,
@@ -42,6 +57,25 @@ function Order() {
     hoan_hang: 0,
     da_huy: 0,
   });
+
+  const fetchHoaDons = useCallback( async() => {
+    try {
+      const response = await OrderService.hoaDons(page, size, filters);
+      setHoaDons(response.content)
+      setTotalPageSP(response.totalPages)
+    }catch (error) {
+      console.log("Lỗi khi lấy dữ liệu hóa đơn", error);
+      setError(error.message);
+    }finally{
+      setLoading(false);
+    }
+  },[size, page, filters]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchHoaDons();
+  },[size,page, filters]);
+  console.log(filters)
 
   const fetchOrderCounts = async () => {
     try {
@@ -110,19 +144,28 @@ function Order() {
         setQrCodeScan={() => setQrScan(true)}
         onExport={handleExportToExcel}
       />
-      <Tabs value={filters} onChange={setFilters} orderCounts={orderCounts} />
+      <Tabs value={filters} onChange={setFilters} orderCounts={orderCounts} setPage={setPage} />
       {isQRScan && (
         <QRCodeScanner onScan={handleScan} onClose={() => setQrScan(false)} />
       )}
-      <OrderTable
-        trangThaiGiaoHang={filters.trangThai}
-        ngayBatDau={filters.ngayBatDau}
-        ngayKetThuc={filters.ngayKetThuc}
-        loaiDon={filters.loaiDon}
-        keyword={filters.keyword}
-        size={size}
-        onSizeChange={setSize}
-      />
+      <div className="bg-white p-2 rounded-lg shadow ">
+        <OrderTable
+          hoaDons={hoaDons}
+          page={page}
+          size={size}
+          filters={filters}
+          error={error}
+          loading={loading}
+        />
+        <PhanTrang 
+          size={size}
+          setSize={setSize}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+        />
+      </div>
+      
     </div>
   );
 }
