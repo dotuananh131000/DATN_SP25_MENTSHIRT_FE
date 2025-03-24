@@ -12,7 +12,7 @@ function SearchFilter({ value, onChange, setQrCodeScan, onExport }) {
   };
   return (
     <div className="bg-white px-4 py-4 mb-4 rounded-lg shadow">
-      <div className="flex justify-between space-x-4">
+      <div className="flex justify-between items-center">
         <Search onChange={handleSearch} />
         <Button setQrCodeScan={setQrCodeScan} />
       </div>
@@ -34,7 +34,7 @@ function SearchFilter({ value, onChange, setQrCodeScan, onExport }) {
         />
         <button
           onClick={onExport}
-          className="btn text-base font-normal bg-orange-500 hover:bg-orange-600 text-white "
+          className="bg-orange-500 m-1 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 "
         >
           Export Excel
         </button>
