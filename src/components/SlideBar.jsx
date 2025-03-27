@@ -16,6 +16,7 @@ import {
   FaGlobe,
   FaMoneyBill,
 } from "react-icons/fa";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function SlideBar() {
   const [activeMenu, setActiveMenu] = useState("thongKe");
@@ -46,7 +47,8 @@ function SlideBar() {
 
   return (
     <div className="w-60 min-h-screen bg-base-200 shadow-lg p-4 relative ">
-      <div className="flex justify-center mb-4">
+     <ScrollArea>
+       <div className="flex justify-center mb-4">
         <img src="/public/logo.png" alt="Logo" className="w-24" />
       </div>
 
@@ -150,6 +152,7 @@ function SlideBar() {
         </li>
        
       </ul>
+     </ScrollArea>
      
     </div>
   );

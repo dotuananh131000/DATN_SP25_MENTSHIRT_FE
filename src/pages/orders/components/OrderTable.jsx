@@ -4,7 +4,13 @@ import { FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 
-function OrderTable({hoaDons, page, size, filters, error, loading}) {
+function OrderTable({hoaDons, page, size, filters, error, loading, setIsOrderDetail, handleGetHoaDon}) {
+
+  //Hàm lấy hóa đơn theo id
+  const hanldleHoaDon = (id) => {
+    setIsOrderDetail(true)
+    handleGetHoaDon(id)
+  }
   
   //Hàm xử lý ngày tháng
   const formatDate = (dateString) => {
@@ -82,9 +88,12 @@ function OrderTable({hoaDons, page, size, filters, error, loading}) {
                 <p className="flex justify-center tooltip tooltip-bottom tooltip-accent"
                 data-tip="Xem chi tiết"
                 >
-                  <Link to={`/admin/detailOrder/${hd.maHoaDon}`}>
+                  {/* <Link to={`/admin/detailOrder/${hd.maHoaDon}`}>
                     <FaEye className="text-xl text-orange-500 cursor-pointer" />
-                  </Link>
+                  </Link> */}
+                 
+                    <FaEye onClick={() => hanldleHoaDon(hd.id)} className="text-xl text-orange-500 cursor-pointer" />
+                 
                 </p>
               </td>
             </tr>
@@ -93,7 +102,7 @@ function OrderTable({hoaDons, page, size, filters, error, loading}) {
   },[size, page, filters,hoaDons])
 
   if(error) return (<p className="text-red-600">Lỗi: {error}</p>);
-  if(loading) return (<p className="text-green-700">Loading...</p>)
+  if(loading) return (<p className="text-green-700 h-full">Loading...</p>)
   return <>
     <table className="table w-full bg-white rounded-lg shadow ">
         <thead className="bg-gray-100 ">

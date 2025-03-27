@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import OrderTable from "./components/OrderTable";
@@ -9,14 +10,18 @@ import OrderService from "../../services/OrderService";
 import QRCodeScanner from "../../containers/QRCodeScanner";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import OrderDetail from "./OrderDetail";
+import { Link } from "react-router-dom";
 
 function Order() {
+  const [isOrderDetail, setIsOrderDetail] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [size, setSize] = useState(10); // Số lượng bản ghi mỗi trang
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPageSP] = useState(0);
   const [hoaDons, setHoaDons] = useState([]);
+  const [hoaDon, setHoaDon] = useState({});
   const [isQRScan, setQrScan] = useState(false);
   const [filters, setFilters] = useState({
     ngayBatDau: null,
@@ -35,6 +40,7 @@ function Order() {
     }));
   }, []);
 
+  // Xử lý quét QR
   const handleScan = (decodedText) => {
     console.log(decodedText);
     setFilters({
@@ -58,6 +64,7 @@ function Order() {
     da_huy: 0,
   });
 
+  //Lấy danh sách hóa đơn
   const fetchHoaDons = useCallback( async() => {
     try {
       const response = await OrderService.hoaDons(page, size, filters);
@@ -67,7 +74,9 @@ function Order() {
       console.log("Lỗi khi lấy dữ liệu hóa đơn", error);
       setError(error.message);
     }finally{
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 400);
     }
   },[size, page, filters]);
 
@@ -75,8 +84,27 @@ function Order() {
     setLoading(true);
     fetchHoaDons();
   },[size,page, filters]);
-  console.log(filters)
 
+  //Hàm Lấy hóa đơn theo id
+  const fetchHoaDonById = async(id) =>{
+    try {
+      const response = await OrderService.getOrderById(id);
+      setHoaDon(response);
+    }catch (error) {
+      console.log("Không thể lấy được hóa đơn theo Id", error);
+    }
+  } 
+
+  const handleGetHoaDon =(id) => {
+    if(!id){
+      toast.error("Không thể lấy được thông tin hóa đơn này");
+      return
+    }
+    fetchHoaDonById(id);
+  }
+  
+
+  //Hàm đếm số lượng trạng thái hóa đơn
   const fetchOrderCounts = async () => {
     try {
       const data = await OrderService.getOrderCounts(filters);
@@ -86,6 +114,7 @@ function Order() {
     }
   };
 
+  //Hàm xuất exel
   const handleExportToExcel = async () => {
     try {
       const data = await OrderService.getOrders(
@@ -99,7 +128,7 @@ function Order() {
       );
 
       if (data.content.length === 0) {
-        toast.warn("Dữ liệu trống");
+        toast.warn("Dữ liệu trống !");
         return;
       }
 
@@ -135,38 +164,55 @@ function Order() {
     fetchOrderCounts();
   }, [filters]);
 
-  return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-xl font-bold mb-4">Quản lý hóa đơn</h1>
-      <SearchFilter
-        value={filters}
-        onChange={setFilters}
-        setQrCodeScan={() => setQrScan(true)}
-        onExport={handleExportToExcel}
-      />
-      <Tabs value={filters} onChange={setFilters} orderCounts={orderCounts} setPage={setPage} />
-      {isQRScan && (
-        <QRCodeScanner onScan={handleScan} onClose={() => setQrScan(false)} />
-      )}
-      <div className="bg-white p-2 rounded-lg shadow ">
-        <OrderTable
-          hoaDons={hoaDons}
-          page={page}
-          size={size}
-          filters={filters}
-          error={error}
-          loading={loading}
+  if(isOrderDetail) {
+    return <OrderDetail hoaDon={hoaDon}
+    setIsOrderDetail={setIsOrderDetail}
+    fetchHoaDonById={fetchHoaDonById}
+    />
+  } else {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+         <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink className="text-lg cursor-pointer">
+                  Danh sách hóa đơn
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        <SearchFilter
+          value={filters}
+          onChange={setFilters}
+          setQrCodeScan={() => setQrScan(true)}
+          onExport={handleExportToExcel}
         />
-        <PhanTrang 
-          size={size}
-          setSize={setSize}
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
-        />
+        <Tabs value={filters} onChange={setFilters} orderCounts={orderCounts} setPage={setPage} />
+        {isQRScan && (
+          <QRCodeScanner onScan={handleScan} onClose={() => setQrScan(false)} />
+        )}
+        <div className="bg-white p-2 rounded-lg shadow ">
+          <OrderTable
+            hoaDons={hoaDons}
+            page={page}
+            size={size}
+            filters={filters}
+            error={error}
+            loading={loading}
+            setIsOrderDetail={setIsOrderDetail}
+            handleGetHoaDon ={handleGetHoaDon}
+          />
+          <PhanTrang 
+            size={size}
+            setSize={setSize}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
+        </div>
+        
       </div>
-      
-    </div>
-  );
+    );
+  } 
 }
 export default Order;
