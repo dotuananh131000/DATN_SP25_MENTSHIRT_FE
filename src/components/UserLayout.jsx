@@ -6,7 +6,7 @@ function UserLayout() {
   return (
     <div className="user-layout ">
       <Navbar />
-      <main className="layout-main min-h-96 ">
+      <main className="layout-main min-h-96 mt-[76px]">
         <Outlet />
       </main>
       <Footer />

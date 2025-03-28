@@ -287,13 +287,21 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                         </thead>
                         <tbody>
                         {spcts.map((spct, i)=>(
-                            <tr key={spct.id} className="hover:bg-gray-100 text-center">
+                            <motion.tr key={spct.id}
+                             className="hover:bg-gray-100 text-center"
+                             initial={{ opacity: 0, y: 10 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             transition={{ duration: 0.3, ease: "easeOut" }}
+                             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                             >
                                 <td className="border p-2">{page * size + i + 1}</td>
                                 <td className="border p-2 flex justify-center">
-                                <img
+                                <motion.img
                                     className="skeleton w-[50px] h-[50px] object-cover"
                                     src={spct.hinhAnh}
                                     alt="Đây là ảnh SP"
+                                    whileHover={{ scale: 1.1 }}
+                                    transition={{ duration: 0.2 }}
                                 />
                                 </td>
                                 <td className="border p-2">{spct.sanPham.tenSanPham}</td>
@@ -309,7 +317,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                 <td className="border p-2">
                                     <Dialog onOpenChange={() => setQuantity(1)}>
                                         <DialogTrigger asChild>
-                                            <button className="btn bg-orange-600 hover:bg-orange-700 text-white"
+                                            <button className="px-4 py-2  rounded-lg bg-orange-600 hover:bg-orange-700 text-white"
                                             >
                                                 Thêm
                                             </button>
@@ -317,9 +325,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                         <DialogContent>
                                             <DialogTitle>Chi tiết sản phẩm</DialogTitle>
                                             <motion.div className="flex space-x-4">
-                                                <img
+                                                <motion.img
                                                     className="skeleton w-[160px] h-[180px] object-cover rounded-lg shadow"
-                                                    src={spct.hinhAnh} alt="" 
+                                                    src={spct.hinhAnh} alt=""
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ duration: 0.5 }} 
                                                 />
                                                 <motion.div>
                                                     <p className="text-lg text-orange-500">{spct.sanPham.tenSanPham}</p>
@@ -336,11 +347,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                                     </p>
                                                     <p className="text-sm mt-2">Số lượng: 
                                                         <span className="ml-3">
-                                                            <input type="number" 
+                                                            <motion.input type="number" 
                                                                 min={1}
                                                                 className="border h-8 rounded p-2"
                                                                 value={quantity}
                                                                 onChange={(e) => setQuantity(e.target.value)} 
+                                                                whileFocus={{ scale: 1.1, borderColor: "#FFA500" }}
                                                             /> 
                                                         </span>
                                                     </p>
@@ -352,11 +364,14 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                                             <DialogClose className="px-4 py-2 bg-gray-500 text-white rounded-lg">
                                                                 Hủy
                                                             </DialogClose>  
-                                                                <button
+                                                                <motion.button
                                                                     onClick={() => handleConfirm(spct)}
-                                                                    className="px-4 py-2 bg-orange-500 text-white rounded-lg">
+                                                                    className="px-4 py-2 bg-orange-500 text-white rounded-lg"
+                                                                    whileTap={{ scale: 0.9 }}
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    >
                                                                     Xác nhận
-                                                                </button>    
+                                                                </motion.button>    
                                                         </DialogFooter>
                                                     </div>                      
                                             </motion.div>
@@ -364,7 +379,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                         </DialogContent>
                                     </Dialog>
                                 </td>
-                            </tr>
+                            </motion.tr>
                             ))}
                         </tbody>
                     </table>
@@ -406,7 +421,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <table className="table table-auto rounded-lg shadow mt-2">
+            <motion.table
+            className="table table-auto rounded-lg shadow mt-2"
+                initial={{ opacity: 0, y: -20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.5 }}
+            >
                 <thead className="bg-gray-200">
                     <tr className="text-center">
                         <th className="px-4 py-2">STT</th>
@@ -422,7 +442,11 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                 </tbody>
                 <tbody>
                     {gioHang.map((item, i) => (
-                        <tr key={item.id} className="text-center">
+                        <motion.tr 
+                            key={item.id} className="text-center"
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                        >
                             <td className="px-4 py-2">{i + 1}</td>
                             <td className="px-4 py-2 flex justify-center">
                                 <img src={item.hinhAnh} alt="Đây là ảnh" className="skeleton h-32 w-32 object-cover" />
@@ -490,7 +514,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                 <Dialog>
                                     {(hoaDon.trangThaiGiaoHang === 1 || hoaDon.trangThaiGiaoHang === 8) &&(
                                         <DialogTrigger>
-                                            <FaRegTrashAlt className="text-orange-500 text-lg" />
+                                            <motion.div
+                                                whileHover={{ rotate: [-5, 5, -5, 0] }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <FaRegTrashAlt className="text-orange-500 text-lg cursor-pointer" />
+                                            </motion.div>
                                         </DialogTrigger>
                                     )}
                                     <DialogContent className="w-[300px] ">
@@ -506,10 +535,10 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                     </DialogContent>
                                 </Dialog>
                             </td>
-                        </tr>
+                        </motion.tr>
                     ))}
                 </tbody>
-            </table>
+            </motion.table>
         </motion.div>
     </>
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import DetailService from "./services/DetailService";
 import Cookies from "js-cookie"; // Import js-cookie
 import { ToastContainer, toast } from "react-toastify"; // Import react-toastify
 import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 function ProductDetail() {
   const { sanPhamId } = useParams();
@@ -170,11 +171,26 @@ function ProductDetail() {
         <ToastContainer />
 
         {/* Breadcrumb navigation */}
-        <div className="mb-6 text-sm text-gray-600">
+        {/* <div className="mb-6 text-sm text-gray-600">
           <span className="hover:text-orange-500 cursor-pointer">Trang chủ</span> / 
           <span className="hover:text-orange-500 cursor-pointer"> Sản phẩm</span> / 
           <span className="text-orange-500"> {productDetail.sanPham?.tenSanPham}</span>
-        </div>
+        </div> */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <Link to="/home" className="hover:text-black">Trang Chủ</Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator/>
+            <BreadcrumbItem>
+              <Link to="/products" className="hover:text-black">Sản phẩm</Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator/>
+            <BreadcrumbItem>
+              <BreadcrumbLink>{productDetail.sanPham?.tenSanPham}</BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         
         {/* Main product section */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
