@@ -4,7 +4,6 @@ import ReactPaginate from "react-paginate";
 import HoaDonService from "../services/HoaDonService";
 import { toast } from "react-toastify";
 import ModalSPCT from "./ModalSPCT";
-import SanPhamChiTietService from "../services/SanPhamChiTietService";
 
 function AddProductModal({
   spcts,
