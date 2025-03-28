@@ -6,8 +6,6 @@ import { FaTruckFast } from "react-icons/fa6";
 import { AiOutlineCheck, AiFillCheckCircle } from "react-icons/ai";
 import { memo } from "react";
 function StepsTrangThaiHoaDon({hoaDon}){
-
-    console.log(hoaDon);
     
     const orderSteps =[
         {id:1 , status: "Chờ xác nhận", icon: <LuClock5 className="text-gray-500 text-2xl" /> },

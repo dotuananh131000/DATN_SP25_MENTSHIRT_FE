@@ -8,24 +8,117 @@ import OrderInfo from "./components/orderDetailComponents/OrderInfo";
 import LichSuThanhToan from "../detailOrder/service/LichSuThanhToan";
 import { toast } from "react-toastify";
 import HoaDonService from "../detailOrder/service/HoaDonService";
+import ProductDetailService from "../details/services/ProductDetailService";
+import SanPhamChiTietService from "../detailOrder/service/SanPhamChiTietService";
 
 function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
 
     const [gioHang, setGioHang] = useState([]);
     const [lichSuThanhToan, setLichSuThanhToan] = useState([]);
-    // Lấy dữ liệu giỏ hàng của hóa đơn
+    //Thuộc tính của sản phẩm
+    const [spcts, setSpct] = useState([]);
+    const [totalPageSP, setTotalPageSP] = useState(0);
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(10);
+    const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState({
+      thuongHieuIds: [],
+      xuatXuIds: [],
+      chatLieuIds: [],
+      coAoIds: [],
+      tayAoIds: [],
+      mauSacIds: [],
+      kichThuocIds: [],
+    });
+    const [chatLieus, setChatLieus] = useState([]);
+    const [coAos, setCoAos] = useState([]);
+    const [kichThuocs, setKichThuocs] = useState([]);
+    const [mauSacs, setMauSacs] = useState([]);
+    const [tayAos, setTayAos] = useState([]);
+    const [thuongHieus, setThuongHieus] = useState([]);
+    const [xuatXus, setXuatXus] = useState([]);
+    const [quantity, setQuantity] = useState(1);
+
+    const fetchSelectOptions = async () => {
+      try {
+        const chatLieuData = await ProductDetailService.getChatLieu();
+        setChatLieus(chatLieuData);
+  
+        const coAoData = await ProductDetailService.getCoAo();
+        setCoAos(coAoData);
+  
+        const kichThuocData = await ProductDetailService.getKichThuoc();
+        setKichThuocs(kichThuocData);
+  
+        const mauSacData = await ProductDetailService.getMauSac();
+        setMauSacs(mauSacData);
+  
+        const tayAoData = await ProductDetailService.getTayAo();
+        setTayAos(tayAoData);
+  
+        const thuongHieuData = await ProductDetailService.getThuongHieu();
+        setThuongHieus(thuongHieuData);
+  
+        const xuatXuData = await ProductDetailService.getXuatXu();
+        setXuatXus(xuatXuData);
+  
+      } catch (error) {
+        setError("Error fetching select options");
+      }
+    };
+    const handleFilterChange = (field, selectedOptions) => {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [field]: selectedOptions ? selectedOptions.map(option => option.value) : [],
+      }));
+      setPage(0);
+    };
     useEffect(() => {
-        const fetchGioHang = async() => {
-            try {
-                if(!hoaDon.id){
-                    return;
-                }
-                const response = await HoaDonChiTietService.getSPCTByIDHoaDon(hoaDon.id);
-                setGioHang(response);
-            }catch (error) {
-                console.log("Không thể lấy được giỏ hàng", error);
+        fetchSelectOptions();
+    }, []);
+
+  const resetFilters = () => {
+    setFilters({
+      thuongHieuIds: [],
+      xuatXuIds: [],
+      chatLieuIds: [],
+      coAoIds: [],
+      tayAoIds: [],
+      mauSacIds: [],
+      kichThuocIds: [],
+      minPrice: 0,
+      maxPrice: 10000000,
+    });
+    setPage(0);
+  };
+
+   const fetchSanPhamChiTiet = async () => {
+      try {
+        const response = await SanPhamChiTietService.GetAll(page, size, search, filters);
+        setSpct(response.content);
+        setTotalPageSP(response.totalPages)
+      } catch (error) {
+        console.log("khong thể tải được danh sách san phẩm chi tiết", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchSanPhamChiTiet();
+    }, [gioHang, page, size, search, filters]);
+
+    // Lấy dữ liệu giỏ hàng của hóa đơn
+    const fetchGioHang = async() => {
+        try {
+            if(!hoaDon.id){
+                return;
             }
+            const response = await HoaDonChiTietService.getSPCTByIDHoaDon(hoaDon.id);
+            setGioHang(response);
+        }catch (error) {
+            console.log("Không thể lấy được giỏ hàng", error);
         }
+    }
+    useEffect(() => {
         fetchGioHang();
     }, [hoaDon]);
    
@@ -69,11 +162,9 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
             <Breadcrumb className="mb-4">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <h1 onClick={() => setIsOrderDetail(false)}
-                        className="cursor-pointer text-lg"
-                        >
+                       <BreadcrumbLink onClick={() => setIsOrderDetail(false)} className="cursor-pointer text-lg">
                             Danh sách hóa đơn
-                        </h1>
+                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -85,7 +176,31 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
                 hoaDon={hoaDon} />
             <ButtonTrangThai hoaDon={hoaDon} handleCapNhatDonHang={handleCapNhatDonHang} />
             <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} />
-            <Cart gioHang={gioHang}/>
+            <Cart
+                hoaDon={hoaDon}
+                gioHang={gioHang}
+                fetchGioHang={fetchGioHang}
+                fetchSanPhamChiTiet={fetchSanPhamChiTiet}
+                fetchHoaDonById={fetchHoaDonById}
+                spcts={spcts}
+                totalPages={totalPageSP}
+                page={page}
+                setPage={ setPage}
+                size={size}
+                setSize={setSize}
+                setSearch={setSearch}
+                quantity={quantity}
+                setQuantity={setQuantity}
+                thuongHieus={thuongHieus}
+                xuatXus={xuatXus}
+                chatLieus={chatLieus}
+                coAos={coAos}
+                tayAos={tayAos}
+                mauSacs={mauSacs}
+                kichThuocs={kichThuocs}
+                handleFilterChange={handleFilterChange}
+                resetFilters={resetFilters}
+            />
         </div>
     </>
 }

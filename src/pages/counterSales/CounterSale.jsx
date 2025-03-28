@@ -795,9 +795,9 @@ const validateThemSP = ()=>{
               {sanPhamGioHang.map((sp, i) => (
                 <tr key={sp?.id} className="hover:bg-gray-100 text-center">
                   <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 flex justify-center" >
                     <img
-                      className="skeleton h-32 w-32 object-cover"
+                      className="skeleton h-32 w-32 object-cover "
                       src={sp?.hinhAnh}
                       alt=""
                     />
@@ -939,8 +939,6 @@ const validateThemSP = ()=>{
       );
     }
   };
-
-  // console.log(billToday[selectedTab]?.idKhachHang);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
