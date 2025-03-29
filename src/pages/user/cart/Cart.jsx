@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from "react-router-dom";
+import {motion} from "framer-motion"
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -160,7 +161,10 @@ function Cart() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}>
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-3 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -281,7 +285,7 @@ function Cart() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow sticky top-8">
               <div className="px-6 py-6">
-                <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-4">Tóm tắt đơn hàng</h2>
+                <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-4">Tóm tắt giỏ hàng của bạn</h2>
                 <div className="mt-6 space-y-4">
                   <div className="flex justify-between items-center">
                     <p className="text-gray-600">Tổng sản phẩm</p>
@@ -329,7 +333,7 @@ function Cart() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
   );
 }
 

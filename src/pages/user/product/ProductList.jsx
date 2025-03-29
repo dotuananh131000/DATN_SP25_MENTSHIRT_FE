@@ -5,7 +5,7 @@ import { FiSearch } from "react-icons/fi";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import ProductService from "./services/ProductService";
-
+import {motion} from "framer-motion"
 function ProductList() {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
@@ -147,7 +147,10 @@ function ProductList() {
   const totalPages = Math.ceil(totalItems / 10);
 
   return (
-    <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen">
+    <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.1, ease: "easeOut" }}>
       <section>
         <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
           {/* Hero Banner */}
@@ -594,7 +597,7 @@ function ProductList() {
           </div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }
 
