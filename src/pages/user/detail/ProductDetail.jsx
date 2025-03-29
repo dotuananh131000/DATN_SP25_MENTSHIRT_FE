@@ -5,6 +5,8 @@ import Cookies from "js-cookie"; // Import js-cookie
 import { ToastContainer, toast } from "react-toastify"; // Import react-toastify
 import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {motion} from "framer-motion"
+import { Button } from "@/components/ui/button";
 
 function ProductDetail() {
   const { sanPhamId } = useParams();
@@ -126,7 +128,7 @@ function ProductDetail() {
   
   
   const handleAddToCart = () => {
-    if (!productDetail.sanPham || productDetail.soLuong < 1) {
+    if (!productDetail?.sanPham || productDetail?.soLuong < 1) {
       toast.error("Sản phẩm không khả dụng.");
       return;
     }
@@ -158,24 +160,29 @@ function ProductDetail() {
   };
   
   
+  const checkEmptyProdct = () => {
+    if (!attributes || !productDetail) {
+      toast.info("Biến thể của sản phẩm này hiện không đủ. Vui lòng chọn sản phẩm khác.");
+      return;
+    }
+  };
   
-
-  if (!attributes || !productDetail) {
-    return <div className="text-center text-gray-500">Không có sản phẩm nào phù hợp.</div>;
-  }
+  // Dùng useEffect để kiểm tra khi attributes hoặc productDetail thay đổi
+  useEffect(() => {
+    checkEmptyProdct();
+  }, [attributes, productDetail]);
 
   return (
-    <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen">
+    <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Toast container */}
         <ToastContainer />
 
         {/* Breadcrumb navigation */}
-        {/* <div className="mb-6 text-sm text-gray-600">
-          <span className="hover:text-orange-500 cursor-pointer">Trang chủ</span> / 
-          <span className="hover:text-orange-500 cursor-pointer"> Sản phẩm</span> / 
-          <span className="text-orange-500"> {productDetail.sanPham?.tenSanPham}</span>
-        </div> */}
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -187,10 +194,15 @@ function ProductDetail() {
             </BreadcrumbItem>
             <BreadcrumbSeparator/>
             <BreadcrumbItem>
-              <BreadcrumbLink>{productDetail.sanPham?.tenSanPham}</BreadcrumbLink>
+              <BreadcrumbLink>{(!productDetail?.sanPham?.tenSanPham)? "Biến thể không tồn tại":productDetail.sanPham?.tenSanPham}
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+
+        {/* {(!attributes || !productDetail) && (
+          toast.info("Biến thể của sản phẩm này hiện không đủ. Vui lòng chọn sản phẩm khác.")
+        )} */}
         
         {/* Main product section */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -199,8 +211,8 @@ function ProductDetail() {
             <div className="lg:col-span-3 p-6">
               <div className="relative overflow-hidden rounded-xl mb-4 bg-gray-50">
                 <img
-                  src={productDetail.hinhAnh}
-                  alt={productDetail.sanPham?.tenSanPham}
+                  src={productDetail?.hinhAnh}
+                  alt={productDetail?.sanPham?.tenSanPham}
                   className="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
                 />
                 <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -211,10 +223,10 @@ function ProductDetail() {
             
             {/* Product details */}
             <div className="lg:col-span-2 p-6 border-l border-gray-100">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">{productDetail.sanPham?.tenSanPham}</h1>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">{productDetail?.sanPham?.tenSanPham}</h1>
               
               <div className="mb-6">
-                <span className="text-3xl font-bold text-orange-600">{productDetail.donGia?.toLocaleString()}₫</span>
+                <span className="text-3xl font-bold text-orange-600">{productDetail?.donGia?.toLocaleString()}₫</span>
               </div>
               
               <div className="space-y-6">
@@ -381,7 +393,7 @@ function ProductDetail() {
                         +
                       </button>
                     </div>
-                    <span className="ml-4 text-gray-500">Còn lại: {productDetail.soLuong} sản phẩm</span>
+                    <span className="ml-4 text-gray-500">Còn lại: {productDetail?.soLuong} sản phẩm</span>
                   </div>
                   
                   <div className="flex flex-col sm:flex-row gap-3">
@@ -413,7 +425,7 @@ function ProductDetail() {
           </h2>
           
           <div className="prose max-w-none text-gray-700 leading-relaxed">
-            {productDetail.sanPham?.moTa}
+            {productDetail?.sanPham?.moTa}
           </div>
           
           {/* Product specifications */}
@@ -444,7 +456,7 @@ function ProductDetail() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
