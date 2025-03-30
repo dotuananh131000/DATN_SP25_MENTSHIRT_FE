@@ -1,12 +1,21 @@
 import {motion} from "framer-motion"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import login from "@/api/Auth";
+import { loginClientSuccess, logOutClientSuccess } from "@/features/ClientAuthSlice";
+import axios from "axios";
+import AccountInfo from "./AccountInfo";
 function UserProfile() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [loginLost, setLoginLost] = useState(null);
+  const client = useSelector((state) => state.authClient?.client);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //Hàm validate
   const validate = () => {
@@ -26,13 +35,49 @@ function UserProfile() {
   };
 
   //Hàm submib form
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
+    setLoginLost(null);
+
     if (validate()) {
-      console.log("Form hợp lệ, tiến hành đăng nhập...");
+      try {
+        const response = await login.CheckLoginClient(email, password);
+
+        console.log("Phản hồi thừ API đăng nhập", response.data);
+
+        const token = response.data.token;
+
+        console.log("Token nhân đươc", token);
+
+        const clientRes = await axios.get(`http://localhost:8080/api/khach-hang/myAccount`,
+          {
+              headers:{Authorization: `Bearer ${token}`}
+          }
+        );
+        console.log("Thông tin tài khoản:", clientRes);
+
+        const clientAccount = {
+          token: token,
+          ...clientRes.data.data,
+        }
+        console.log("Đối tượng client được lưu", clientAccount);
+
+        dispatch(loginClientSuccess(clientAccount));
+        navigate("/products");
+      } catch (error){
+        if(error.response){
+          setLoginLost(error.response.data.message || "Lỗi đăng nhập từ server");
+        } else{
+          setLoginLost("Tài khoản hoặc mật khẩu không chính xác.");
+        }
+      }
     }
   };
+  if(client){
+    return <AccountInfo />
+  }
     return <>
+    {loginLost && <p className="error text-red-700">{loginLost}</p>}
       <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

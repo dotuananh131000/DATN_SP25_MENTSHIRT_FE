@@ -9,6 +9,7 @@ const OrderHistory = lazy(() => import("../pages/user/order/OrderHistory.jsx"));
 const ChangePassword = lazy(() => import("../pages/user/account/ChangePassword.jsx"));
 const UserProfile = lazy(() => import("../pages/user/account/UserProfile.jsx"));
 const SignUp = lazy(() => import("../pages/user/account/SignUp.jsx"));
+const OrderDetail = lazy(() => import("../pages/user/order/OrderDetail.jsx"));
 // const loginClient = lazy(() => import("../auth/client/loginClient.jsx"));
 
 const userRoutes = [
@@ -21,6 +22,7 @@ const userRoutes = [
   { path: "change-password", component: ChangePassword, role:"user"  },
   { path: "profile", component: UserProfile, role:"user"  },
   { path: "sign-up", component: SignUp, role:"user"  },
+  { path: "order-detail/:id", component: OrderDetail, role:"user"  },
   // { path: "loginClient", component: loginClient, role:"user"  },
 ];
 
