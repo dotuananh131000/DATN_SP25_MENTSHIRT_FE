@@ -5,10 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import Voucher from "./service/Voucher";
 import api_giaoHangNhanh from "../../counterSales/services/GiaoHangNhanhService";
 import Order from "./service/hoaDonOnline";
+import { useSelector } from "react-redux";
 
 function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
+  const client = useSelector((state) => state.authClient?.client);
 
   // Retrieve the checkout state passed from the Cart page
   const { items, totalAmount, totalItems } = location.state || {
@@ -191,7 +193,6 @@ function Payment() {
     }))
    }
   },[districts, districtID, ward, wardID, specific, wardName])
-  console.log(formData);
 
   // Tính toán tổng tiền sau khi áp dụng voucher
   const caculatorDiscount = (voucher, totalAmount) => {
@@ -228,7 +229,7 @@ function Payment() {
     
     const orderData = {
       ghiChu: formData.note || "",
-      idKhachHang: null,
+      idKhachHang: client.id || null,
       idPhieuGiamGia: selectedVoucher ? selectedVoucher.id : null ,
       hoTenNguoiNhan: formData.fullName || "",
       soDienThoai: formData.phone || "",

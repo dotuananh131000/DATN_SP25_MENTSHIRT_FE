@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { FaPhone } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,6 +13,9 @@ function Navbar() {
   };
 
   const [isSticky, setIsSticky] = useState(false);
+  const client = useSelector((state) => state.authClient?.client);
+
+  console.log("Đây là tài khoản của khách hàng:", client);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,9 +61,9 @@ function Navbar() {
         <div className="col-span-8 flex justify-between items-center">
           <Link to="/home">
             <motion.img 
-            className="col-span-4 w-16 h-16 object-cover rounded-lg m-2 shadow-lg "
-            src="/public/logo2.png"
-            whileHover={{ scale: 1.1 }}
+            className="col-span-4 w-28 h-22 object-cover rounded-lg  "
+            src="/public/logodone.png"
+            whileHover={{ scale: 1.1,  boxShadow: "0px 4px 15px rgba(0,0,0,0.2)" }}
             transition={{ duration: 0.2 }}
             />
           </Link>
@@ -66,10 +72,22 @@ function Navbar() {
             <Link to="/products" className="text-gray-600 hover:text-orange-500 duration-200">Sản phẩm</Link>
             <Link to="/cart" className="text-gray-600 hover:text-orange-500 duration-200">Giỏ hàng</Link>
             <Link to="/order-history" className="text-gray-600 hover:text-orange-500 duration-200">Lịch sử mua hàng</Link>
-            <Link to="/profile" className="text-gray-600 hover:text-orange-500 duration-200">Tài khoản</Link>
+            {!client && <Link to="/profile" className="text-gray-600 hover:text-orange-500 duration-200">Tài khoản</Link>}
           </div>
         </div>
-        <div className="col-span-2"></div>
+        <div className="col-span-2 flex justify-center items-center">
+            {client && (
+              <>
+                <p className="text-pink-800 text-sm mr-2">Xin chào !</p>
+                <Link to="/profile">
+                  <Avatar>
+                    <AvatarImage src={client.avatarUrl}></AvatarImage>
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </Link>
+              </>
+            )}
+        </div>
       </motion.div>
     </header>
     // <header className="bg-white w-full mt-4 ">

@@ -10,8 +10,8 @@ function Footer() {
         <div className="sm:flex sm:items-center sm:justify-between">
           <div  className="block text-orange-600">
             <motion.img
-            src="/logo2.png"
-            className="w-20 h-20 rounded-full object-cover"
+            src="/logodone.png"
+            className="w-40 h-28 object-cover bg-white rounded-lg"
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.2 }}
             />
