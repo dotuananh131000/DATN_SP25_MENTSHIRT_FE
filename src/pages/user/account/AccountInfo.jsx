@@ -33,7 +33,7 @@ function AccountInfo(){
                     </BreadcrumbItem>
                     <BreadcrumbSeparator/>
                     <BreadcrumbItem>
-                    <BreadcrumbLink>Thông tin tài khoản</BreadcrumbLink>
+                        Thông tin tài khoản
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -45,7 +45,7 @@ function AccountInfo(){
                     <h1 className="text-lg font-semibold mb-8">Quản lý tài khoản</h1>
                     <TabsTrigger def value="info" className="w-full mb-4">Thông tin cá nhân</TabsTrigger>
                     <TabsTrigger value="diaChi" className="w-full mb-4">Quản lý địa chỉ</TabsTrigger>
-                    <TabsTrigger value="" className="w-full mb-8">Thay đổi mật khẩu</TabsTrigger>
+                    <TabsTrigger value="changePassword" className="w-full mb-8">Thay đổi mật khẩu</TabsTrigger>
                     <button
                     onClick={() => handleLogout()}
                     value="" className="w-full mb-8 py-2 rounded-lg hover:bg-gray-600 hover:text-white duration-300">
