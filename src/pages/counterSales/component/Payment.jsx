@@ -41,6 +41,7 @@ export default function Payment({
   const [HDPTTT, setHDPTTT] = useState([]);
   const [diaChiKH, setDiaChiKH] = useState({});
   const [diaChiCuThe, setDiaChiCuThe] = useState("");
+  const [phieuGiamGia, setPhieuGiamGia] = useState(phieuGiamGiaTN);
   // console.log(diaChiKH[0]?.diaChiChiTiet);
   
   //Hàm lấy địa chỉ để đưa vào hóa đơn
@@ -64,11 +65,8 @@ export default function Payment({
       }
     }
   },[provinceID, province, districtID, districtName, district, ward, wardCOde])
-  // console.log(provinceName)
-  // console.log(districtName)
-  // console.log(wardName)
 
-  // console.log(thongTinDonHang);
+
   const handleHoTenNguoiNhan = (e) => {
     const newThongTinNguoiNhan = e.target.value;
       setThongTinDongHang((prev) => ({
@@ -176,7 +174,6 @@ export default function Payment({
         Number(districtID),
         wardCOde.toString()
       );
-      console.log(response.data.service_fee)
       setFee(response.data.service_fee);
     } catch (error) {
       console.log("Không thể tính được phí ship.", error);
@@ -193,7 +190,6 @@ export default function Payment({
   useEffect(() => {
     updateLoaiDon(isChecked);
   }, [isChecked]);
-  console.log(isChecked)
 
   //Goi API province
   const fetchAPIProvince = async () => {
@@ -307,7 +303,6 @@ export default function Payment({
       }));
     }
   }, [fee]);
-  console.log(thongTinDonHang);
 
   const fetchDiaChiKH = async (id) => {
     try {
@@ -337,11 +332,11 @@ export default function Payment({
 
   const tongTien = billToday[selectedTab]?.tongTien;
   const discountAmount =
-    phieuGiamGiaTN?.hinhThucGiamGia === 1
-      ? phieuGiamGiaTN?.giaTriGiam
+    phieuGiamGia?.hinhThucGiamGia === 1
+      ? phieuGiamGia?.giaTriGiam
       : Math.min(
-          (billToday[selectedTab]?.tongTien * phieuGiamGiaTN?.giaTriGiam) / 100,
-          phieuGiamGiaTN?.soTienGiamToiDa
+          (billToday[selectedTab]?.tongTien * phieuGiamGia?.giaTriGiam) / 100,
+          phieuGiamGia?.soTienGiamToiDa
         );
 
   const soTienDaThanhToan = HDPTTT.reduce(
@@ -350,7 +345,7 @@ export default function Payment({
   );
 
   const khachPhaiThanhToan =
-    tongTien - discountAmount + Math.round(fee / 500) * 500;
+    tongTien - discountAmount + Math.round(thongTinDonHang?.phiShip / 500) * 500;
 
   const soTienConLai =
     (!khachPhaiThanhToan ? 0 : khachPhaiThanhToan) - soTienDaThanhToan;
@@ -381,7 +376,33 @@ export default function Payment({
       );
     }
   };
+  
+  //Phần radio giao hàng và phí ship
+  const [isInput, setIsInput] = useState(false);
 
+  const hanhdlDoubleClick = () => {
+    setIsInput(true);
+    console.log("đang xử lý ...");
+  }
+  const onBlug = () => {
+    console.log(thongTinDonHang.phiShip);
+    if(thongTinDonHang.phiShip < 1000 || thongTinDonHang.phiShip > 1000000){
+      toast.error("Phí ship phải lớn hơn 1000 và nhỏ hơn 1.000.000.");
+      setThongTinDongHang((pre) => ({
+        ...pre, phiShip: 0
+      }));
+      setIsInput(false);
+      return;
+    }
+    setIsInput(false);
+  }
+  const onChange = (e) =>{
+    const NewFee = e.target.value.replace(/\D/g, "");
+    setThongTinDongHang((pre) => ({
+      ...pre, phiShip: parseFloat(NewFee)
+    }));
+  }
+ 
   const radioGiaoHang = () => {
       return (
         <>
@@ -397,13 +418,18 @@ export default function Payment({
             </div>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <h1 className="text-orange-500">Phí ship</h1>
-            <h1 className="text-orange-500">
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(thongTinDonHang?.phiShip)}
-            </h1>
+            <h1 className="text-orange-500">Phí ship</h1> 
+            {isInput ? 
+            <input onBlur={()=>onBlug()} type="text" 
+            onChange={(e) => onChange(e)}
+            value={new Intl.NumberFormat("vi-VN").format(thongTinDonHang?.phiShip || 0)}
+            className="text-orange-500 border border-orange-500 focus:ring-2 focus:ring-orange-400 focus:outline-none px-2 py-1 rounded-md transition duration-200"/> 
+                  : <h1 onDoubleClick={() => hanhdlDoubleClick()} className="text-orange-500 hover:scale-105 duration-200">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(thongTinDonHang?.phiShip)}
+                    </h1>}
           </div>
         </>
       );
@@ -657,6 +683,19 @@ export default function Payment({
     }
   };
 
+  //Chọn phiếu giảm giá cho hóa đơn
+  useEffect(() => {
+    if(phieuGiamGiaTN){
+      setPhieuGiamGia(phieuGiamGiaTN);
+    }
+  },[sanPhamGioHang, phieuGiamGiaTN]);
+
+  const [choosePGG, setChoosePGG] = useState(null);
+  useEffect(() => {
+    setPhieuGiamGia(choosePGG);
+  },[choosePGG]);
+
+
   return (
     <>
       <div className="w-full bg-white rounde-md mt-4 border-opacity-50">
@@ -669,21 +708,25 @@ export default function Payment({
           <div className="w-full p-4">{adress()}</div>
           {/* đây là bên phải */}
           <div className="w-3/5 p-2 mb-4">
-            <div className=" flex items-center border border-gray-300 shadow p-4 my-2 rounded-md ">
-              <h1 className="text-2xl text-orange-500 ">
-                <BiPurchaseTagAlt />
-              </h1>
-              <h1>Mã giảm giá :</h1>
-              <input
-                type="text"
-                value={phieuGiamGiaTN?.maPhieuGiamGia || ""}
-                placeholder=""
-                className="input input-bordered mx-2 w-[170px]"
-                disabled
-              />
-              <button onClick={() => setPGG(true)} className="btn">
-                Chọn mã
-              </button>
+            <div className="relative border-2 border-gray-400 p-2 w-full rounded-lg mt-2 ">
+              <div className="flex absolute -top-3 left-10 transform -translate-x-1/2 bg-white px-2 text-sm font-bold">
+                <span className="text-sm text-orange-500 ">
+                  <BiPurchaseTagAlt />
+                </span>
+                <h1 className="text-xs">Mã giảm giá :</h1>
+              </div>
+              <div className="flex justify-between space-x-3 items-center">
+                <button onClick={() => setPGG(true)} 
+                className=" px-4 py-2 bg-orange-500 text-white rounded-lg hover:scale-105 duration-200 ">
+                    Chọn
+                </button>
+                <p className="px-4 py-2 rounded-lg bg-gray-600 text-center text-white w-2/4">{phieuGiamGia?.maPhieuGiamGia || ""}</p>
+                {phieuGiamGia?.maPhieuGiamGia === phieuGiamGiaTN?.maPhieuGiamGia && 
+                  <h1 className="text-xs text-red-600">Phiếu giảm giá tốt nhất.</h1>
+                }
+                 
+              </div>
+             
             </div>
             <div className="flex justify-between py-2">
               <h1 className="text-orange-500">Tiền hàng</h1>
@@ -747,6 +790,8 @@ export default function Payment({
           isClose={() => setPGG(false)}
           billToday={billToday}
           selectedTab={selectedTab}
+          setChoosePGG ={setChoosePGG}
+          choosePGG={choosePGG}
         />
       )}
     </>

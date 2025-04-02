@@ -1,16 +1,55 @@
 import { AiOutlineCheck } from "react-icons/ai";
+import HoaDonService from "../services/HoaDonService";
+import { toast } from "react-toastify";
 export default function ListPhieuGiamGia({
   pggPublic,
   pggkh,
   isClose,
   billToday,
   selectedTab,
+  setChoosePGG,
+  choosePGG,
 }) {
-  const btnChoose = (tienToiThieu) => {
-    if (billToday[selectedTab]?.tongTien >= tienToiThieu) {
+
+  const hanhdlePGG = (idHD, pgg) => {
+    if(!idHD || !pgg){
+      toast.error("Lỗi khi thay đổi phiếu giảm giá");
+      return;
+    }
+    const fetchAPIChoosePGG = async() =>{
+      try{
+        const response = await HoaDonService.choosePGG(idHD, pgg.id);
+        console.log("Đã thay đổi phiểu giảm giá");
+      }catch(error){
+        console.log("Có lỗi khi thay đổi phiều giảm giá", error);
+      }
+    }
+    fetchAPIChoosePGG();
+    setChoosePGG(pgg);
+  }
+
+  console.log(choosePGG);
+  const btnChoose = (pgg) => {
+    if (billToday[selectedTab]?.tongTien >= pgg.soTienToiThieuHd) {
       return (
         <td className="text-center ">
-          <button className="btn text-orange-500 bg-white shadow-none border-none ">
+          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg)} 
+          className="btn text-orange-500 bg-white shadow-none border-none ">
+            <AiOutlineCheck />
+          </button>
+        </td>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const btnChooseCN = (pgg) => {
+    if (billToday[selectedTab]?.tongTien >= pgg.soTienToiThieu) {
+      return (
+        <td className="text-center ">
+          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg)} 
+          className="btn text-orange-500 bg-white shadow-none border-none ">
             <AiOutlineCheck />
           </button>
         </td>
@@ -92,7 +131,7 @@ export default function ListPhieuGiamGia({
                       })}
                     </p>
                   </td>
-                  {btnChoose(pgg.soTienToiThieu)}
+                  {btnChooseCN(pgg)}
                 </tr>
               ))}
             </tbody>
@@ -154,7 +193,7 @@ export default function ListPhieuGiamGia({
                       })}
                     </p>
                   </td>
-                  {btnChoose(pgg.soTienToiThieuHd)}
+                  {btnChoose(pgg)}
                 </tr>
               ))}
             </tbody>

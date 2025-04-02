@@ -10,7 +10,6 @@ import ConfirmModal from "./component/ConfirmModal";
 import Payment from "./component/Payment";
 import KhachHangModal from "./component/KhachHangModal";
 import KhachHangService from "./services/KhachHangService";
-import axios from "axios";
 import PhieuGiamGiaService from "./services/PhieuGiamGiaService";
 import { useDispatch, useSelector } from "react-redux";
 import { setMultipleProductPrices } from "../../features/ProducSlice";
@@ -73,6 +72,7 @@ export default function CounterSale() {
     phiShip: 0,
   });
 
+  console.log(hdHienTai);
    const [filters, setFilters] = useState({
       thuongHieuIds: [],
       xuatXuIds: [],
@@ -348,7 +348,6 @@ export default function CounterSale() {
       console.log("Không thể lọc được phiếu giảm giá tốt nhất", error);
     }
   };
-  // console.log(sanPhamGioHang.length);
   //Gọi API tự động ren phiếu giảm giá tốt nhất
 
   const handleCreateBill = async () => {
@@ -622,7 +621,6 @@ export default function CounterSale() {
   }, [sanPhamGioHang]);
   //Hàm đếm số lượng hóa đơn chi tiết
 
-  // console.log(sanPhamGioHang.length);
   const confirmXacNhan = () => {
     if (isChecked) {
       return (

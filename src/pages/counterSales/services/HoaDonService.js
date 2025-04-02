@@ -20,7 +20,7 @@ const HoaDonService = {
         JSON.stringify(idKH),
         {
           headers: {
-            "Content-Type": "application/json", // Đảm bảo gửi Content-Type là application/json
+            "Content-Type": "application/json",
           },
         }
       );
@@ -172,5 +172,20 @@ const HoaDonService = {
       throw error;
     }
   },
+  async choosePGG(idHD, idPGG){
+    try{
+      const response = await apiClients.put(`/ban-hang/choosePGG/${idHD}`, 
+        JSON.stringify(idPGG),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    }catch (error){
+      throw error;
+    }
+  }
 };
 export default HoaDonService;
