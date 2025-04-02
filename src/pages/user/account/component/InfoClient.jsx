@@ -16,8 +16,6 @@ function InfoClient(){
       const [districtName, setDistrictName] = useState("");
       const [wardName, setWardName] = useState("");
       const [specific, setSpecific] = useState("");
-      const [serviceID, setServiceID] = useState("");
-      const [shippingFee, setShippingFee] = useState(0);
       //phần tỉnh
      
       useEffect(() => {
@@ -76,7 +74,7 @@ function InfoClient(){
           },[districts,districtID])
     return <>
         <div className="w-full bg-white p-4 rounded-lg">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Tài khoản</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Tài khoản</h1>
             
             <div className="space-y-4">
                 <div className="grid grid-cols-2 ">
