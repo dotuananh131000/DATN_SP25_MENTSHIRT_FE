@@ -34,20 +34,22 @@ function Login(){
                 ...userRes.data.data
             }
             dispatch( loginSuccess(userInfo)); // Lưu token vào context
-            navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
+            setLoading(true);
+            navigate("/admin/statistic"); // Chuyển hướng sau khi đăng nhập thành công
         } catch (err) {
             if (err.response) {
                 setError(err.response.data.message || "Lỗi đăng nhập từ server!");
             } else {
-                setError("Không thể kết nối đến server!");
+                setError("Tài khoản hoặc mật khẩu không chính xác.");
             }
         }finally {
-            setLoading(false); // Cho phép nhấn lại nút
+            setTimeout(() => {
+                setLoading(false); // Cho phép nhấn lại nút
+            },500)
         }
       };
     return <>
-    {error && <p className="error">{error}</p>}
-    {user && <p>Đã đăng nhập với email: {user.email}</p>}
+    {/* {user && <p>Đã đăng nhập với email: {user.email}</p>} */}
    <section  className=" bg-gray-50 min-h-screen flex justify-center items-center ">
         {/* Login container */}
         <div className="bg-gray-100 flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
@@ -65,11 +67,12 @@ function Login(){
                         />
                         <p className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400"><FaRegEye /></p>
                     </div>
+                    {error && <p className="error text-sm text-red-500">{error}</p>}
                     <button 
-                    className="bg-[#002D74] rounded-xl text-white py-2 hover:scale-105 duration-300"
-                    disabled={loading}
-                    >
-                    {loading ? "Đang đăng nhập..." : "Login"}
+                        className="bg-[#002D74] rounded-xl text-white py-2 hover:scale-105 duration-300"
+                        disabled={loading}
+                        >
+                        {loading ? "Đang đăng nhập..." : "Login"}
                     </button>
                 </form>
                 <div className="mt-10 grid grid-cols-3 items-center text-gray-500">
@@ -90,7 +93,7 @@ function Login(){
             </div>
             {/* image */}
             <div className="md:block hidden w-1/2 p-5">
-                <img className="rounded-2xl hover:scale-105 duration-500" 
+                <img className="rounded-2xl" 
                 src="https://images.unsplash.com/photo-1616606103915-dea7be788566?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80" 
                 alt="" />
             </div>
