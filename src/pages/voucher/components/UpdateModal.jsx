@@ -219,7 +219,7 @@ const UpdateModal = ({ isOpen, onCancel, voucherId, fetchVouchers }) => {
                     Thời gian áp dụng
                   </label>
                   <DatePicker
-                    selected={voucher.thoiGianApDung}
+                    selected={voucher.thoiGianApDung ? new Date(voucher.thoiGianApDung) : null}
                     onChange={(date) =>
                       handleDateChange("thoiGianApDung", date)
                     }
@@ -234,7 +234,7 @@ const UpdateModal = ({ isOpen, onCancel, voucherId, fetchVouchers }) => {
                     Thời gian hết hạn
                   </label>
                   <DatePicker
-                    selected={voucher.thoiGianHetHan}
+                    selected={voucher.thoiGianHetHan ? new Date(voucher.thoiGianHetHan) : null}
                     onChange={(date) =>
                       handleDateChange("thoiGianHetHan", date)
                     }
