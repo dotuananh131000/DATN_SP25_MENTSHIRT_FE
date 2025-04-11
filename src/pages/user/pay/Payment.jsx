@@ -229,7 +229,7 @@ function Payment() {
     
     const orderData = {
       ghiChu: formData.note || "",
-      idKhachHang: client.id || null,
+      idKhachHang: client?.id || "",
       idPhieuGiamGia: selectedVoucher ? selectedVoucher.id : null ,
       hoTenNguoiNhan: formData.fullName || "",
       soDienThoai: formData.phone || "",

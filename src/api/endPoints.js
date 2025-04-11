@@ -12,6 +12,8 @@ const API_ENDPOINTS = {
   VOUCHERS: {
     BASE: `${API_BASE_URL}/phieu-giam-gia/hien-thi`,
   },
+
+  CHANGEPASSWORD:(id) => `${API_BASE_URL}/nhan-vien/changePassword/${id}`,
 };
 export default API_ENDPOINTS;
 export const TOKEN_GHN = "cfbc877c-f2a2-11ef-b8bc-72b37b984ae4";
