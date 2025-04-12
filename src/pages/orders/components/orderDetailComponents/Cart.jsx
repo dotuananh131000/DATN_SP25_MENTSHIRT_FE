@@ -142,7 +142,6 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
     }
     useEffect(() => {
         fetchThemHoaDonChiTiet();
-        console.log("Đây là hóa đơn request", HDCTRequest);
     }, [HDCTRequest])
 
     //Hàm xóa sản phẩm ra khỏi giỏ hàng

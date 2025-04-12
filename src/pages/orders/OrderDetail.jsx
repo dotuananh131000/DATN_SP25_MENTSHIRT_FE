@@ -10,11 +10,14 @@ import { toast } from "react-toastify";
 import HoaDonService from "../detailOrder/service/HoaDonService";
 import ProductDetailService from "../details/services/ProductDetailService";
 import SanPhamChiTietService from "../detailOrder/service/SanPhamChiTietService";
+import LichSuHoaDonService from "@/services/LichSuHoaDonService";
+import { useSelector } from "react-redux";
 
-function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
+function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons}){
 
     const [gioHang, setGioHang] = useState([]);
     const [lichSuThanhToan, setLichSuThanhToan] = useState([]);
+    const user = useSelector((state)=> state.auth.user);
     //Thuộc tính của sản phẩm
     const [spcts, setSpct] = useState([]);
     const [totalPageSP, setTotalPageSP] = useState(0);
@@ -121,6 +124,36 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
     useEffect(() => {
         fetchGioHang();
     }, [hoaDon]);
+
+    // Ghi lại lịch sử thay đổi của hóa đơn
+    const fetchCreateLichSuHoaDon = async (form) => {
+      try {
+        const response = await LichSuHoaDonService.Create(form);
+
+      }catch (error){
+        console.log("Không thể ghi lại lịch sử thay đổi", error);
+      }
+    }
+
+    // Hiện thi lich sử thay đổi của hóa đơn
+    const [listHistoryHD, setListHistoryHD] = useState([]);
+
+    const fetchGetLichSuHoaDon = async (id) => {
+      try {
+        const response = await LichSuHoaDonService.GetAllByIdHd(id);
+        setListHistoryHD(response);
+      }catch (error){
+        console.log("Không thể lấy danh sách lịch sử thay đổi của hóa đơn");
+      }
+    }
+
+    const handleClickHistory = () => {
+      if(!hoaDon.id){
+        toast.error("Lỗi khi lấy danh sách hóa đơn. Vui lòng thử lại!");
+        return;
+      }
+      fetchGetLichSuHoaDon(hoaDon.id)
+    }
    
     //Lấy dữ liệu lịch sử thanh toán
     useEffect(() => {
@@ -146,8 +179,24 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
                     toast.error("Lỗi hóa đơn, vui lòng thử lại.")
                     return;
                 }
+                const formLichSuHoaDon = {
+                  idHoaDon: hoaDon.id || null,
+                  hanhDong: hoaDon.trangThaiGiaoHang === 1
+                    ? "Đã chuyển trạng thái thành: Đã xác nhân"
+                    : hoaDon.trangThaiGiaoHang === 2
+                      ? "Đã chuyển trạng thái thành: Chờ vận chuyển"
+                      : hoaDon.trangThaiGiaoHang === 3
+                        ? "Đã chuyển trạng thái đơn hàng thành: Đang vận chuyển"
+                        : hoaDon.trangThaiGiaoHang === 4
+                          ? "Đã chuyển trạng thái thành: Đã hoàn thành"
+                            : ""
+                  ,
+                  nguoiThayDoi: user.tenNhanVien ?? "",
+                }
                 const response = await HoaDonService.UpdateTrangThaiDonHang(hoaDon.id);
+                fetchCreateLichSuHoaDon(formLichSuHoaDon);
                 fetchHoaDonById(hoaDon.id);
+                fetchHoaDons();
                 toast.success("Trạng thái đã được cập nhật");
             }catch (error) {
                 toast.error("Lỗi khi cập nhật trạng thái, vui lòng thử lại.")
@@ -155,8 +204,10 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
             }
         }
         fetchCapNhatDonHang();
+
+        
     },[hoaDon])
-    
+
     return <>
         <div className="p-6 bg-gray-50 min-h-screen">
             <Breadcrumb className="mb-4">
@@ -174,7 +225,11 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById}){
             </Breadcrumb>
             <StepsTrangThaiHoaDon
                 hoaDon={hoaDon} />
-            <ButtonTrangThai hoaDon={hoaDon} handleCapNhatDonHang={handleCapNhatDonHang} />
+            <ButtonTrangThai hoaDon={hoaDon} handleCapNhatDonHang={handleCapNhatDonHang}
+            handleClickHistory={handleClickHistory}
+            listHistoryHD={listHistoryHD}
+            setListHistoryHD={setListHistoryHD}
+            />
             <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} />
             <Cart
                 hoaDon={hoaDon}

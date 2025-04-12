@@ -14,6 +14,11 @@ const API_ENDPOINTS = {
   },
 
   CHANGEPASSWORD:(id) => `${API_BASE_URL}/nhan-vien/changePassword/${id}`,
+
+  ORDERHISTORIES: {
+    CREATE: `${API_BASE_URL}/lich-su-hoa-don`,
+    GETALL:(id) => `${API_BASE_URL}/lich-su-hoa-don/${id}`
+  }
 };
 export default API_ENDPOINTS;
 export const TOKEN_GHN = "cfbc877c-f2a2-11ef-b8bc-72b37b984ae4";
