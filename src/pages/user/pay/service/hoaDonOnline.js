@@ -27,8 +27,21 @@ const Order = {
              )
             return response.data.data
         }catch (error) {
+            console.error("Error creating order:", error);
             throw error;
         }
     },
+
+    async createPaymentUrl(maHD) {
+        try {
+            const response = await axios.post(`http://localhost:8080/payment/create-payment-url/${maHD}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating payment URL:", error);
+            throw error;
+        }
+    },
+
+
 }
 export default Order;

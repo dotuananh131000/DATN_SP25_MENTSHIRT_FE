@@ -6,6 +6,7 @@ import Voucher from "./service/Voucher";
 import api_giaoHangNhanh from "../../counterSales/services/GiaoHangNhanhService";
 import Order from "./service/hoaDonOnline";
 import { useSelector } from "react-redux";
+import HoaDonOnline from "../order/services/HoaDonService";
 
 function Payment() {
   const location = useLocation();
@@ -222,7 +223,8 @@ function Payment() {
       [name]: value
     });
   };
-  console.log(items)
+  // console.log(items)
+
   // Xử lý submit form
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -235,7 +237,7 @@ function Payment() {
       soDienThoai: formData.phone || "",
       email: formData.email || "",
       diaChiNhanHang: formData.diaChi || "",
-      phuongThucThanhToan: paymentMethod === "cod" ? 3 :4,
+      phuongThucThanhToan: paymentMethod === "cod" ? 3 : 4,
       phiShip: shippingFee || "",
       danhSachChiTiet: items.map((item) => ({
         sanPhamChiTietId: item.detailId,
@@ -245,12 +247,28 @@ function Payment() {
 
     try{
       const response = await Order.createOrder(orderData);
-      // const orderResponse = response?.data;
-      if(response){
+      const orderResponse = response;
+
+      console.log(orderResponse)
+
+      if(orderResponse?.id){
         toast.success("Đặt hàng thành công!");
+
+        //Diều hướng nếu chọn thanh toán VNPay
+        if(orderData.phuongThucThanhToan === 4){
+
+          console.log("Đang xử lý VNPay");
+
+          const paymentUrl = await Order.createPaymentUrl(orderResponse.maHoaDon);
+          window.location.href = paymentUrl;
+
+        }else{
+          setTimeout(() => navigate("/"), 1500);
+        }
       }else{
         toast.error("Đặt hàng thất bại, vui lòng thử lại.");
       }
+
     }catch (error){
       console.log("Có lỗi khi đặt hàng", error);
     }
