@@ -168,6 +168,7 @@ function Order() {
     return <OrderDetail hoaDon={hoaDon}
     setIsOrderDetail={setIsOrderDetail}
     fetchHoaDonById={fetchHoaDonById}
+    fetchHoaDons={fetchHoaDons}
     />
   } else {
     return (
