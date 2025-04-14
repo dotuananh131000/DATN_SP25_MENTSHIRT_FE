@@ -18,6 +18,12 @@ const API_ENDPOINTS = {
   ORDERHISTORIES: {
     CREATE: `${API_BASE_URL}/lich-su-hoa-don`,
     GETALL:(id) => `${API_BASE_URL}/lich-su-hoa-don/${id}`
+  },
+  ADDRESS: {
+    DEFAULTADDRESS: (idKH) => `${API_BASE_URL}/dia-chi/dia-chi-mac-dinh/${idKH}`,
+  },
+  CUSTOMER: {
+    CHANGEPASSWORD: (id) => `${API_BASE_URL}/khach-hang/changePassword/${id}`,
   }
 };
 export default API_ENDPOINTS;

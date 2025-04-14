@@ -1,4 +1,5 @@
 import api_giaoHangNhanh from "@/pages/counterSales/services/GiaoHangNhanhService";
+import Address from "@/services/AdressSerrvice";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -72,6 +73,24 @@ function InfoClient(){
             setWardID("")
             setWardName("")
           },[districts,districtID])
+
+    // Gọi API lấy địa chỉ mặc định của khách hàng
+    const [address, setAddress] = useState({});
+    const fetchAddress = async () => {
+      try{
+        const response = await Address.DefaultAdress(client.id);
+        setAddress(response.data);
+      }catch (error){
+        console.log("Không thể lấy địa chỉ mặc đinh của khách", error);
+      }
+    }
+
+    useEffect(()=>{
+      fetchAddress();
+    },[])
+
+    const diaChi = `${address.diaChiChiTiet}, ${address.phuongXa}, ${address.quanHuyen}, ${address.tinhThanh}`;
+    
     return <>
         <div className="w-full bg-white p-4 rounded-lg">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Tài khoản</h1>
@@ -82,7 +101,7 @@ function InfoClient(){
                     <div className="flex flex-col mb-4">
                     <label className="text-gray-600 font-medium">Tên khách hàng</label>
                     <input type="text" value={client.tenKhachHang}  disabled
-                    className="input-field w-56 p-2 border border-gray-400 rounded-lg none" placeholder="Nhập tên khách hàng" />
+                    className="input-field w-56 p-2 border border-gray-400 rounded-lg" placeholder="Nhập tên khách hàng" />
                     </div>
 
                     {/* Email */}
@@ -104,81 +123,8 @@ function InfoClient(){
                 <h2 className="text-gray-600 font-medium">
                     địa chỉ nhận hàng
                 </h2>
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                    <div className="">
-                        <label htmlFor="tinh" className="flex">
-                        <p className="text-red-500 text-lg">*</p>
-                        <h1 className="block text-sm font-medium text-gray-700 mb-1">Tỉnh / Thành phố</h1>
-                        </label>
-                        <select
-                        id="tinh"
-                        className="select select-bordered w-full max-w-xs"
-                        onChange={(e) => setProvinceID(e.target.value)}
-                        value={provinceID}
-                        >
-                        <option defaultChecked>Tỉnh / Thành phố</option>
-                        {provinces.map((pro) => (
-                            <option key={pro.ProvinceID} value={pro.ProvinceID}>
-                            {pro.ProvinceName}
-                        </option>
-                        ))}
-                        </select>
-                    </div>
-
-                    <div className="">
-                        <label htmlFor="huyen" className="flex">
-                        <p className="text-red-500 text-lg">*</p>
-                        <h1 className="block text-sm font-medium text-gray-700 mb-1">Huyện / Quận</h1>
-                        </label>
-                        <select
-                        id="huyen"
-                        className="select select-bordered w-full max-w-xs"
-                        onChange={(e) => setDistrictID(e.target.value)}
-                        value={districtID}
-                        >
-                        <option defaultChecked>Huyện / Quận</option>
-                        {districts.map((dis) => (
-                            <option key={dis.DistrictID} value={dis.DistrictID}>
-                            {dis.DistrictName}
-                        </option>
-                        ))}
-                        </select>
-                    </div>
-
-                    <div className="">
-                        <label htmlFor="xa" className="flex">
-                        <p className="text-red-500 text-lg">*</p>
-                        <h1 className="block text-sm font-medium text-gray-700 mb-1">Xã / Phường</h1>
-                        </label>
-                        <select
-                        id="xa"
-                        className="select select-bordered w-full max-w-xs"
-                        onChange={(e) => setWardID(e.target.value)}
-                        value={wardID}
-                        >
-                        <option defaultChecked>Xã / Phường</option>
-                        {ward.map((w) => (
-                            <option key={w.WardCode} value={w.WardCode}>
-                            {w.WardName}
-                        </option>
-                        ))}
-                        </select>
-                    </div>
-                    <div>
-                    <label htmlFor="place" className="flex">
-                        <p className="text-red-500 text-lg">*</p>
-                        <h1 className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ cụ thể</h1>
-                        </label>
-                        <input
-                        id="place"
-                        value={specific}
-                        onChange={(e) => setSpecific(e.target.value)}
-                        type="text"
-                        placeholder="Địa chỉ cụ thể"
-                        className="input input-bordered w-[400px]"
-                        />
-                    </div>
-                </div>    
+                <input type="text" value={diaChi}  disabled
+                className="input-field w-1/2 p-2 border border-gray-400 rounded-lg" />
             </div>
         </div>
     </>

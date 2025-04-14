@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { logOutClientSuccess } from "@/features/ClientAuthSlice";
+import DoiMaTKhau from "./component/DoiMatKhau";
 
 function AccountInfo(){
     const dispatch = useDispatch();
@@ -43,7 +44,7 @@ function AccountInfo(){
                 className="flex flex-col w-1/4 h-full p-4 justify-start gap-y-2 
                 bg-gradient-to-b from-orange-50 to-white border-r">
                     <h1 className="text-lg font-semibold mb-8">Quản lý tài khoản</h1>
-                    <TabsTrigger def value="info" className="w-full mb-4">Thông tin cá nhân</TabsTrigger>
+                    <TabsTrigger value="info" className="w-full mb-4">Thông tin cá nhân</TabsTrigger>
                     <TabsTrigger value="diaChi" className="w-full mb-4">Quản lý địa chỉ</TabsTrigger>
                     <TabsTrigger value="changePassword" className="w-full mb-8">Thay đổi mật khẩu</TabsTrigger>
                     <button
@@ -56,6 +57,7 @@ function AccountInfo(){
                 <div className="w-3/4 p-4">
                     <TabsContent value="info"><InfoClient /></TabsContent>
                     <TabsContent value="diaChi"><DiaChi /></TabsContent>
+                    <TabsContent value="changePassword"><DoiMaTKhau /></TabsContent>
                 </div>
             </Tabs>
         </div>
