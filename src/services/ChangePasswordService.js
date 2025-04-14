@@ -15,6 +15,19 @@ const ChangePasswordService = {
             console.log("Lỗi khi gọi API đổi mật khẩu");
             throw error;
         }
+    },
+    async ChangPasswordCustomer(id, formChange){
+        const form = {
+            oldPassword: formChange.oldPassword ?? "",
+            newPassword: formChange.newPassword ?? "",
+        }
+        try {
+            const response = await apiClient.put(API_ENDPOINTS.CUSTOMER.CHANGEPASSWORD(id),form);
+            return response.data.data;
+        }catch (error) {
+            console.log("Lỗi khi gọi API đổi mật khẩu");
+            throw error;
+        }
     }
 }
 export default ChangePasswordService;
