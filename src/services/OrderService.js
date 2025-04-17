@@ -49,6 +49,17 @@ const OrderService = {
     );
     return response.data;
   },
+
+  async tiepNhanHoaDon(idHD, idNV) {
+    try{
+      const idNhanVien = idNV ? idNV : null
+      
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.TIEPNHAN(idHD)}?idNhanVien=${idNhanVien}`);
+      return response.data.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API tiếp nhận nhân viên", err);
+    }
+  },
 };
 
 export default OrderService;

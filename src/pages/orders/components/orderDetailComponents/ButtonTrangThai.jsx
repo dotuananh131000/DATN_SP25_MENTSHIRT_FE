@@ -1,9 +1,8 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { motion } from "framer-motion";
-function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, listHistoryHD, setListHistoryHD}){
+function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, listHistoryHD, setListHistoryHD, handleTiepNhan}){
 
-    console.log(listHistoryHD);
     return <>
      <motion.div className="flex relative space-x-4 w-full bg-white rounded-lg shadow p-4 mb-4"
         initial={{ opacity: 0, y: 10 }}
@@ -19,30 +18,55 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
                                 Chuyển trạng thái
                             </button>
                         </DialogTrigger>
-                        <DialogContent className="top-10 max-w-md translate-y-0">
-                            <DialogHeader className="text-lg">
-                                Xác nhận chuyển trạng thái
-                            </DialogHeader>
-                            {
-                                 hoaDon.trangThaiGiaoHang === 1
-                                 ? "Chuyển trạng thái thành: Đã xác nhân"
-                                 : hoaDon.trangThaiGiaoHang === 2
-                                   ? "Chuyển trạng thái thành: Chờ vận chuyển"
-                                   : hoaDon.trangThaiGiaoHang === 3
-                                     ? "Chuyển trạng thái đơn hàng thành: Đang vận chuyển"
-                                     : hoaDon.trangThaiGiaoHang === 4
-                                       ? "Chuyển trạng thái thành: Đã hoàn thành"
-                                         : ""
-                            }
+                        {!hoaDon.idNhanVien && (
+                            <DialogContent className="top-10 max-w-md translate-y-0">
+                                <DialogHeader>
+                                    <DialogTitle className="text-lg">
+                                        Tiếp nhận đơn hàng
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div>
+                                    Nhân viên vui lòng tiếp nhận đơn hàng trước khi thực hiện các thao tác!
+                                </div>
+                                <div className="w-full flex justify-center">
+                                    <DialogClose 
+                                    className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3"
+                                    onClick={handleTiepNhan}
+                                    >
+                                        Xác nhận
+                                    </DialogClose>
+                                </div>
+                            </DialogContent>
+                        )}
+                        {hoaDon.idNhanVien && (
+                            <DialogContent className="top-10 max-w-md translate-y-0">
+                                <DialogHeader className="text-lg">
+                                    <DialogTitle>
+                                        Xác nhận chuyển trạng thái
+                                    </DialogTitle>
+                                </DialogHeader>
+                                {
+                                    hoaDon.trangThaiGiaoHang === 1
+                                    ? "Chuyển trạng thái thành: Đã xác nhân"
+                                    : hoaDon.trangThaiGiaoHang === 2
+                                    ? "Chuyển trạng thái thành: Chờ vận chuyển"
+                                    : hoaDon.trangThaiGiaoHang === 3
+                                        ? "Chuyển trạng thái đơn hàng thành: Đang vận chuyển"
+                                        : hoaDon.trangThaiGiaoHang === 4
+                                        ? "Chuyển trạng thái thành: Đã hoàn thành"
+                                            : ""
+                                }
 
-                           <DialogClose>
-                            <button 
-                            className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3"
-                            onClick={handleCapNhatDonHang}>
-                                Xác nhận
-                            </button>
-                            </DialogClose>
-                        </DialogContent>
+                                <div className="w-full flex justify-center">
+                                    <DialogClose
+                                    className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3"
+                                    onClick={handleCapNhatDonHang}
+                                    >
+                                        Xác nhận
+                                    </DialogClose>
+                                </div>
+                            </DialogContent>
+                        )}
                     </Dialog>
                    
                 )}
@@ -72,8 +96,8 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
                         </DialogDescription>
                        
                     </DialogHeader>
-                        <DialogClose>
-                            <button className="bg-orange-600 px-4 py-3 rounded-lg text-white">Xác nhận</button>
+                        <DialogClose className="bg-orange-600 px-4 py-3 rounded-lg text-white">
+                           Xác nhận
                         </DialogClose>
                 </DialogContent>
             </Dialog>
