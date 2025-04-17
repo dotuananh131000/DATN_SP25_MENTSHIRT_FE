@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiLogOut } from "react-icons/fi";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
@@ -9,7 +9,11 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTr
 import { logOutSuccess } from "@/features/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { TbBellRinging2Filled } from "react-icons/tb";
 import ChangePasswordService from "@/services/ChangePasswordService";
+import ThongBaoService from "@/services/ThongBaoService";
+import dayjs from "dayjs";
+import UseNotificationSocket from "@/lib/useNotificationSoket";
 function Header() {
   const user = useSelector((state)=> state.auth.user);
   const dispatch = useDispatch();
@@ -91,9 +95,87 @@ function Header() {
     navigate("/login");
   }
 
+   const formatDate = (dateString) => {
+      return dayjs(dateString).format("HH:mm:ss DD/MM/YYYY");
+    };
+
+  //Lấy thông báo của nhân viên
+  const [thongBao, setThongBao] = useState([]);
+  const fetchThongBao = async () => {
+    try {
+      const response = await ThongBaoService.GetAll(user.id);
+      setThongBao(response);
+    }catch (err){
+      console.log("Không thể lấy danh sách thông báo của nhân viên", err);
+    }
+  }
+  useEffect(() => {
+    fetchThongBao();
+  }, [])
+
+  //Đã đọc
+  const fetchSeen =async (id) => {
+    try {
+      await ThongBaoService.SEEN(id);
+      fetchThongBao();
+    }catch (err) {
+      console.log("Lỗi khi đọc thông báo",err);
+    }
+  } 
+
+  const handleClickDieuHuong = (id) => {
+    fetchSeen(id)
+    navigate("/admin/order")
+  }
+
+  const handleNewThongBao = (newNotification) => {
+    setThongBao((prev) => [newNotification, ...prev]);
+  }
+
+  UseNotificationSocket(handleNewThongBao)
+
+  //Đếm số lượng thong báo chưa đọc
+  const thonngBaoChuaDoc = thongBao.filter(item => !item.daDoc);
+  const soLuongChuaDoc = thonngBaoChuaDoc.length;
+
+
   return (
     <>
     <div className="header w-full h-12 relative ">
+      <Sheet>
+        <SheetTrigger asChild>
+          <div className="absolute right-56 top-3  ">
+            <div className="relative">
+              <button
+              // onClick={handleClickThongBao}
+              className="text-2xl text-orange-500">
+                <TbBellRinging2Filled />
+              </button>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 h-4 flex items-center justify-center">
+                {soLuongChuaDoc}
+              </span>
+            </div>
+          </div>
+        </SheetTrigger>
+        <SheetContent className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>
+              Thông báo
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 ">
+            {thongBao.map((item)=>(
+              <div key={item.id}
+              onClick={() => handleClickDieuHuong(item.id)} 
+              className={`m-2 p-2 rounded-lg ${item.daDoc ?"bg-gray-100" :"bg-gray-300"} cursor-pointer active:scale-95 duration-200`}>
+                <p className="font-">{item.noiDung}</p>
+                <p className="text-orange-500">{formatDate(item.thoiGianTao)}</p>
+              </div>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+     
       <div className="flex justify-center items-center gap-2 absolute right-8">
         <img src={user.avatarUrl} alt="" 
         className="skeleton h-7 w-7 border border-b border-gray-500 " />

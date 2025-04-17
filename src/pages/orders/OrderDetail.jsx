@@ -12,8 +12,9 @@ import ProductDetailService from "../details/services/ProductDetailService";
 import SanPhamChiTietService from "../detailOrder/service/SanPhamChiTietService";
 import LichSuHoaDonService from "@/services/LichSuHoaDonService";
 import { useSelector } from "react-redux";
+import OrderService from "@/services/OrderService";
 
-function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons}){
+function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, fetchOrderCounts}){
 
     const [gioHang, setGioHang] = useState([]);
     const [lichSuThanhToan, setLichSuThanhToan] = useState([]);
@@ -197,6 +198,7 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons}){
                 fetchCreateLichSuHoaDon(formLichSuHoaDon);
                 fetchHoaDonById(hoaDon.id);
                 fetchHoaDons();
+                fetchOrderCounts();
                 toast.success("Trạng thái đã được cập nhật");
             }catch (error) {
                 toast.error("Lỗi khi cập nhật trạng thái, vui lòng thử lại.")
@@ -207,6 +209,26 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons}){
 
         
     },[hoaDon])
+
+    //Hàm tiếp nhận hóa đơn
+    const fetchTiepNhanHoaDon =async () => {
+      try {
+        if(!hoaDon.id || !user.id){
+          toast.error("Lỗi, vui lòng thử lại!")
+          return;
+        }
+       await OrderService.tiepNhanHoaDon(hoaDon.id, user.id);
+       toast.success("Tiếp nhận đơn hàng thành công");
+       fetchHoaDons();
+      }catch (err) {
+        console.log("Không thể tiếp nhân đơn hàng", err);
+        toast.error("Lỗi khi tiếp nhân đơn hàng. Vui long thử lại!")
+      }
+    }
+
+    const handleTiepNhan = () => {
+      fetchTiepNhanHoaDon();
+    }
 
     return <>
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -229,6 +251,7 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons}){
             handleClickHistory={handleClickHistory}
             listHistoryHD={listHistoryHD}
             setListHistoryHD={setListHistoryHD}
+            handleTiepNhan={handleTiepNhan}
             />
             <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} />
             <Cart

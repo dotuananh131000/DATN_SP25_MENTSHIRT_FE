@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
     BASE: `${API_BASE_URL}/hoa-don/hien-thi`,
     SEARCH: `${API_BASE_URL}/hoa-don/search`,
     COUNT: `${API_BASE_URL}/hoa-don/count`,
+    TIEPNHAN: (idHD) => `${API_BASE_URL}/hoa-don/${idHD}`,
   },
   DETAILORDERS: {
     BASE: `${API_BASE_URL}/hdct/hien-thi`,
@@ -24,6 +25,10 @@ const API_ENDPOINTS = {
   },
   CUSTOMER: {
     CHANGEPASSWORD: (id) => `${API_BASE_URL}/khach-hang/changePassword/${id}`,
+  },
+  NOTIFICATION: {
+    GETALL: (id) => `${API_BASE_URL}/thong-bao/${id}`,
+    SEEN : (idTB) => `${API_BASE_URL}/thong-bao/${idTB}`
   }
 };
 export default API_ENDPOINTS;

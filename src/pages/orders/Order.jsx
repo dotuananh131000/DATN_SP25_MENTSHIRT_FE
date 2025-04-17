@@ -12,6 +12,7 @@ import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import OrderDetail from "./OrderDetail";
 import { Link } from "react-router-dom";
+import useSocket from "@/lib/useSocket";
 
 function Order() {
   const [isOrderDetail, setIsOrderDetail] = useState(false);
@@ -52,6 +53,23 @@ function Order() {
     });
     setQrScan(false);
   };
+
+
+  // Xử lý khi có đơn hàng mới
+  const handleNewOrder = () => {
+    // setHoaDons(prev => [...prev, order]);
+    fetchOrderCounts();
+    if(totalPages > 0) {
+      setPage(totalPages - 1);
+    }
+  }
+
+  const handleError = (message) => {
+    setError(message);
+    setTimeout(() => setError('', 5000));
+  }
+
+  useSocket(handleNewOrder, handleError);
  
   const [orderCounts, setOrderCounts] = useState({
     tong: 0,
@@ -102,7 +120,6 @@ function Order() {
     }
     fetchHoaDonById(id);
   }
-  
 
   //Hàm đếm số lượng trạng thái hóa đơn
   const fetchOrderCounts = async () => {
@@ -164,15 +181,17 @@ function Order() {
     fetchOrderCounts();
   }, [filters]);
 
+
   if(isOrderDetail) {
     return <OrderDetail hoaDon={hoaDon}
     setIsOrderDetail={setIsOrderDetail}
     fetchHoaDonById={fetchHoaDonById}
     fetchHoaDons={fetchHoaDons}
+    fetchOrderCounts ={fetchOrderCounts}
     />
   } else {
     return (
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="p-6 bg-gray-50 min-h-screen relative">
          <Breadcrumb className="mb-4">
             <BreadcrumbList>
               <BreadcrumbItem>
