@@ -58,8 +58,19 @@ const OrderService = {
       return response.data.data;
     }catch (err){
       console.log("Lỗi khi gọi API tiếp nhận nhân viên", err);
+      throw err;
     }
   },
+
+  async getByMa(maHoaDon) {
+    try {
+      const response = await apiClient.get(`${API_ENDPOINTS.ORDERS.GETBYMA(maHoaDon)}`);
+      return response.data.data;
+    }catch (err) {
+      console.log("Lỗi khi gọi API lấy hóa đơn theo mã", err);
+      throw err;
+    }
+  }
 };
 
 export default OrderService;

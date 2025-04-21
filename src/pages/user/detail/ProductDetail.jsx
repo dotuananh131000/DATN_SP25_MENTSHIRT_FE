@@ -172,6 +172,8 @@ function ProductDetail() {
     checkEmptyProdct();
   }, [attributes, productDetail]);
 
+  
+
   return (
     <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
         initial={{ opacity: 0, y: 20 }}
@@ -403,7 +405,8 @@ function ProductDetail() {
                     >
                       Thêm vào giỏ hàng
                     </button>
-                    <button className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-medium py-3 px-6 rounded-lg transition-colors">
+                    <button 
+                    className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-medium py-3 px-6 rounded-lg transition-colors">
                       Mua ngay
                     </button>
                   </div>

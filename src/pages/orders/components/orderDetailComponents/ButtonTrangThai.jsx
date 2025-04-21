@@ -96,9 +96,11 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
                         </DialogDescription>
                        
                     </DialogHeader>
-                        <DialogClose className="bg-orange-600 px-4 py-3 rounded-lg text-white">
-                           Xác nhận
+                    <div className="w-full flex justify-center">
+                        <DialogClose className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3">
+                            Xác nhận
                         </DialogClose>
+                    </div>   
                 </DialogContent>
             </Dialog>
            
@@ -123,14 +125,14 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
                             <DrawerTitle className="text-center text-lg">Lịch sử hóa đơn</DrawerTitle>
                         </DrawerHeader>
                         {listHistoryHD.map((item, i) => (
-                            <>
+                            <div key={item.id}>
                                 <hr className="border border-1 bor m-2" />
                                 <div className="pl-2">
                                     <h1 className="font-bold text-lg text-gray-500">{item.nguoiThayDoi}</h1>
                                     <p><span className="font-bold text-lg text-gray-500">Thời gian:</span> {item.thoiGianThayDoi}</p>  
                                     <p><span className="font-bold text-lg text-gray-500" >Hành động:</span> {item.hanhDong}</p>
                                 </div>
-                            </>
+                            </div>
                         ))}
                     </div>
                 </DrawerContent>

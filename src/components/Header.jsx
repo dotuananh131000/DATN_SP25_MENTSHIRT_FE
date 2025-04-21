@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiLogOut } from "react-icons/fi";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import {motion} from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -14,6 +14,7 @@ import ChangePasswordService from "@/services/ChangePasswordService";
 import ThongBaoService from "@/services/ThongBaoService";
 import dayjs from "dayjs";
 import UseNotificationSocket from "@/lib/useNotificationSoket";
+import OrderService from "@/services/OrderService";
 function Header() {
   const user = useSelector((state)=> state.auth.user);
   const dispatch = useDispatch();
@@ -123,10 +124,24 @@ function Header() {
     }
   } 
 
-  const handleClickDieuHuong = (id) => {
-    fetchSeen(id)
-    navigate("/admin/order")
+  // Lấy hóa đơn theo mã
+  const handleClickDieuHuong = async (item) => {
+    const ThongBaoStr = item.noiDung;
+    const match = ThongBaoStr.match(/HD\w+/);
+    if(!match) return;
+      try {
+        const response = await OrderService.getByMa(match[0]);
+        fetchSeen(item.id)
+        navigate("/admin/order", {
+          state: {
+            order: response
+          }
+        });
+      }catch (err){
+        console.log("Lỗi khi lấy hóa đơn theo mã", err);
+      }
   }
+
 
   const handleNewThongBao = (newNotification) => {
     setThongBao((prev) => [newNotification, ...prev]);
@@ -165,12 +180,15 @@ function Header() {
           </SheetHeader>
           <div className="mt-4 ">
             {thongBao.map((item)=>(
-              <div key={item.id}
-              onClick={() => handleClickDieuHuong(item.id)} 
-              className={`m-2 p-2 rounded-lg ${item.daDoc ?"bg-gray-100" :"bg-gray-300"} cursor-pointer active:scale-95 duration-200`}>
-                <p className="font-">{item.noiDung}</p>
-                <p className="text-orange-500">{formatDate(item.thoiGianTao)}</p>
+              <SheetClose key={item.id}>
+                <div
+                  onClick={() => handleClickDieuHuong(item)} 
+                  className={`m-2 p-2 rounded-lg ${item.daDoc ?"bg-gray-100" :"bg-gray-300"} cursor-pointer active:scale-95 duration-200`}>
+                  <p className="font-">{item.noiDung}</p>
+                  <p className="text-orange-500">{formatDate(item.thoiGianTao)}</p>
               </div>
+              </SheetClose>
+              
             ))}
           </div>
         </SheetContent>
