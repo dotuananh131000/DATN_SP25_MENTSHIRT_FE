@@ -23,7 +23,7 @@ function Cart() {
   useEffect(()=>{
     //Cập nhật trạng thái checkbox nếu giỏ hàng trống
     if(cartItems.length === 0){
-      setSelectedItems({});
+      setSelectedItems([]);
     }
   }, [cartItems])
 
@@ -54,14 +54,12 @@ function Cart() {
         newSelected[item.detailId] = true;
       });
       setSelectedItems(newSelected);
-      setSelectCartItems(...cartItems);
+      setSelectCartItems(cartItems);
     }else {
       setSelectedItems({});
       setSelectCartItems([]);
     }
   };
-
-  console.log(selectCartItems)
 
   const handleRemoveItem = (sanPhamId, cartAttributes) => {
     // Remove item from cart

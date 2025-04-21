@@ -11,7 +11,7 @@ import QRCodeScanner from "../../containers/QRCodeScanner";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import OrderDetail from "./OrderDetail";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useSocket from "@/lib/useSocket";
 
 function Order() {
@@ -22,7 +22,7 @@ function Order() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPageSP] = useState(0);
   const [hoaDons, setHoaDons] = useState([]);
-  const [hoaDon, setHoaDon] = useState({});
+  
   const [isQRScan, setQrScan] = useState(false);
   const [filters, setFilters] = useState({
     ngayBatDau: null,
@@ -31,6 +31,14 @@ function Order() {
     loaiDon: null,
     trangThaiGiaoHang: null
   });
+
+  const location = useLocation();
+  const {order} = location.state || {};
+
+  const [hoaDon, setHoaDon] = useState(order || {});
+
+  // console.log(order);
+
 
   // Hàm cập nhật ngày mặc định
   useEffect(() => {
@@ -181,13 +189,15 @@ function Order() {
     fetchOrderCounts();
   }, [filters]);
 
+  console.log(hoaDon)
 
-  if(isOrderDetail) {
-    return <OrderDetail hoaDon={hoaDon}
+  if(order || isOrderDetail) {
+    return <OrderDetail hoaDon={Object.keys(hoaDon).length > 0 ? hoaDon : !order ? hoaDon: order} 
     setIsOrderDetail={setIsOrderDetail}
     fetchHoaDonById={fetchHoaDonById}
     fetchHoaDons={fetchHoaDons}
     fetchOrderCounts ={fetchOrderCounts}
+    setHoaDon= {setHoaDon}
     />
   } else {
     return (

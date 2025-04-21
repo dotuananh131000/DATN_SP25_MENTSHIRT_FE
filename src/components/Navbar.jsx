@@ -15,7 +15,7 @@ function Navbar() {
   const [isSticky, setIsSticky] = useState(false);
   const client = useSelector((state) => state.authClient?.client);
 
-  console.log("Đây là tài khoản của khách hàng:", client);
+  // console.log("Đây là tài khoản của khách hàng:", client);
 
   useEffect(() => {
     const handleScroll = () => {

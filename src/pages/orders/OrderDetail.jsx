@@ -13,12 +13,14 @@ import SanPhamChiTietService from "../detailOrder/service/SanPhamChiTietService"
 import LichSuHoaDonService from "@/services/LichSuHoaDonService";
 import { useSelector } from "react-redux";
 import OrderService from "@/services/OrderService";
+import { useNavigate } from "react-router-dom";
 
-function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, fetchOrderCounts}){
+function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, fetchOrderCounts, setHoaDon}){
 
     const [gioHang, setGioHang] = useState([]);
     const [lichSuThanhToan, setLichSuThanhToan] = useState([]);
     const user = useSelector((state)=> state.auth.user);
+    const navigate = useNavigate();
     //Thuộc tính của sản phẩm
     const [spcts, setSpct] = useState([]);
     const [totalPageSP, setTotalPageSP] = useState(0);
@@ -220,6 +222,7 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
        await OrderService.tiepNhanHoaDon(hoaDon.id, user.id);
        toast.success("Tiếp nhận đơn hàng thành công");
        fetchHoaDons();
+       fetchHoaDonById(hoaDon.id);
       }catch (err) {
         console.log("Không thể tiếp nhân đơn hàng", err);
         toast.error("Lỗi khi tiếp nhân đơn hàng. Vui long thử lại!")
@@ -230,12 +233,18 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
       fetchTiepNhanHoaDon();
     }
 
+    const handleNavigate = () => {
+      setIsOrderDetail(false);
+      setHoaDon({})
+      navigate("/admin/order")
+    }
+
     return <>
         <div className="p-6 bg-gray-50 min-h-screen">
             <Breadcrumb className="mb-4">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                       <BreadcrumbLink onClick={() => setIsOrderDetail(false)} className="cursor-pointer text-lg">
+                       <BreadcrumbLink onClick={handleNavigate} className="cursor-pointer text-lg">
                             Danh sách hóa đơn
                        </BreadcrumbLink>
                     </BreadcrumbItem>

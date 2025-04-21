@@ -6,6 +6,7 @@ const API_ENDPOINTS = {
     SEARCH: `${API_BASE_URL}/hoa-don/search`,
     COUNT: `${API_BASE_URL}/hoa-don/count`,
     TIEPNHAN: (idHD) => `${API_BASE_URL}/hoa-don/${idHD}`,
+    GETBYMA: (maHoaDon) => `${API_BASE_URL}/hoa-don/getByMa/${maHoaDon}`,
   },
   DETAILORDERS: {
     BASE: `${API_BASE_URL}/hdct/hien-thi`,
@@ -22,6 +23,7 @@ const API_ENDPOINTS = {
   },
   ADDRESS: {
     DEFAULTADDRESS: (idKH) => `${API_BASE_URL}/dia-chi/dia-chi-mac-dinh/${idKH}`,
+    ADDRESSLIST: (idKH) => `${API_BASE_URL}/dia-chi/khach-hang/${idKH}`
   },
   CUSTOMER: {
     CHANGEPASSWORD: (id) => `${API_BASE_URL}/khach-hang/changePassword/${id}`,
