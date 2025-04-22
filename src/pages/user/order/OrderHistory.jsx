@@ -33,8 +33,11 @@ function OrderHistory() {
 
     //Hàm xử lý khi nhấn vào hàng
     const handleClick = (item) => {
-        console.log("Đây là hóa đơn của có id là", item);
-        navigate(`/order-detail/${item}`);
+        navigate(`/order-detail/${item.id}`,{
+            state: {
+                order: item,
+            }
+        });
     }
 
     return <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
@@ -65,7 +68,7 @@ function OrderHistory() {
                 <tbody>
                     {order.map((item) => (
                         <motion.tr 
-                        onClick={() => handleClick(item.id)}
+                        onClick={() => handleClick(item)}
                         key={item.id}
                         className="hover:bg-gray-100 text-center cursor-pointer"
                         initial={{ opacity: 0, y: 10 }}

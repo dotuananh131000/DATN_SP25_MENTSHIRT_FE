@@ -70,6 +70,16 @@ const OrderService = {
       console.log("Lỗi khi gọi API lấy hóa đơn theo mã", err);
       throw err;
     }
+  },
+
+  async paidInvoice (idHD) {
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.PAIDINVOICE(idHD)}`);
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi đổi trạng thái hóa đơn", err);
+      throw err;
+    }
   }
 };
 
