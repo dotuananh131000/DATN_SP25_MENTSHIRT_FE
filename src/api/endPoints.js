@@ -7,6 +7,7 @@ const API_ENDPOINTS = {
     COUNT: `${API_BASE_URL}/hoa-don/count`,
     TIEPNHAN: (idHD) => `${API_BASE_URL}/hoa-don/${idHD}`,
     GETBYMA: (maHoaDon) => `${API_BASE_URL}/hoa-don/getByMa/${maHoaDon}`,
+    PAIDINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/paid/${idHD}`,
   },
   DETAILORDERS: {
     BASE: `${API_BASE_URL}/hdct/hien-thi`,
@@ -31,6 +32,10 @@ const API_ENDPOINTS = {
   NOTIFICATION: {
     GETALL: (id) => `${API_BASE_URL}/thong-bao/${id}`,
     SEEN : (idTB) => `${API_BASE_URL}/thong-bao/${idTB}`
+  },
+  HDPTTTT : {
+    ADD :`${API_BASE_URL}/hdpttt/add`,
+    GETALLBYIDHD: (idHD) => `${API_BASE_URL}/hdpttt/${idHD}` 
   }
 };
 export default API_ENDPOINTS;

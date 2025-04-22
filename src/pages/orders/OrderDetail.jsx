@@ -14,6 +14,8 @@ import LichSuHoaDonService from "@/services/LichSuHoaDonService";
 import { useSelector } from "react-redux";
 import OrderService from "@/services/OrderService";
 import { useNavigate } from "react-router-dom";
+import { Dialog } from "@/components/ui/dialog";
+import HDPTTTService from "@/services/HDPTTTService";
 
 function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, fetchOrderCounts, setHoaDon}){
 
@@ -239,6 +241,64 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
       navigate("/admin/order")
     }
 
+    //Tính tổng tiền khách thanh toán
+    const soTienGiam = Math.min(
+        hoaDon.hinhThucGiamGia === 0 
+            ? (hoaDon.tongTien * hoaDon.giaTriGiam) / 100 // Giảm theo %
+            : hoaDon.giaTriGiam, // Giảm số tiền cố định
+        hoaDon.soTienGiamToiDa, // Giới hạn không vượt quá số tiền giảm tối đa
+        hoaDon.tongTien // Không thể giảm quá tổng tiền
+    );
+
+    const phuPhi = hoaDon.phuPhi ? hoaDon.phuPhi : 0;
+    const soTienCanThanhToan = hoaDon.tongTien - soTienGiam + hoaDon.phiShip + phuPhi;
+
+    //Chuyển trạng thái thàng đã thanh toán
+    const fetchPaid = async () => {
+      try {
+        const response = await OrderService.paidInvoice(hoaDon.id);
+        setHoaDon(response.data); 
+      }catch (err){
+        console.log("Lỗi khi thay đổi trạng thái", err);
+      }
+    }
+
+    //Xác nhận thanh toán hóa đơn
+    const [dataTotal, setDataTotal] = useState({
+      hoaDonId: "",
+      phuongThucThanhToanId: 3,
+      soTienThanhToan: 0,
+      nguoiXacNhan: user.tenNhanVien || "",
+    });
+    useEffect(() => {
+      setDataTotal(prev => ({ ...prev, hoaDonId: hoaDon.id, 
+        soTienThanhToan: soTienCanThanhToan,
+        nguoiXacNhan: user.tenNhanVien,
+      }));
+    }, [hoaDon, user]);
+
+    const handleOnchange = (e) => {
+      const newMoney = e.target.value.replace(/\D/g, "");
+      setDataTotal((prev) => ({...prev, soTienThanhToan:newMoney ? parseFloat(newMoney) : 0}));
+    }
+    const confirmTotal = async () => {
+      try {
+        const form = {
+          hoaDonId: dataTotal.hoaDonId ? dataTotal.hoaDonId : null,
+          phuongThucThanhToanId: dataTotal.phuongThucThanhToanId ? dataTotal.phuongThucThanhToanId : null,
+          soTienThanhToan: dataTotal.soTienThanhToan ? dataTotal.soTienThanhToan : null,
+          nguoiXacNhan: dataTotal.nguoiXacNhan ? dataTotal.nguoiXacNhan : null,
+        }
+        const response = await HDPTTTService.Add(form);
+        fetchPaid();
+        toast.success(response);
+      }catch (err){
+        console.log("Không thể xác nhận thanh toán hóa đơn,Vui lòng thuwr lại", err);
+      }
+    }
+
+    console.log(dataTotal);
+
     return <>
         <div className="p-6 bg-gray-50 min-h-screen">
             <Breadcrumb className="mb-4">
@@ -262,6 +322,32 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
             setListHistoryHD={setListHistoryHD}
             handleTiepNhan={handleTiepNhan}
             />
+            {(hoaDon.trangThaiGiaoHang === 5 && hoaDon.trangThai === 0) && (
+              <div className="fixed top-0 left-0 w-full h-full flex items-start justify-center bg-black bg-opacity-50 z-50">
+                <div className="modal-box mt-10 bg-white p-4 rounded-lg shadow">
+                  <h1 className="text-lg">
+                    Đơn hàng đã hoàn thành. Nhân viên xác nhận số tiền khách đã thanh toán:</h1>
+                  <div className="relative border-2 border-gray-400 p-2 w-full rounded-lg mt-6 ">
+                    <div className="flex absolute -top-3 left-20 transform -translate-x-1/2 bg-white px-2 text-sm font-bold">
+                      <h1 className="text-sm">Số tiền khách thanh toán</h1>
+                    </div>
+                    <div className="flex justify-between">
+                      <input type="text"
+                      readOnly
+                       value={new Intl.NumberFormat("vi-VN").format(dataTotal.soTienThanhToan || 0)}
+                      onChange={(e) => handleOnchange(e)} 
+                      className="w-1/2 m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300" />
+                      <button 
+                      onClick={confirmTotal}
+                      className="bg-orange-500 m-1 px-3 py-2 rounded-lg text-white active:scale-95 duration-200">
+                        Xác nhận
+                        </button>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            )}
             <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} />
             <Cart
                 hoaDon={hoaDon}

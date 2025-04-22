@@ -1,7 +1,33 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {motion} from "framer-motion";
+import { useEffect, useState } from "react";
+import apiClients from "@/api/ApiClient";
+import OrderService from "@/services/OrderService";
+import StepsTrangThaiHoaDon from "@/pages/orders/components/orderDetailComponents/StepsTrangThaiHoaDon";
+import ButtonDetail from "./components/ButtonDetail";
+import OrderInfo from "./components/OrderInfo";
+import ProductModal from "./components/ProductModal";
 function OrderDetail(){
+    const { id } = useParams(); 
+    const location = useLocation();
+    const [order, setOrder] = useState(location.state?.order || null);
+
+    const fetchOrder = async () => {
+        try {
+            const response = await OrderService.getOrderById(id);
+            setOrder(response)
+        }catch (err){
+            console.log("Không thể lấy được hóa đơn", err);
+        }
+    }
+    useEffect(() => {
+        if(!order){
+            fetchOrder(); 
+        }
+    },[id, order]);
+
+    console.log(order);
     return <>
         <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
         initial={{ opacity: 0, y: 20 }}
@@ -19,10 +45,14 @@ function OrderDetail(){
                     </BreadcrumbItem>
                     <BreadcrumbSeparator/>
                     <BreadcrumbItem>
-                       Hóa đơn: mã hóa đơn
+                       Hóa đơn: {order.maHoaDon}
                     </BreadcrumbItem>
                 </BreadcrumbList>
                 </Breadcrumb>
+                <StepsTrangThaiHoaDon hoaDon={order}/>
+                <ButtonDetail order={order}  />
+                <OrderInfo order={order} />
+                <ProductModal />
             </div>
     </motion.div>;
     </>
