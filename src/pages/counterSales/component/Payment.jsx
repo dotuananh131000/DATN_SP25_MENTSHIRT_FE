@@ -308,7 +308,6 @@ export default function Payment({
     try {
       const response = await DiaChiKhacHangService.diaChi(id);
       const diaChi = response.data;
-      console.log("Dữ liệu địa chỉ khách hàng:", diaChi);  // Kiểm tra dữ liệu
       if (diaChi && diaChi.length > 0) {
         setDiaChiKH(diaChi[0]);
   
@@ -615,7 +614,6 @@ export default function Payment({
     setIsTotal(true);
   };
 
-  // console.log(hdHienTai?.id);
   const xacNhanHoaDon= ()=>{
     if(!wardName || !diaChiCuThe){
       toast.warn("Vui long nhập thông tin đầy đủ.")
@@ -659,7 +657,6 @@ export default function Payment({
     isOpenConfirm(true);
   }
 
-  // console.log(soTienConLai);
   //Check sản phẩm khi thanh toán
   const btnAccetpHD = () => {
     if (isChecked) {
