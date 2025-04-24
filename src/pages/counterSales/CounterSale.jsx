@@ -72,7 +72,6 @@ export default function CounterSale() {
     phiShip: 0,
   });
 
-  console.log(hdHienTai);
    const [filters, setFilters] = useState({
       thuongHieuIds: [],
       xuatXuIds: [],
@@ -490,7 +489,6 @@ export default function CounterSale() {
 
   useEffect(() => {
     fetchBillToday();
-    console.log("Đã gọi fecthToday");
   }, [selectedTab]);
 
   useEffect(() => {

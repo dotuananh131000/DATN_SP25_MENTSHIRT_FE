@@ -1,6 +1,7 @@
 import { AiOutlineCheck } from "react-icons/ai";
 import HoaDonService from "../services/HoaDonService";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 export default function ListPhieuGiamGia({
   pggPublic,
   pggkh,
@@ -11,14 +12,14 @@ export default function ListPhieuGiamGia({
   choosePGG,
 }) {
 
-  const hanhdlePGG = (idHD, pgg) => {
-    if(!idHD || !pgg){
+  const hanhdlePGG = (idHD, pgg, id) => {
+    if(!idHD || !id){
       toast.error("Lỗi khi thay đổi phiếu giảm giá");
       return;
     }
     const fetchAPIChoosePGG = async() =>{
       try{
-        const response = await HoaDonService.choosePGG(idHD, pgg.id);
+        const response = await HoaDonService.choosePGG(idHD, id);
         console.log("Đã thay đổi phiểu giảm giá");
       }catch(error){
         console.log("Có lỗi khi thay đổi phiều giảm giá", error);
@@ -28,12 +29,12 @@ export default function ListPhieuGiamGia({
     setChoosePGG(pgg);
   }
 
-  console.log(choosePGG);
+
   const btnChoose = (pgg) => {
     if (billToday[selectedTab]?.tongTien >= pgg.soTienToiThieuHd) {
       return (
         <td className="text-center ">
-          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg)} 
+          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg, pgg.id)} 
           className="btn text-orange-500 bg-white shadow-none border-none ">
             <AiOutlineCheck />
           </button>
@@ -48,7 +49,7 @@ export default function ListPhieuGiamGia({
     if (billToday[selectedTab]?.tongTien >= pgg.soTienToiThieu) {
       return (
         <td className="text-center ">
-          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg)} 
+          <button onClick={() => hanhdlePGG(billToday[selectedTab].id, pgg, pgg.idPGG)} 
           className="btn text-orange-500 bg-white shadow-none border-none ">
             <AiOutlineCheck />
           </button>
@@ -92,7 +93,7 @@ export default function ListPhieuGiamGia({
             <tbody>
               {pggkh.map((pgg) => (
                 <tr key={pgg.id}>
-                  <td>{pgg.maPGG}</td>
+                  <td>{pgg.maPhieuGiamGia}</td>
                   <td>
                     <h1 className="font-sans text-orange-500">
                       Phiếu giảm giá: {pgg.tenPhieuGiamGia}
@@ -118,7 +119,7 @@ export default function ListPhieuGiamGia({
                       {new Intl.NumberFormat("vi-VN", {
                         style: "currency",
                         currency: "VND",
-                      }).format(pgg.soTienToiDa)}
+                      }).format(pgg.soTienGiamToiDa)}
                     </p>
                     <p className="font-sans">
                       Ngày kết thúc:

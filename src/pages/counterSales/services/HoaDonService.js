@@ -130,8 +130,8 @@ const HoaDonService = {
         `/ban-hang/auto-pggtn/${id}`
       );
       if (response.status == 200) {
-        // console.log(response.data);
         return response.data;
+        
       } else {
         console.log("Cập nhật trạng thái thất bại");
         return null;
