@@ -9,9 +9,13 @@ const API_ENDPOINTS = {
     GETBYMA: (maHoaDon) => `${API_BASE_URL}/hoa-don/getByMa/${maHoaDon}`,
     PAIDINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/paid/${idHD}`,
   },
+
   DETAILORDERS: {
     BASE: `${API_BASE_URL}/hdct/hien-thi`,
+    GETBYID: (idHD) =>  `${API_BASE_URL}/hdct/${idHD}`,
+    ADD: `${API_BASE_URL}/hdct`
   },
+
   VOUCHERS: {
     BASE: `${API_BASE_URL}/phieu-giam-gia/hien-thi`,
   },
@@ -22,20 +26,28 @@ const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/lich-su-hoa-don`,
     GETALL:(id) => `${API_BASE_URL}/lich-su-hoa-don/${id}`
   },
+
   ADDRESS: {
     DEFAULTADDRESS: (idKH) => `${API_BASE_URL}/dia-chi/dia-chi-mac-dinh/${idKH}`,
     ADDRESSLIST: (idKH) => `${API_BASE_URL}/dia-chi/khach-hang/${idKH}`
   },
+
   CUSTOMER: {
     CHANGEPASSWORD: (id) => `${API_BASE_URL}/khach-hang/changePassword/${id}`,
   },
+
   NOTIFICATION: {
     GETALL: (id) => `${API_BASE_URL}/thong-bao/${id}`,
     SEEN : (idTB) => `${API_BASE_URL}/thong-bao/${idTB}`
   },
+
   HDPTTTT : {
     ADD :`${API_BASE_URL}/hdpttt/add`,
     GETALLBYIDHD: (idHD) => `${API_BASE_URL}/hdpttt/${idHD}` 
+  },
+
+  PRODUCT: {
+    GETALLACTIVE: `${API_BASE_URL}/san-pham-chi-tiet/active`,
   }
 };
 export default API_ENDPOINTS;

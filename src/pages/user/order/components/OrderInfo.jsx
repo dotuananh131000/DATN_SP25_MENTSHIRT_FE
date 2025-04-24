@@ -1,5 +1,4 @@
 export default function OrderInfo({order}){
-    console.log(order);
     return <div className="bg-white p-4 rounded-lg shadow">
         <h1 className="text-xl">Địa chỉ nhận hàng</h1>
         <div className="mt-2">

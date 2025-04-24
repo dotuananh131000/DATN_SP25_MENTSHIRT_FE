@@ -8,10 +8,15 @@ import StepsTrangThaiHoaDon from "@/pages/orders/components/orderDetailComponent
 import ButtonDetail from "./components/ButtonDetail";
 import OrderInfo from "./components/OrderInfo";
 import ProductModal from "./components/ProductModal";
+import CartOfOrder from "./components/CartOfOrder";
+import OrderDetailService from "@/services/OrderDetailService";
+import Productdetail from "@/services/ProductDetailService";
 function OrderDetail(){
     const { id } = useParams(); 
     const location = useLocation();
     const [order, setOrder] = useState(location.state?.order || null);
+
+    const [cartItems, setCartItems] = useState([]);
 
     const fetchOrder = async () => {
         try {
@@ -27,7 +32,19 @@ function OrderDetail(){
         }
     },[id, order]);
 
-    console.log(order);
+    // Hàm gọi giỏ hàng của hóa đơn
+    const fetchItemOfCart = async () => {
+        try {
+            const response = await OrderDetailService.GetByIdHd(id);
+            setCartItems(response);
+        }catch (err){
+            console.log("Không thể lấy được danh sách hóa đơn, vui lòng thử lại", err);
+        }
+    }
+    useEffect(() => {
+        fetchItemOfCart();
+    }, [])
+
     return <>
         <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
         initial={{ opacity: 0, y: 20 }}
@@ -52,7 +69,8 @@ function OrderDetail(){
                 <StepsTrangThaiHoaDon hoaDon={order}/>
                 <ButtonDetail order={order}  />
                 <OrderInfo order={order} />
-                <ProductModal />
+                <ProductModal setCartItems={setCartItems} order={order} />
+                <CartOfOrder cartItems={cartItems} />
             </div>
     </motion.div>;
     </>

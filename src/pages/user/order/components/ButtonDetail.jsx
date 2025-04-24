@@ -13,6 +13,14 @@ export default function ButtonDetail({order}) {
 
     const client = useSelector((state) => state.authClient?.client);
 
+     //Form thay đổi
+     const [form, setForm] = useState({
+        hoTenNguoiNhan: "",
+        soDienThoai: "",
+        diaChiNhanHang: "",
+        phiShip: 0
+    })
+
 
     // Lấy danh scahs lịch sử thanh toán
     const [historyPayment, setHistoryPayMent] = useState([]);
@@ -47,6 +55,7 @@ export default function ButtonDetail({order}) {
     const [selectedAddress, setSelectedAddress] = useState({});
     const handleOnchangeAddress = (e) => {
         const selected = addressList.find(item => item.id.toString() === e.target.value);
+        setForm((prev) => ({...prev, diaChiNhanHang: `${selected.phuongXa}, ${selected.quanHuyen}, ${selected.tinhThanh}`}))
         setSelectedAddress(selected);
     }
 
@@ -65,14 +74,6 @@ export default function ButtonDetail({order}) {
         fetchServiceId();
     }, [selectedAddress])
 
-
-    //Form thay đổi
-    const [form, setForm] = useState({
-        hoTenNguoiNhan: "",
-        soDienThoai: "",
-        diaChiNhanHang: "",
-        phiShip: 0
-    })
 
     // GỌi hàm tính phí ship
     const fetchFee = async () => {
@@ -94,7 +95,7 @@ export default function ButtonDetail({order}) {
    
 
     //Hàm vaildate
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const [errors, setErrors] = useState({
         hoTen: '',
         soDienThoai: ''
@@ -105,6 +106,7 @@ export default function ButtonDetail({order}) {
             hoTenNguoiNhan: order.hoTenNguoiNhan || "",
             soDienThoai: order.soDienThoai || "",
             diaChiNhanHang: order.diaChiNhanHang || "",
+            phiShip: order.phiShip || "",
         }))
     }, [order])
 
@@ -132,14 +134,25 @@ export default function ButtonDetail({order}) {
         return isValid;
     }
 
+    const cancel = () => {
+        setForm((prev) => ({...prev, 
+            hoTenNguoiNhan: order.hoTenNguoiNhan || "",
+            soDienThoai: order.soDienThoai || "",
+            diaChiNhanHang: order.diaChiNhanHang || "",
+            phiShip: order.phiShip || "",
+        }))
+        setIsOpen(false);
+        setErrors((prev) => ({...prev, hoTen: "", soDienThoai: ""}));
+    }
+
     const handleOnSubmit = () => {
         if(validate()){
             setIsOpen(false);
+        }else {
+            setIsOpen(true);
         }
     };
     
-
-
     return <div className="w-full h-14">
             <div className="relative">
             <Dialog>
@@ -177,9 +190,11 @@ export default function ButtonDetail({order}) {
                 </DialogContent>
             </Dialog>
             
-            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+            <AlertDialog open={isOpen}>
                 <AlertDialogTrigger asChild>
-                    <button className="absolute right-3 bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
+                    <button 
+                    onClick={() => setIsOpen(true)}
+                    className="absolute right-3 bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
                         Thay đổi địa chỉ
                     </button>
                 </AlertDialogTrigger>
@@ -191,17 +206,21 @@ export default function ButtonDetail({order}) {
                         <div className="grid grid-cols-1 mb-2">
                             <label htmlFor="name">Họ và tên</label>
                             <input
+                            onChange={(e) => handleOnchange(e)}
                             value={form.hoTenNguoiNhan}
                             className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
-                            id="name" type="text" />
+                            id="hoTenNguoiNhan" type="text" />
+                            {errors.hoTen && (<span className="text-sm text-red-500 px-3">{errors.hoTen}</span>)}
                         </div>
 
                         <div className="grid grid-cols-1 mb-2">
                             <label htmlFor="sdt">Số điện thoại</label>
                             <input 
+                            onChange={(e) => handleOnchange(e)}
                             value={form.soDienThoai}
                             className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
-                            id="sdt" type="text" />
+                            id="soDienThoai" type="text" />
+                             {errors.soDienThoai && (<span className="text-sm text-red-500 px-3">{errors.soDienThoai}</span>)}
                         </div>
 
                         <div className="grid grid-cols-1 mb-2">
@@ -209,7 +228,7 @@ export default function ButtonDetail({order}) {
                             <select
                             className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                             name="address" 
-                            id="addr"
+                            id="diaChiNhanHang"
                             onChange={(e) => handleOnchangeAddress(e)}
                             value={selectedAddress?.id}>
                                 {addressList.map((item) => (
@@ -223,13 +242,15 @@ export default function ButtonDetail({order}) {
                             <input 
                             readOnly
                             value={UseFormatMoney(form.phiShip? form.phiShip : order.phiShip)}
-                            className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
-                            id="fee" type="text" />
+                            className="bg-gray-200 w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
+                            id="phiShip" type="text" />
                         </div>
                     </div>
                 <div className="flex justify-end space-x-4 mx-2">
                         
-                        <AlertDialogCancel className="bg-gray-300 px-3 py-2 rounded-lg hover:bg-gray-400 duration-200">
+                        <AlertDialogCancel 
+                        onClick={cancel}
+                        className="bg-gray-300 px-3 py-2 rounded-lg hover:bg-gray-400 duration-200">
                             Hủy
                         </AlertDialogCancel>
 
