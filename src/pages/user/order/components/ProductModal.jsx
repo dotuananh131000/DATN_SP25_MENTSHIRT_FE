@@ -96,8 +96,6 @@ export default function ProductModal ({setCartItems, order}){
         setQuantity("");
     }
 
-    console.log(quantity);
-
     return <div className="w-full h-14 mt-4">
         <div className="relative">
             <Dialog>

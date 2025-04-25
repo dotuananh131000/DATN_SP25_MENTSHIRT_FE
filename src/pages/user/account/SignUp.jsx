@@ -1,35 +1,67 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import CustomerService from "@/services/CustomerService";
 import {motion} from "framer-motion"
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 function SignUp(){
 
-    const  [form, setForm] = useState({name:"", soDienThoai:"", email:"", password:""});
+    const  [form, setForm] = useState({tenKhachHang:"", soDienThoai:"", email:"", password:"", confirmPassword: ""});
     const [errors, setErrors] = useState({});
     
       //Hàm validate
       const validate = () => {
         let tempErrors = {};
+
         if (!form.email) {
           tempErrors.email = "Email không được để trống";
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)) {
           tempErrors.email = "Email không hợp lệ";
         }
+
+        const phoneRegex = /^[0-9]{10,11}$/; 
+        if(!phoneRegex.test(form.soDienThoai)){
+          tempErrors.soDienThoai = "Số điện thoại không hợp lệ";
+        }
+
         if (!form.password) {
           tempErrors.password = "Mật khẩu không được để trống";
         } else if (password.length < 6) {
           tempErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
         }
+
+        if(form.password !== form.confirmPassword){
+          tempErrors.confirmPassword = "Mật khẩu xác nhận  không khớp."
+        }
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
       };
+
+      const handleChange = (e) => {
+        setForm((prev) => ({...prev, [e.target.id]: e.target.value}))
+      }
     
       //Hàm submib form
-      const handleSubmit = (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-          console.log("Form hợp lệ, tiến hành tạo...");
+         
+          const formData = {
+            tenKhachHang: form.tenKhachHang || "",
+            soDienThoai: form.soDienThoai || "",
+            email: form.email || "",
+            password: form.password || "",
+            confirmPassword: form.confirmPassword || "",
+          }
+          try {
+            const response = await CustomerService.signUp(formData);
+            toast.success(response.message);
+            setForm((prev) => ({...prev, tenKhachHang: "", soDienThoai: "", email: "", password: "", confirmPassword: ""}));
+          }catch (err){
+            console.log("Lỗi khi tạo tài khoản. Vui lòng thử lại.");
+            toast.error("Lỗi khi tạo tài khoản. Vui lòng thử lại.");
+          }
         }
       };
     return<>
@@ -72,28 +104,31 @@ function SignUp(){
                     <label className="font-medium text-gray-700">Họ và Tên <span className="text-red-500">*</span></label>
                     <input 
                         type="text" 
-                        value={form.email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        id="tenKhachHang"
+                        value={form.tenKhachHang}
+                        onChange={(e) => handleChange(e)}
                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-300 ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-orange-400'}`}
                         placeholder="Nhập họ tên của bạn" 
                     />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+                    {errors.tenKhachHang && <p className="text-red-500 text-sm">{errors.tenKhachHang}</p>}
 
                     <label className="font-medium text-gray-700">Số điện thoại <span className="text-red-500">*</span></label>
                     <input 
                         type="text" 
                         value={form.soDienThoai}
-                        onChange={(e) => setEmail(e.target.value)}
+                        id="soDienThoai"
+                        onChange={(e) => handleChange(e)}
                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-300 ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-orange-400'}`}
                         placeholder="Nhập số điện thoại của bạn" 
                     />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+                    {errors.soDienThoai && <p className="text-red-500 text-sm">{errors.soDienThoai}</p>}
 
                     <label className="font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
                     <input 
                         type="text" 
                         value={form.email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        id="email"
+                        onChange={(e) => handleChange(e)}
                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-300 ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-orange-400'}`}
                         placeholder="Nhập email của bạn" 
                     />
@@ -103,11 +138,22 @@ function SignUp(){
                     <input 
                         type="password" 
                         value={form.password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        id="password"
+                        onChange={(e) => handleChange(e)}
                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-300 ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-orange-400'}`}
                         placeholder="Nhập mật khẩu của bạn" 
                     />
                     {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
+                    <input 
+                        type="password" 
+                        value={form.confirmPassword}
+                        id="confirmPassword"
+                        onChange={(e) => handleChange(e)}
+                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-300 ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-orange-400'}`}
+                        placeholder="Nhập mật khẩu của bạn" 
+                    />
+                    {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                             
                             
                     <Button type="submit" className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition duration-300">

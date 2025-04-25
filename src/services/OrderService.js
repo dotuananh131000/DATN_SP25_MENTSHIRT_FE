@@ -80,6 +80,35 @@ const OrderService = {
       console.log("Lỗi khi đổi trạng thái hóa đơn", err);
       throw err;
     }
+  },
+
+  async updateInfoInvoice (formData) {
+
+    const form = {
+      id: formData.id ?? null,
+      hoTenNguoiNhan: formData.hoTenNguoiNhan ?? null,
+      sdt: formData.soDienThoai ?? null,
+      email: formData.email ?? null,
+      diaChiNhanHang: formData.diaChiNhanHang ?? null,
+      phiShip: formData.phiShip ?? null
+    }
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.UPDATEINFOINVOICE}`,form);
+      return response.data;
+    }catch (err){
+      console.log("Lối khi gọi API thay đổi thông tin hóa đơn!", err);
+      throw err;
+    }
+  },
+
+  async cancelInvoice (idHD){
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.CANCELINVOICE(idHD)}`);
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API cancelInvoice", err);
+      throw err;
+    }
   }
 };
 

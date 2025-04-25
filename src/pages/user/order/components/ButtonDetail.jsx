@@ -1,41 +1,28 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import UseFormatDate from "@/lib/useFomatDay";
 import UseFormatMoney from "@/lib/useFormatMoney";
 import api_giaoHangNhanh from "@/pages/counterSales/services/GiaoHangNhanhService";
 import Address from "@/services/AdressSerrvice";
-import HDPTTTService from "@/services/HDPTTTService";
-import LichSuHoaDonService from "@/services/LichSuHoaDonService";
+import OrderService from "@/services/OrderService";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
-export default function ButtonDetail({order}) {
+export default function ButtonDetail({order, setOrder, historyPayment}) {
 
     const client = useSelector((state) => state.authClient?.client);
 
      //Form thay đổi
      const [form, setForm] = useState({
+        id: "",
         hoTenNguoiNhan: "",
         soDienThoai: "",
+        email: "",
         diaChiNhanHang: "",
-        phiShip: 0
+        phiShip: 0,
     })
 
-
-    // Lấy danh scahs lịch sử thanh toán
-    const [historyPayment, setHistoryPayMent] = useState([]);
-
-    const fetchLichSuThanhToanByHD = async () => {
-        try {
-            const response = await HDPTTTService.getAllByIdHd(order.id);
-            setHistoryPayMent(response);
-        }catch (err){
-            console.log("Không thể lấy được danh sách lịch sử thanh toán.", err);
-        }
-    }
-    useEffect(() => {
-        fetchLichSuThanhToanByHD();
-    },[])
 
     // Danh sách địa chỉ của khach hàng
     const [addressList, setAddressList] = useState([]);
@@ -98,13 +85,16 @@ export default function ButtonDetail({order}) {
     const [isOpen, setIsOpen] = useState(false);
     const [errors, setErrors] = useState({
         hoTen: '',
-        soDienThoai: ''
+        soDienThoai: '',
+        email: ''
     });
 
     useEffect(() => {
         setForm((prev) => ({...prev, 
+            id: order.id || "",
             hoTenNguoiNhan: order.hoTenNguoiNhan || "",
             soDienThoai: order.soDienThoai || "",
+            email: order.email || "",
             diaChiNhanHang: order.diaChiNhanHang || "",
             phiShip: order.phiShip || "",
         }))
@@ -118,7 +108,7 @@ export default function ButtonDetail({order}) {
     const validate = () => {
         let isValid = true;
         
-        let newError = {hoTen: "", soDienThoai: ""}
+        let newError = {hoTen: "", soDienThoai: "", email: "" }
         
         if(!form.hoTenNguoiNhan.trim()){
             newError.hoTen = "Họ và tên không được để trống !";
@@ -130,6 +120,16 @@ export default function ButtonDetail({order}) {
             newError.soDienThoai = "Số điện thoại không hợp lệ";
             isValid = false;
         }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!form.email.trim()) {
+            newError.email = "Email không được để trống !";
+            isValid = false;
+        }else if(!emailRegex.test(form.email)) {
+            newError.email = "Email không hợp lệ !";
+            isValid = false;
+        }
+
         setErrors(newError);
         return isValid;
     }
@@ -138,21 +138,44 @@ export default function ButtonDetail({order}) {
         setForm((prev) => ({...prev, 
             hoTenNguoiNhan: order.hoTenNguoiNhan || "",
             soDienThoai: order.soDienThoai || "",
+            email: order.email || "",
             diaChiNhanHang: order.diaChiNhanHang || "",
             phiShip: order.phiShip || "",
         }))
         setIsOpen(false);
-        setErrors((prev) => ({...prev, hoTen: "", soDienThoai: ""}));
+        setErrors((prev) => ({...prev, hoTen: "", soDienThoai: "", email: ""}));
     }
 
-    const handleOnSubmit = () => {
+
+    const handleOnSubmit = async() => {
         if(validate()){
+
+            const formData = {
+                id: form.id || "",
+                hoTenNguoiNhan: form.hoTenNguoiNhan || "",
+                soDienThoai: form.soDienThoai || "",
+                email: form.email || "",
+                diaChiNhanHang: form.diaChiNhanHang || "",
+                phiShip: form.phiShip || "",
+            }
+
+            // họi API thay đổi thông tinh hóa đơn
+            try {
+                const response = await OrderService.updateInfoInvoice(formData);
+                const orderUpdated = response.data;
+                setOrder(orderUpdated);
+
+                toast.success(response.message);
+            }catch (err){
+                console.log("Không thể thay đổi được thông tin hóa đơn", err);
+                toast.error("Lỗi khi thay đổi thông tin, vui lòng thử lại!");
+            }
             setIsOpen(false);
         }else {
             setIsOpen(true);
         }
     };
-    
+
     return <div className="w-full h-14">
             <div className="relative">
             <Dialog>
@@ -211,6 +234,16 @@ export default function ButtonDetail({order}) {
                             className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                             id="hoTenNguoiNhan" type="text" />
                             {errors.hoTen && (<span className="text-sm text-red-500 px-3">{errors.hoTen}</span>)}
+                        </div>
+
+                        <div className="grid grid-cols-1 mb-2">
+                            <label htmlFor="email">Email</label>
+                            <input
+                            onChange={(e) => handleOnchange(e)}
+                            value={form.email}
+                            className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
+                            id="email" type="text" />
+                            {errors.email && (<span className="text-sm text-red-500 px-3">{errors.email}</span>)}
                         </div>
 
                         <div className="grid grid-cols-1 mb-2">

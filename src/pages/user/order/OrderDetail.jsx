@@ -10,11 +10,11 @@ import OrderInfo from "./components/OrderInfo";
 import ProductModal from "./components/ProductModal";
 import CartOfOrder from "./components/CartOfOrder";
 import OrderDetailService from "@/services/OrderDetailService";
-import Productdetail from "@/services/ProductDetailService";
+import HDPTTTService from "@/services/HDPTTTService";
+import ConfirmOrder from "./components/ConfirmOrder";
 function OrderDetail(){
     const { id } = useParams(); 
-    const location = useLocation();
-    const [order, setOrder] = useState(location.state?.order || null);
+    const [order, setOrder] = useState({});
 
     const [cartItems, setCartItems] = useState([]);
 
@@ -26,11 +26,25 @@ function OrderDetail(){
             console.log("Không thể lấy được hóa đơn", err);
         }
     }
-    useEffect(() => {
-        if(!order){
-            fetchOrder(); 
+    useEffect(() => { 
+        fetchOrder(); 
+    },[id]);
+
+    // Lấy danh scahs lịch sử thanh toán
+    const [historyPayment, setHistoryPayMent] = useState([]);
+
+    const fetchLichSuThanhToanByHD = async (id) => {
+        try {
+            if(!id) return;
+            const response = await HDPTTTService.getAllByIdHd(id);
+            setHistoryPayMent(response);
+        }catch (err){
+            console.log("Không thể lấy được danh sách lịch sử thanh toán.", err);
         }
-    },[id, order]);
+    }
+    useEffect(() => {
+        fetchLichSuThanhToanByHD(order.id);
+    },[order.id])
 
     // Hàm gọi giỏ hàng của hóa đơn
     const fetchItemOfCart = async () => {
@@ -44,6 +58,7 @@ function OrderDetail(){
     useEffect(() => {
         fetchItemOfCart();
     }, [])
+
 
     return <>
         <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
@@ -67,10 +82,14 @@ function OrderDetail(){
                 </BreadcrumbList>
                 </Breadcrumb>
                 <StepsTrangThaiHoaDon hoaDon={order}/>
-                <ButtonDetail order={order}  />
+                <ButtonDetail order={order} setOrder={setOrder} historyPayment={historyPayment}  />
                 <OrderInfo order={order} />
                 <ProductModal setCartItems={setCartItems} order={order} />
-                <CartOfOrder cartItems={cartItems} />
+                <div className="bg-white p-4 rounded-lg shadow">
+                    <CartOfOrder cartItems={cartItems} />
+                    <ConfirmOrder order={order} historyPayment={historyPayment} setOrder={setOrder} />
+                </div>
+                
             </div>
     </motion.div>;
     </>
