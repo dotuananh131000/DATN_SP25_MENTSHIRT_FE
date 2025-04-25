@@ -312,10 +312,6 @@ function Payment() {
     }
 
   
-
-  console.log(cartItems)
-  console.log(items)
-  
   // Xử lý submit form
   const handleSubmit = async(e) => {
     e.preventDefault();

@@ -8,6 +8,8 @@ const API_ENDPOINTS = {
     TIEPNHAN: (idHD) => `${API_BASE_URL}/hoa-don/${idHD}`,
     GETBYMA: (maHoaDon) => `${API_BASE_URL}/hoa-don/getByMa/${maHoaDon}`,
     PAIDINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/paid/${idHD}`,
+    UPDATEINFOINVOICE: `${API_BASE_URL}/hoa-don/updateInfo`,
+    CANCELINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/cancel/${idHD}`,
   },
 
   DETAILORDERS: {
@@ -48,6 +50,10 @@ const API_ENDPOINTS = {
 
   PRODUCT: {
     GETALLACTIVE: `${API_BASE_URL}/san-pham-chi-tiet/active`,
+  },
+
+  CUSTOMER: {
+    SIGNUP: `${API_BASE_URL}/khach-hang/sign-up`
   }
 };
 export default API_ENDPOINTS;

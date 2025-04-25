@@ -3,9 +3,8 @@ import UseFormatMoney from "@/lib/useFormatMoney";
 import { FaRegTrashAlt } from "react-icons/fa";
 
 export default function CartOfOrder ({cartItems}) {
-    console.log(cartItems);
-    return <div className="bg-white p-4 rounded-lg shadow">
-        <div>
+    
+    return <div>
             <table className="table table-auto w-full bg-white rounded-lg shadow text-center text-xs mt-2">
                 <thead className="bg-gray-200">
                     <tr className="text-center">
@@ -42,6 +41,7 @@ export default function CartOfOrder ({cartItems}) {
                             <td>
                                 <input 
                                 value={item.soLuong}
+                                readOnly
                                 className="w-1/3 m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                                 type="text" />
                             </td>
@@ -85,5 +85,4 @@ export default function CartOfOrder ({cartItems}) {
                 </tbody>
             </table>
         </div>
-    </div>
 }

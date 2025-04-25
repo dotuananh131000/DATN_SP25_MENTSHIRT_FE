@@ -134,17 +134,7 @@ function SlideBar() {
             </ul>
           )}
         </li>
-
-        <li>
-          <Link to="/admin/return" className="menu-item my-1 ">
-            <FaReply /> Trả Hàng
-          </Link>
-        </li>
-        {/* <li>
-          <Link to="/admin/promotion" className="menu-item my-1">
-            <FaGift /> Khuyến mãi
-          </Link>
-        </li> */}
+        
         <li>
           <Link to="/admin/voucher" className="menu-item my-1">
             <FaMoneyBill /> Phiếu giảm giá
