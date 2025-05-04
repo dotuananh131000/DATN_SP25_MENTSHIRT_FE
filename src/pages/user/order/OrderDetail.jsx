@@ -86,7 +86,7 @@ function OrderDetail(){
                 <OrderInfo order={order} />
                 <ProductModal setCartItems={setCartItems} order={order} fetchOrder={fetchOrder} />
                 <div className="bg-white p-4 rounded-lg shadow">
-                    <CartOfOrder cartItems={cartItems} order={order} setCartItems={setCartItems} />
+                    <CartOfOrder cartItems={cartItems} order={order} setCartItems={setCartItems} fetchOrder={fetchOrder}  />
                     <ConfirmOrder order={order} historyPayment={historyPayment} setOrder={setOrder} />
                 </div>
                 

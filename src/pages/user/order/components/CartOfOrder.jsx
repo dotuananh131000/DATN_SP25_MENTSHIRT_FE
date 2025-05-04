@@ -4,14 +4,15 @@ import OrderDetailService from "@/services/OrderDetailService";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-export default function CartOfOrder ({cartItems, order, setCartItems }) {
+export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder }) {
 
     //Gọi hàm xóa sản phẩm chi tiết
     const fetchDelete = async (idHDCT) => {
         try{
             const response = await OrderDetailService.delete(idHDCT);
             setCartItems(response.data);
-            toast.success("Đã loại sản phẩm ra khỏi giỏ hàng.")
+            toast.success("Đã loại sản phẩm ra khỏi giỏ hàng.");
+            fetchOrder();
 
         }catch (err){
             console.log("Không thể xóa sản phẩm", err);

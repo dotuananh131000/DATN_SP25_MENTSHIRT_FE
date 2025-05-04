@@ -1,7 +1,112 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import usePrint from "@/lib/usePrint";
 import { motion } from "framer-motion";
-function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, listHistoryHD, setListHistoryHD, handleTiepNhan}){
+import { QRCodeCanvas } from "qrcode.react";
+import { useRef } from "react";
+function ButtonTrangThai({hoaDon, 
+    handleCapNhatDonHang, 
+    handleClickHistory, 
+    listHistoryHD, 
+    setListHistoryHD, 
+    handleTiepNhan, 
+    gioHang, lichSuThanhToan,}){
+
+        const renderChiTietHTML = () => {
+            return gioHang.map((item, i) => (
+               ` <tr>
+                    <td class="border px-4 py-2">${i + 1}</td>
+                    <td class="border px-4 py-2">${item.tenSanPham}</td>
+                    <td class="border px-4 py-2 text-right">${item.soLuong}</td>
+                    <td class="border px-4 py-2 text-center">${item.thanhTien}</td>
+                </tr>`
+            )).join('');
+          };
+
+          const renderLichSuThanhToanHTML = () => {
+            return lichSuThanhToan.map((item, i) => (
+               ` <tr>
+                    <td class="border px-4 py-2">${i + 1}</td>
+                    <td class="border px-4 py-2">${item.tenPhuongThuc}</td>
+                    <td class="border px-4 py-2 text-right">${item.soTienThanhToan}</td>
+                    <td class="border px-4 py-2 text-center">${item.nguoiXacNhan}</td>
+                </tr>`
+            )).join('');
+          };
+
+        const qrRef = useRef();
+
+        <QRCodeCanvas
+        value={hoaDon.id}
+        size={140}
+        bgColor="#ffffff"
+        fgColor="#000000"
+        level="H"
+        ref={qrRef}
+        />
+
+    const handlePrint = () => {
+
+        setTimeout(() => {
+            const canvas = qrRef.current?.querySelector?.('canvas') || qrRef.current;
+            if (!canvas) {
+            alert("Không tìm thấy QR code để in");
+            return;
+            }
+
+            const qrBase64 = canvas.toDataURL();
+            const invoiceHtml = `
+            <div class="w-full">
+              <h1 class="text-2xl text-center font-bold mb-2">Men T-Shirt</h1>
+              <p class="text-center text-xs">136 Hồ Tùng Mậu, Bắc Từ Liêm, Thành phố Hà Nội</p>
+              <p class="text-center text-xs">Số điện thoại: 1900 1512</p>
+              <p class="text-center text-xs">Mã hóa đơn: ${hoaDon.maHoaDon} - Ngày Tạo: ${hoaDon.ngayTao}</p>
+              <hr />
+              <div class="mt-4">
+                  <p>Khách hàng: ${hoaDon.tenKhachHang || "Khách lẻ"}</p>
+                  <p>Số điện thoại: ${hoaDon.soDienThoai || "Không có"}</p>
+                  <p>Địa chỉ: ${hoaDon.diaChiNhanHang || "Tại quầy"}</p>
+              </div>
+               <hr />
+               <div class="mt-4 ">
+                  <p class="text-xl font-bold">Nội dung đơn hàng</p>
+                  <table class="w-full mt-2 text-center px-3 py-2">
+                      <thead>
+                          <tr class="text-center">
+                              <th>STT</th>
+                              <th>Tên</th>
+                              <th>Số lượng</th>
+                              <th>Tổng tiền</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          ${renderChiTietHTML()}
+                      <tbody>
+                  </table>
+              </div>
+              <hr class="mt-4" />
+             
+              <div class="mt-4 ">
+                  <p class="text-xl font-bold">Lịch sử thanh toán</p>
+                  <table class="w-full mt-2 text-center px-3 py-2">
+                      <tbody>
+                          ${renderLichSuThanhToanHTML()}
+                      <tbody>
+                  </table>
+              </div>
+              <div class="mt-10 flex justify-center ">
+                  <img src="${qrBase64}" alt="QR Code" class="w-36 h-36 mb-4" />
+              </div>
+            </div>
+          `;
+          
+          usePrint(invoiceHtml);
+
+            
+
+        }, 500)
+        
+      };
 
     return <>
      <motion.div className="flex relative space-x-4 w-full bg-white rounded-lg shadow p-4 mb-4"
@@ -9,6 +114,20 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
      >
+
+        <div>
+        {/* QR ẩn để in */}
+            <div style={{ display: "none" }}>
+                <QRCodeCanvas
+                value={hoaDon.maHoaDon}
+                size={140}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+                ref={qrRef}
+                />
+            </div>
+        </div>
         {hoaDon.loaiDon === 0 && (
             <>
                 {hoaDon.trangThaiGiaoHang !== 5 && (
@@ -108,7 +227,9 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
         <div className="p-4"></div>
         
         <div className="absolute right-4 space-x-4">
-            <button className="px-4 py-2 bg-orange-500 rounded-lg text-white hover:scale-105 duration-200">
+            <button 
+            onClick={handlePrint}
+            className="px-4 py-2 bg-orange-500 rounded-lg text-white hover:scale-105 duration-200">
                 In hóa đơn
             </button>
             <Drawer>
