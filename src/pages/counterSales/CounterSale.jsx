@@ -203,38 +203,7 @@ export default function CounterSale() {
     setHdHienTai(billToday[selectedTab]);
   }, [selectedTab, billToday]);
 
-  const dispatch = useDispatch();
-  const productPrices = useSelector((state) => state.productPrices);
-  const fecthProductPrices = useCallback(async () => {
-    try {
-      localStorage.removeItem("productPrices");
-      const storeData = localStorage.getItem("productPrices");
-      if (storeData) {
-        dispatch(setMultipleProductPrices(JSON.parse(storeData)));
-        return;
-      }
-      const response = await apiClients.get(
-        `/ban-hang/mapGiaSPCT`
-      );
-      const data = response.data;
-      // chuyển đổi map từ API sang redux object nếu cần
-      const formatData = Object.entries(data).map(([productId, price]) => ({
-        productId,
-        price: parseFloat(price),
-      }));
-      //Cập nhật redux store
-      dispatch(setMultipleProductPrices(formatData));
-      //Lưu vào localStorage để không bị mất khi reload
-
-      localStorage.setItem("productPrices", JSON.stringify(formatData));
-    } catch (error) {
-      console.log("lỗi khi gọi API map giá sản phẩm", error);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    fecthProductPrices();
-  }, [fecthProductPrices]);
+  
 
   const fetchReloadHDCT = async (id) => {
     if (!id) {
@@ -249,62 +218,7 @@ export default function CounterSale() {
     }
   };
 
-  //Thông báo cập nhật giá sản phẩm
-  const soSanhGia = (sp) => {
-    if (!sp) {
-      return;
-    }
-    const mapGiaSP = Object.fromEntries(Object.entries(productPrices));
-    const product = Object.values(mapGiaSP).find(
-      (product) => Number(product.productId) === sp.idSPCT
-    );
-    if (product.oldPrice === product.price) {
-      return null;
-    } else if (product.oldPrice > product.price) {
-      //là giảm giá
-      fetchReloadHDCT(sp?.id);
-      return (
-        <h1 className="text-red-500">
-          Sản phẩm đã được giả giá <br />
-          từ{" "}
-          <strong>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(product?.oldPrice)}
-          </strong>{" "}
-          còn{" "}
-          <strong>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(product?.price)}
-          </strong>
-        </h1>
-      );
-    } else {
-      fetchReloadHDCT(sp?.id);
-      return (
-        <h1 className="text-red-500">
-          Sản phẩm đã tăng <br />
-          từ{" "}
-          <strong>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(product?.oldPrice)}
-          </strong>{" "}
-          thành{" "}
-          <strong>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(product?.price)}
-          </strong>
-        </h1>
-      );
-    }
-  };
+  
 
   const fetchPhieuGiamGiaKhachHang = async () => {
     try {
@@ -396,6 +310,7 @@ export default function CounterSale() {
     };
     fetchUpdateKHOfHoaDon();
   };
+
 
   //Gọi API để load hóa đơn đang chờ của ngày hiện tại
   const fetchBillToday = async () => {
@@ -793,7 +708,7 @@ const validateThemSP = ()=>{
               {sanPhamGioHang.map((sp, i) => (
                 <tr key={sp?.id} className="hover:bg-gray-100 text-center">
                   <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2 flex justify-center" >
+                  <td className="px-4 py-2" >
                     <img
                       className="skeleton h-32 w-32 object-cover "
                       src={sp?.hinhAnh}
@@ -814,7 +729,14 @@ const validateThemSP = ()=>{
                         }).format(sp?.donGia)}
                       </strong>
                     </p>
-                    {soSanhGia(sp)}
+                    {sp.donGiaCu && (
+                      <div className="flex justify-center space-x-1">
+                        <p>Giá cũ:</p>
+                        <span class="line-through text-gray-500">{sp.donGiaCu}</span>
+                      </div>
+                    )}
+                    
+                    
                   </td>
                   <td className="px-4 py-2">
                     <button

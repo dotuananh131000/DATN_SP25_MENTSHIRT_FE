@@ -46,7 +46,7 @@ function OrderInfo({hoaDon, lichSuThanhToan}){
             </div>
                 <div className="relative mb-4">
                     <h1 className="w-full text-lg text-gray-500 ">Thông tin khách hàng</h1>
-                    {(hoaDon.loaiDon ===0 && hoaDon.trangThaiGiaoHang < 2) && (
+                    {((hoaDon.loaiDon ===0 || hoaDon.loaiDon ===2 ) && hoaDon.trangThaiGiaoHang < 2) && (
                         <button className="absolute right-4 top-[-8px] px-4 py-2 bg-orange-500 text-white rounded-lg hover:scale-105 duration-200">
                             Thay đổi thông tin
                         </button>
@@ -62,7 +62,7 @@ function OrderInfo({hoaDon, lichSuThanhToan}){
                         <p className="text-lg text-orange-500">{hoaDon.tenKhachHang || "Khách lẻ"}</p>
                     </div>
                 </div>
-                {hoaDon.loaiDon === 0 && (
+                {(hoaDon.loaiDon ===0 || hoaDon.loaiDon ===2 ) && (
                 <>
                     <div className="flex justify-center space-x-4">
                     <div className="w-1/2">

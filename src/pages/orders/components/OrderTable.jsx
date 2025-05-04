@@ -31,10 +31,11 @@ function OrderTable({hoaDons, page, size, filters, error, loading, setIsOrderDet
                 className={`px-2 py-1 rounded-lg text-xs ${
                 hd.loaiDon == 0
                   ? "bg-orange-400 text-white"
-                  : "bg-orange-600 text-white"
+                  : hd.loaiDon === 1 ? "bg-orange-500 text-white ":"bg-orange-600 text-white"
                 }`}
               >
-              {hd.loaiDon ===0 ?"Online" : "Tại quầy"}
+              {hd.loaiDon ===0 ?"Giao hàng" 
+              : hd.loaiDon === 1 ? "Tại quầy":"Online"}
         </span>
               </td>
               <td className="px-4 py-4">
