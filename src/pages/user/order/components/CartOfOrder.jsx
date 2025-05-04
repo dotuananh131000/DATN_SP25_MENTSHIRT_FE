@@ -1,8 +1,23 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import UseFormatMoney from "@/lib/useFormatMoney";
+import OrderDetailService from "@/services/OrderDetailService";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 
-export default function CartOfOrder ({cartItems, order }) {
+export default function CartOfOrder ({cartItems, order, setCartItems }) {
+
+    //Gọi hàm xóa sản phẩm chi tiết
+    const fetchDelete = async (idHDCT) => {
+        try{
+            const response = await OrderDetailService.delete(idHDCT);
+            setCartItems(response.data);
+            toast.success("Đã loại sản phẩm ra khỏi giỏ hàng.")
+
+        }catch (err){
+            console.log("Không thể xóa sản phẩm", err);
+            toast.error("Có lỗi khi xóa. vui long thử lại.")
+        }
+    }
     
     return <div>
             <table className="table table-auto w-full bg-white rounded-lg shadow text-center text-xs mt-2">
@@ -74,7 +89,9 @@ export default function CartOfOrder ({cartItems, order }) {
                                                 Hủy
                                             </DialogClose>
 
-                                            <DialogClose className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 duration-200">
+                                            <DialogClose 
+                                            onClick={() => fetchDelete(item.id)}
+                                            className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 duration-200">
                                                 Xóa
                                             </DialogClose>
                                         </div>

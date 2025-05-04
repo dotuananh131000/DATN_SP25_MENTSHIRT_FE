@@ -5,6 +5,7 @@ import CreatableSelect from "react-select/creatable";
 import ProductVariants from "./components/ProductVariants";
 import ProductDetailService from "./services/ProductDetailService";
 import { toast } from "react-toastify";
+import UseFormatMoney from "@/lib/useFormatMoney";
 
 export default function AddProduct() {
   const [sanPhams, setSanPhams] = useState([]);
@@ -26,8 +27,8 @@ export default function AddProduct() {
     tayAo: [],
     mauSac: [],
     kichThuoc: [],
-    soLuong: 0,
-    donGia: 0,
+    soLuong: 1,
+    donGia: 1000,
   });
 
   useEffect(() => {
@@ -146,28 +147,36 @@ export default function AddProduct() {
     }
   };
 
+  const [isErrSoLuong, setIsErrSoLuong] = useState("");
   const handleSoLuong = (e) => {
     const { name, value } = e.target;
-    if(Number(value)<0){
-      toast.error("Số lượng phải lớn hơn 0.");
+    const newNumber = value.replace(/\D/g, "");
+
+    if(Number(newNumber) > 10000){
+      setIsErrSoLuong("Số lượng sản phẩm tối đa là 10000.");
       return;
     }
+   
     setGenerateData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newNumber,
     }));
+    setIsErrSoLuong("");
   };
 
+  const [isErrGia, setIsErrGia] = useState("");
   const handleGia = (e) => {
     const { name, value } = e.target;
-    if(Number(value)<0){
-      toast.error("Giá sản phẩm phải lớn hơn 0");
+    const newPrice = value.replace(/\D/g, "");
+    if(Number(newPrice) > 10000000){
+      setIsErrGia("Giá sản phẩm tối đa là 10.000.000 đ");
       return;
     }
     setGenerateData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: parseFloat(newPrice),
     }));
+    setIsErrGia("")
   };
 
 
@@ -317,33 +326,41 @@ export default function AddProduct() {
 
                 <div></div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Số lượng</label>
-                  <input
-                    type="number"
-                    name="soLuong"
-                    value={generateData.soLuong}
-                    onChange={handleSoLuong}
-                    className="input input-bordered w-full"
-                    placeholder="Nhập số lượng"
-                    min={1}
-                  />
+              </div>
+              {/* Sô lượng và đơn giá chung */}
+              <div>
+                <div className="mb-2">
+                  <hr className="border" /> 
                 </div>
+                <div className="flex justify-between">
+                  <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Số lượng chung</label>
+                      <input
+                        type="text"
+                        name="soLuong"
+                        value={generateData.soLuong || 1}
+                        onChange={handleSoLuong}
+                        className="input input-bordered w-full"
+                        placeholder="Nhập số lượng"
+                      
+                      />
+                      {isErrSoLuong && (<p className="text-sm text-red-500 mt-2">{isErrSoLuong}</p>)}
+                    </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Đơn giá</label>
-                  <input
-                    type="number"
-                    name="donGia"
-                    value={generateData.donGia}
-                    onChange={handleGia}
-                    className="input input-bordered w-full"
-                    placeholder="Nhập đơn giá"
-                    min={10000}
-                    step={10000}
-                  />
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Đơn giá chung</label>
+                      <input
+                        type="text"
+                        name="donGia"
+                        value={new Intl.NumberFormat("vi-VN").format(generateData.donGia || 0)}
+                        onChange={handleGia}
+                        className="input input-bordered w-full"
+                        placeholder="Nhập đơn giá"
+                        
+                      />
+                      {isErrGia && (<p className="text-sm text-red-500 mt-2">{isErrGia}</p>)}
+                    </div>
                 </div>
-
               </div>
             </div>
           </div>

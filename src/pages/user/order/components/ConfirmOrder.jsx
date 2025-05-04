@@ -40,7 +40,8 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
     return <>
         <div className="flex space-x-1 items-center shadow rounded-lg mt-4 p-3 bg-orange-100">
             <p>Đã trả </p>
-            <p className="text-red-500 font-bold">{UseFormatMoney(soTienDaThanhToan)}</p>
+            <p className="text-red-500 font-bold">
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(soTienDaThanhToan) }</p>
             <p>bằng phí VNPay,</p>
             <p>và phải trả thêm</p>
             <p className="text-red-500 font-bold">

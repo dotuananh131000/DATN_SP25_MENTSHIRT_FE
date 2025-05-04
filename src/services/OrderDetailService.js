@@ -24,6 +24,17 @@ const OrderDetailService = {
             console.log("Lỗi khi gọi API thêm hóa đơn chi tiết", err);
             throw err;
         }
+    },
+
+    async delete (idHDCT){
+        try {
+            const response = await apiClients.delete(API_ENDPOINTS.DETAILORDERS.DELETE(idHDCT));
+            return response.data;
+        }catch (err){
+            console.log("Lỗi khi gọi AOI xóa hóa đơn chi tiết", err);
+            throw err;
+        }
+        
     }
 }
 export default OrderDetailService;
