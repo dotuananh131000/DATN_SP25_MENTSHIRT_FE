@@ -53,7 +53,8 @@ const API_ENDPOINTS = {
   },
 
   CUSTOMER: {
-    SIGNUP: `${API_BASE_URL}/khach-hang/sign-up`
+    SIGNUP: `${API_BASE_URL}/khach-hang/sign-up`,
+    THEMNHANH: `${API_BASE_URL}/khach-hang/themNhanh`,
   }
 };
 export default API_ENDPOINTS;

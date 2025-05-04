@@ -2,10 +2,13 @@ import axios from "axios";
 import apiClients from "../../../api/ApiClient";
 
 const KhachHangService = {
-  async getAllKH() {
+  async getAllKH(keyword) {
     try {
       const response = await apiClients.get(
-        `/ban-hang/khach-hang`
+        `/ban-hang/khach-hang`,
+        {params: {
+          keyword
+        }}
       );
       return response.data;
     } catch (error) {

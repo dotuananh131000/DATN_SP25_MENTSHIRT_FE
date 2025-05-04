@@ -22,6 +22,8 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
         ? Number(order.phuPhi)
         : order.phuPhi ?? 0;
 
+    const tongTien = order.tongTien + order.phiShip + phuPhi - soTienGiam;
+
     // Gọi service cancel hóa đơn
     const handleCancel = async (order) =>{
         const idHD =  order.id || null;
@@ -34,6 +36,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
             toast.error("Hủy thất bại đơn hàng!");
         }
     }
+
     return <>
         <div className="flex space-x-1 items-center shadow rounded-lg mt-4 p-3 bg-orange-100">
             <p>Đã trả </p>
@@ -65,38 +68,50 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
-                    <p>Tổng thanh toán:</p>
-                    <p className="font-bold">{UseFormatMoney(soTienDaThanhToan)}</p>
+                    <p>Phụ phí:</p>
+                    <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(phuPhi) }</p>
                 </div>
 
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <button className="bg-gray-200 px-2 py-3 rounded-lg hover:scale-95 duration-200 ">Hủy đơn hàng</button>
-                                    </DialogTrigger>
-                                    <DialogContent className="fixed top-1/3 left-1/2 -translate-x-1/2 w-1/4 max-w-2xl bg-white p-6 rounded-lg shadow-lg">
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                Xác nhận hủy đơn hàng  !
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                Bạn có muốn hủy đơn hàng này không ?
-                                                (Trường hợp khách hàng đã thanh toán đơn hàng, vui lòng liên hệ:  0868.444.644 để
-                                                được nhân viên hỗ trợ.)
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="flex justify-end space-x-4">
-                                            <DialogClose className="bg-gray-300 px-3 py-2 rounded-lg hover:bg-gray-400 duration-200">
-                                                Thoát
-                                            </DialogClose>
+                <div className="flex justify-center items-center space-x-3 p-2">
+                    <p>Tổng tiền:</p>
+                    <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tongTien)}</p>
+                </div>
 
-                                            <DialogClose 
-                                            onClick={() => handleCancel(order)}
-                                            className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 duration-200">
-                                                Hủy
-                                            </DialogClose>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                <div className="flex justify-center items-center space-x-3 p-2">
+                    <p>Đã thanh toán:</p>
+                    <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(soTienDaThanhToan)}</p>
+                </div>
+
+               {order.trangThaiGiaoHang === 1 && (
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <button className="bg-gray-200 px-2 py-3 rounded-lg hover:scale-95 duration-200 ">Hủy đơn hàng</button>
+                    </DialogTrigger>
+                    <DialogContent className="fixed top-1/3 left-1/2 -translate-x-1/2 w-1/4 max-w-2xl bg-white p-6 rounded-lg shadow-lg">
+                        <DialogHeader>
+                            <DialogTitle>
+                                Xác nhận hủy đơn hàng  !
+                            </DialogTitle>
+                            <DialogDescription>
+                                Bạn có muốn hủy đơn hàng này không ?
+                                (Trường hợp khách hàng đã thanh toán đơn hàng, vui lòng liên hệ:  0868.444.644 để
+                                được nhân viên hỗ trợ.)
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-end space-x-4">
+                            <DialogClose className="bg-gray-300 px-3 py-2 rounded-lg hover:bg-gray-400 duration-200">
+                                Thoát
+                            </DialogClose>
+
+                            <DialogClose 
+                            onClick={() => handleCancel(order)}
+                            className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 duration-200">
+                                Hủy
+                            </DialogClose>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+               )}                 
                  
             </div>
             <div className="col-span-4"></div>

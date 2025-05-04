@@ -176,15 +176,15 @@ export default function ButtonDetail({order, setOrder, historyPayment}) {
         }
     };
 
-    return <div className="w-full h-14">
-            <div className="relative">
+    return <div className="w-full h-14 relative">
+            <div className="absolute right-3 flex justify-center items-center space-x-4">
             <Dialog>
                 <DialogTrigger asChild>
-                    <button className="absolute right-44 bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
+                    <button className="bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
                         Lịch sử thanh toán
                     </button>
                 </DialogTrigger>
-                <DialogContent className="fixed  left-1/2 -translate-x-1/2 w-3/4 max-w-2xl bg-white p-6 rounded-lg shadow-lg">
+                <DialogContent className="fixed left-1/2 -translate-x-1/2 w-3/4 max-w-2xl bg-white p-6 rounded-lg shadow-lg">
                     <DialogHeader>
                         <DialogTitle>Lịch sử thanh toán </DialogTitle>
                     </DialogHeader>
@@ -213,11 +213,12 @@ export default function ButtonDetail({order, setOrder, historyPayment}) {
                 </DialogContent>
             </Dialog>
             
-            <AlertDialog open={isOpen}>
+            {order.trangThaiGiaoHang === 1 && (
+                <AlertDialog open={isOpen}>
                 <AlertDialogTrigger asChild>
                     <button 
                     onClick={() => setIsOpen(true)}
-                    className="absolute right-3 bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
+                    className="bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200">
                         Thay đổi địa chỉ
                     </button>
                 </AlertDialogTrigger>
@@ -295,7 +296,8 @@ export default function ButtonDetail({order, setOrder, historyPayment}) {
 
                 </div>
                 </AlertDialogContent>
-            </AlertDialog>
+                </AlertDialog>
+            )}
             
             
         </div>

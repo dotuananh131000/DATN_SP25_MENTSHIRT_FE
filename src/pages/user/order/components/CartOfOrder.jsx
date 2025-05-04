@@ -2,7 +2,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import UseFormatMoney from "@/lib/useFormatMoney";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-export default function CartOfOrder ({cartItems}) {
+export default function CartOfOrder ({cartItems, order }) {
     
     return <div>
             <table className="table table-auto w-full bg-white rounded-lg shadow text-center text-xs mt-2">
@@ -53,7 +53,8 @@ export default function CartOfOrder ({cartItems}) {
                                 >{item.trangThai === 1 ? "Đã thanh toán":"chưa thanh toán"}</p>
                             </td>
                             <td>
-                                <Dialog>
+                                {order.trangThaiGiaoHang === 1 && (
+                                    <Dialog>
                                     <DialogTrigger asChild>
                                         <button className="bg-orange-">
                                             <FaRegTrashAlt className="text-orange-500 text-lg cursor-pointer"/>
@@ -78,7 +79,9 @@ export default function CartOfOrder ({cartItems}) {
                                             </DialogClose>
                                         </div>
                                     </DialogContent>
-                                </Dialog>
+                                    </Dialog>
+                                )}
+                                
                             </td>
                         </tr>
                     ))}
