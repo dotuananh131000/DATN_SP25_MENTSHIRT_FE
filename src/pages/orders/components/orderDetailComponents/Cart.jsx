@@ -144,6 +144,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         fetchThemHoaDonChiTiet();
     }, [HDCTRequest])
 
+    //Nút close sản phẩm chi tiết
+    const handleCloseModal = () => {
+        setIsError("");
+       setQuantity(1);
+    }
+
     //Hàm xóa sản phẩm ra khỏi giỏ hàng
 
     const deleteSP = (hoaDonChiTiet) => {
@@ -161,6 +167,8 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         }
         fetchDeleteSP();
     }
+
+    console.log(spcts)
     return <>
         <motion.div className="bg-white rounded-lg shadow w-full p-4 relative"
             initial={{ opacity: 0, y: 10 }}
@@ -314,7 +322,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                     currency: "VND",
                                 }).format(spct?.donGia)}</td>
                                 <td className="border p-2">
-                                    <Dialog onOpenChange={() => setQuantity(1)}>
+                                    <Dialog onOpenChange={handleCloseModal}>
                                         <DialogTrigger asChild>
                                             <button className="px-4 py-2  rounded-lg bg-orange-600 hover:bg-orange-700 text-white"
                                             >
@@ -356,11 +364,13 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                                         </span>
                                                     </p>
                                                    {isError &&  <span className="text-sm text-red-500">{isError}</span>}
-                                                    
+                                                    <p className="text-gray-500 text-sm mt-1">Số lượng tồn: {spct.soLuong}</p>
                                                 </motion.div> 
                                                     <div className="absolute bottom-6 right-4">
                                                         <DialogFooter className="sm:justify-end">
-                                                            <DialogClose className="px-4 py-2 bg-gray-500 text-white rounded-lg">
+                                                            <DialogClose 
+                                                            onClick={handleCloseModal}
+                                                            className="px-4 py-2 bg-gray-500 text-white rounded-lg">
                                                                 Hủy
                                                             </DialogClose>  
                                                                 <motion.button

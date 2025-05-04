@@ -1,5 +1,6 @@
 import axios from "axios";
 import API_ENDPOINTS from "../api/endPoints";
+import apiClients from "@/api/ApiClient";
 
 
 const CustomerService = {
@@ -16,6 +17,21 @@ const CustomerService = {
             return response.data;
         }catch (err){
             console.log("Lỗi khi gọi API Sign up", err);
+            throw err;
+        }
+    },
+
+    async themNhanh (form) {
+        const formThemNhanh = {
+            tenKhachHang: form.tenKhachHang ?? null,
+            soDienThoai: form.soDienThoai ?? null,
+            email: form.email ?? null,
+        }
+        try {
+            const response = await apiClients.post(API_ENDPOINTS.CUSTOMER.THEMNHANH, formThemNhanh);
+            return response.data;
+        }catch (err) {
+            console.log("Lỗi khi gọi API thêm nhanh khách hàng", err);
             throw err;
         }
     }

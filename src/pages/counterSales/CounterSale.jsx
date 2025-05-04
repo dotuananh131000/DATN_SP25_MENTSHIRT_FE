@@ -453,9 +453,11 @@ export default function CounterSale() {
       console.log("Không thể cập nhật thông tin đơn hàng.");
     }
   }
+
+  const [keywordKH, setKeywordKH] = useState("");
   const fetchDataKhachHang = async () => {
     try {
-      const response = await KhachHangService.getAllKH();
+      const response = await KhachHangService.getAllKH(keywordKH);
       setKhList(response);
     } catch (error) {
       console.log("Lỗi khi gọi API khách hàng", error);
@@ -726,12 +728,12 @@ const validateThemSP = ()=>{
               <div className="flex space-x-4">
                 <button
                   onClick={()=> validateThemSP()}
-                  className="btn px-4 py-1 border border-orange-500 rounded-lg bg-orange-500 hover:bg-orange-600 text-white"
+                  className="px-3 py-2 border border-orange-500 rounded-lg bg-orange-500 hover:bg-orange-600 text-white"
                 >
                   Thêm sản phẩm
                 </button>
                 <button onClick={()=> setIsQRScanner(true)} 
-                className="btn px-4 py-1 border border-orange-500 bg-orange-500 text-white rounded-lg hover:bg-orange-500 hover:text-white">
+                className="px-3 py-2 border border-orange-500 bg-orange-500 text-white rounded-lg hover:bg-orange-500 hover:text-white">
                   Quét QR
                 </button>
               </div>
@@ -867,9 +869,9 @@ const validateThemSP = ()=>{
             </h1>
             <button
               onClick={handleModalKH}
-              className="btn bg-orange-500 hover:bg-orange-600 text-white"
+              className="bg-orange-500 hover:bg-orange-600 duration-200 px-3 py-2 rounded-lg text-white"
             >
-              Thêm khách hàng
+              Chọn khách hàng
             </button>
           </div>
           <div className="flex items-center p-4 space-x-4 bg-white rounded-lg shadow h-20 ">
@@ -895,7 +897,7 @@ const validateThemSP = ()=>{
               </button>
               <button
                 onClick={handleModalKH}
-                className="btn bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-orange-500 hover:bg-orange-600 duration-200 px-3 py-2 rounded-lg text-white"
               >
                 Thay đổi khách hàng
               </button>
@@ -941,7 +943,7 @@ const validateThemSP = ()=>{
       <div className="flex space-x-4 bg-white shadow rounded py-4 px-4">
         <button
           onClick={handleCreateBill}
-          className="btn text-base font-normal bg-orange-500 hover:bg-orange-600 text-white "
+          className="bg-orange-500 hover:bg-orange-600 duration-200 text-white px-3 py-2 rounded-lg "
         >
           Tạo hóa đơn mới
         </button>
@@ -989,6 +991,10 @@ const validateThemSP = ()=>{
           khList={khList}
           isClose={setIsModalKH}
           handleUpdateKhOfHd={handleUpdateKhOfHd}
+          keywordKH={keywordKH}
+          setKeywordKH={setKeywordKH}
+          fetchDataKhachHang={fetchDataKhachHang}
+          setKhList={setKhList}
         />
       )}
       {thongTinKH()}

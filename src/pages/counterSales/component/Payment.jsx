@@ -380,11 +380,12 @@ export default function Payment({
   const [isInput, setIsInput] = useState(false);
 
   const hanhdlDoubleClick = () => {
-    setIsInput(true);
-    console.log("đang xử lý ...");
+    if(isChecked){
+      setIsInput(true);
+    }
   }
+
   const onBlug = () => {
-    console.log(thongTinDonHang.phiShip);
     if(thongTinDonHang.phiShip < 1000 || thongTinDonHang.phiShip > 1000000){
       toast.error("Phí ship phải lớn hơn 1000 và nhỏ hơn 1.000.000.");
       setThongTinDongHang((pre) => ({
@@ -417,7 +418,12 @@ export default function Payment({
             </div>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <h1 className="text-orange-500">Phí ship</h1> 
+            <div className="flex items-center space-x-4">
+              <h1 className="text-orange-500">Phí ship</h1> 
+              <img 
+              className="object-cover w-9 h-9 rounded-lg"
+              src="/public/imagesGHN.jpg" alt="" />
+            </div>
             {isInput ? 
             <input onBlur={()=>onBlug()} type="text" 
             onChange={(e) => onChange(e)}
@@ -663,7 +669,7 @@ export default function Payment({
       return (
         <button
           onClick={xacNhanHoaDon}
-          className="btn w-full mb-4 bg-orange-500 hover:bg-orange-600 text-white"
+          className="w-full mb-4 bg-orange-500 hover:bg-orange-600 duration-200 rounded-lg text-white px-3 py-2"
         >
           Xác nhân đơn hàng
         </button>
@@ -672,7 +678,7 @@ export default function Payment({
       return (
         <button
           onClick={() => handleHoaTatHoaDon()}
-          className="btn w-full mb-4 bg-orange-500 hover:bg-orange-600 text-white"
+          className="w-full mb-4 px-3 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 duration-200 text-white"
         >
           Hoàn tất hóa đơn
         </button>

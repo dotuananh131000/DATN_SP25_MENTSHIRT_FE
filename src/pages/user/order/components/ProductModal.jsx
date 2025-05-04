@@ -96,13 +96,15 @@ export default function ProductModal ({setCartItems, order}){
         setQuantity("");
     }
 
-    return <div className="w-full h-14 mt-4">
+    return <div className="w-full mt-4 flex justify-between">
+        <div></div>
         <div className="relative">
-            <Dialog>
+            {order.trangThaiGiaoHang === 1 && (
+                <Dialog>
                 <DialogTrigger asChild>
                     <button
                     onClick={handleOnClick}
-                    className="absolute right-3 bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200"
+                    className="bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200 mb-4 mr-3"
                     >Thêm sản phẩm</button>
                 </DialogTrigger>
                 <DialogContent 
@@ -164,7 +166,7 @@ export default function ProductModal ({setCartItems, order}){
                                                         className="skeleton w-[160px] h-[180px] object-cover rounded-lg shadow"
                                                         src={item.hinhAnh} alt=""
                                                         />
-                                                       <div>
+                                                        <div>
                                                         <p className="text-lg text-orange-500">{item.sanPham.tenSanPham}</p>
                                                             <div className="flex items-center space-x-4">
                                                                 <p className="text-sm">Màu sắc: {item.mauSac.tenMauSac}</p>
@@ -183,11 +185,12 @@ export default function ProductModal ({setCartItems, order}){
                                                                 />
                                                                 </span>
                                                             </p>  
-                                                            {error && (<p className="text-sm text-red-500">{error}</p>)}      
+                                                            {error && (<p className="text-sm text-red-500">{error}</p>)}  
+                                                            <p className="text-sm mt-2">Số lượng tồn: <span>{item.soLuong}</span></p>    
                                                         </div>                                              
                                                     </div>
                                                     <div className="absolute bottom-4 right-4">
-                                                       <DialogFooter>
+                                                        <DialogFooter>
                                                             <DialogClose
                                                             onClick={handleClose}
                                                             className="px-4 py-2 bg-gray-500 text-white rounded-lg">
@@ -198,7 +201,7 @@ export default function ProductModal ({setCartItems, order}){
                                                             className="bg-orange-500 text-white px-3 py-2 rounded-lg active:scale-95 duration-200">
                                                                 Thêm
                                                             </button>
-                                                       </DialogFooter>
+                                                        </DialogFooter>
                                                     </div>
                                                 </DialogContent>
                                                 
@@ -210,7 +213,9 @@ export default function ProductModal ({setCartItems, order}){
                         </table>
                     </div>
                 </DialogContent>
-            </Dialog>
+                </Dialog>
+            )}
+           
         </div>
     </div>
 }

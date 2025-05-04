@@ -1,12 +1,23 @@
 function ModalSPCT({spct, setIsModalChitietSP,quantity, setQuantity, handleSetHDCTRequest }){
+
+  const handleSetquatity = (e) => {
+    const newQuantity = e.target.value.replace(/\D/g, "");
+    setQuantity(newQuantity)
+  }
+
+  const handleClose = () => {
+    setIsModalChitietSP(false);
+    setQuantity(1);
+  }
+
     return <>
     <div className="modal modal-open">
-    <div className="modal-box relative h-[310px]">
+    <div className="modal-box relative h-[350px]">
       <h1 className="text-sm text-red-500 text-left font-bold mb-4">
         Chi tiết sản phẩm
       </h1>
       <button
-        onClick={() => setIsModalChitietSP(false)}
+        onClick={handleClose}
         className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
       >
         ✖
@@ -34,22 +45,20 @@ function ModalSPCT({spct, setIsModalChitietSP,quantity, setQuantity, handleSetHD
             </strong>
           </p>
           <div className="flex flex-wrap align-center">
-            <p className="w-1/3 px-2 py-2">Số lượng :</p>
+            <p className="w-1/3 ">Số lượng : </p>
             <input
-              type="number"
+              type="text"
               className="w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 "
-              min={1}
               value={quantity}
-              onChange={(e) => {
-                setQuantity(Number(e.target.value));
-              }}
+              onChange={(e) => handleSetquatity(e)}
             />
           </div>
+          <p className="mt-2">Số lượng tồn: {spct.soLuong}</p>
           <div className="flex flex-1 mt-4">
             <div className="w-full"></div>
             <button
               onClick={() => handleSetHDCTRequest()}
-              className="btn bg-orange-500 hover:bg-orange-600 text-white w-1/3"
+              className="bg-orange-500 hover:bg-orange-600 text-white w-2/3 px-3 py-2 rounded-lg"
             >
               Xác nhận
             </button>
