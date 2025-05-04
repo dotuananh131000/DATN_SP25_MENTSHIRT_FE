@@ -15,7 +15,8 @@ const API_ENDPOINTS = {
   DETAILORDERS: {
     BASE: `${API_BASE_URL}/hdct/hien-thi`,
     GETBYID: (idHD) =>  `${API_BASE_URL}/hdct/${idHD}`,
-    ADD: `${API_BASE_URL}/hdct`
+    ADD: `${API_BASE_URL}/hdct`,
+    DELETE:(idHDCT) => `${API_BASE_URL}/hdct/${idHDCT}`,
   },
 
   VOUCHERS: {

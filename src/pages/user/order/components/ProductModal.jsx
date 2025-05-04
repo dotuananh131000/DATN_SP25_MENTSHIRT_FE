@@ -5,7 +5,7 @@ import Productdetail from "@/services/ProductDetailService";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function ProductModal ({setCartItems, order}){
+export default function ProductModal ({setCartItems, order, fetchOrder}){
 
      // Hàm lấy danh sách sản phẩm
      const [productList, setProductList] = useState([]);
@@ -63,6 +63,7 @@ export default function ProductModal ({setCartItems, order}){
                 }
             });
             toast.success("Đã thêm sản phẩm và đơn hàng");
+            fetchOrder();
         }catch(err) {
             console.log("Lỗi khi thêm hóa đơn chi tiết", err);
             toast.error("Không thể thêm sản phẩm và giỏ hàng, vui lòng thử lại");

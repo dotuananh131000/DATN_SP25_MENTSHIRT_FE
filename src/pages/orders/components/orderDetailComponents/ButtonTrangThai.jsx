@@ -72,9 +72,9 @@ function ButtonTrangThai({hoaDon, handleCapNhatDonHang, handleClickHistory, list
                 )}
 
                 {hoaDon.trangThaiGiaoHang === 5 && (
-                    <p className="px-4 py-2 bg-blue-600 rounded-lg text-white "
+                    <p className="text-orange-500 px-3 py-2"
                     >
-                        Thành Công
+                        Đơn hàng đã hoàn thành
                     </p>
                 )}
             </>
