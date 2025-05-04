@@ -77,7 +77,7 @@ function Payment() {
   useEffect(() => {
     const fetchListVoucher =async ()=>{
       try {
-        const response = await Voucher.lisVoucher();
+        const response = await Voucher.lisVoucher(client.id);
         setListVoucher(response);
       }catch (error){
         console.log("Không thể lấy được danh sách voucher");
@@ -85,6 +85,8 @@ function Payment() {
     }
     fetchListVoucher();
   },[])
+
+  console.log(listVoucher)
 
   const handleGetVoucher = (voucher) =>{
     if(!voucher){
@@ -620,7 +622,7 @@ function Payment() {
                   </div>
                 </label>
                 
-                <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                {/* <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -633,7 +635,7 @@ function Payment() {
                     <span className="font-medium text-gray-900 block">Ví MoMo</span>
                     <span className="text-sm text-gray-500">Thanh toán qua ví điện tử MoMo</span>
                   </div>
-                </label>
+                </label> */}
               </div>
             </div>
           </div>
@@ -741,8 +743,13 @@ function Payment() {
                   <span className="text-sm text-gray-600">Tạm tính ({totalItems} sản phẩm):</span>
                   <span className="text-sm font-medium">{totalAmount.toLocaleString()}đ</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between">
+                 <div className="flex items-center space-x-3">
                   <span className="text-sm text-gray-600">Phí vận chuyển:</span>
+                    <img src="/public/imagesGHN.jpg" 
+                    className="w-9 h-9 object-cover rounded-lg"
+                    alt="" />
+                 </div>
                   <span className="text-sm font-medium">{shippingFee.toLocaleString()}đ</span>
                 </div>
                 {selectedVoucher && voucherDiscount > 0 && (

@@ -321,6 +321,8 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
             listHistoryHD={listHistoryHD}
             setListHistoryHD={setListHistoryHD}
             handleTiepNhan={handleTiepNhan}
+            gioHang={gioHang}
+            lichSuThanhToan={lichSuThanhToan}
             />
             {(hoaDon.trangThaiGiaoHang === 5 && hoaDon.trangThai === 0) && (
               <div className="fixed top-0 left-0 w-full h-full flex items-start justify-center bg-black bg-opacity-50 z-50">

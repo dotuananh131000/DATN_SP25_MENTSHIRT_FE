@@ -33,22 +33,20 @@ function QRProduct({spct, quantity, setQuantity, setIsSPQR, handleSetSPQR}){
             </strong>
           </p>
           <div className="flex flex-wrap align-center">
-            <p className="w-1/3 px-2 py-2">Số lượng :</p>
+            <p className="w-1/3 ">Số lượng : </p>
             <input
-              type="number"
+              type="text"
               className="w-2/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 "
-              min={1}
               value={quantity}
-              onChange={(e) => {
-                setQuantity(Number(e.target.value));
-              }}
+              onChange={(e) => handleSetquatity(e)}
             />
           </div>
+          <p className="mt-2">Số lượng tồn: {spct.soLuong}</p>
           <div className="flex flex-1 mt-4">
             <div className="w-full"></div>
             <button
               onClick={() => handleSetSPQR()}
-              className="btn bg-orange-500 hover:bg-orange-600 text-white w-1/3"
+               className="bg-orange-500 hover:bg-orange-600 text-white w-2/3 px-3 py-2 rounded-lg"
             >
               Xác nhận
             </button>

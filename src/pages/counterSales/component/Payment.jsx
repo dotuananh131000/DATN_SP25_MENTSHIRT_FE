@@ -600,6 +600,8 @@ export default function Payment({
     }
   };
 
+  
+
   const handleHoaTatHoaDon = () => {
     if (sanPhamGioHang.length <= 0) {
       toast.warn("Giỏ hàng trống !");

@@ -145,7 +145,7 @@ export default function ProductUpdateModal({
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Mã QR Sản phẩm</h3>
             <div className="bg-gray-100 p-4 rounded-lg border border-gray-300 shadow-sm">
               <QRCodeCanvas
-                value={`http://localhost:5173/product/${currentProduct?.id}`}
+                value={currentProduct?.id.toString()}
                 size={140}
                 bgColor="#ffffff"
                 fgColor="#000000"
