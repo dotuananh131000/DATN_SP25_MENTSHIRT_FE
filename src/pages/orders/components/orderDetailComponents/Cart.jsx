@@ -91,6 +91,8 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong - 1);
     }
 
+    console.log(gioHang)
+
     const nextSoLuongSanPham = (hoaDonChiTiet) => {
         if(!hoaDonChiTiet) {
             toast.error("Lỗi khi thêm số lượng sản phẩm.");
@@ -474,6 +476,16 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                     }).format(item.donGia)}
                                     </strong>
                                 </p>
+                                {item.donGiaCu && (
+                                    <div className="flex justify-center space-x-1">
+                                        <p>Giá cũ:</p>
+                                        <span class="line-through text-gray-500">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(item.donGiaCu)}</span>
+                                    </div>
+                                )}
                             </td>
                             <td className="px-4 py-2 ">
                                 

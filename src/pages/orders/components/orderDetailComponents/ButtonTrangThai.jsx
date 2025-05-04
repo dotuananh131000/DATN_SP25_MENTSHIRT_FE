@@ -128,7 +128,7 @@ function ButtonTrangThai({hoaDon,
                 />
             </div>
         </div>
-        {hoaDon.loaiDon === 0 && (
+        {(hoaDon.loaiDon === 0 || hoaDon.loaiDon === 2) && (
             <>
                 {hoaDon.trangThaiGiaoHang !== 5 && (
                     <Dialog>

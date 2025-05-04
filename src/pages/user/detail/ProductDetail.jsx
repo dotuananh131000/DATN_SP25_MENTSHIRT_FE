@@ -172,7 +172,7 @@ function ProductDetail() {
     checkEmptyProdct();
   }, [attributes, productDetail]);
 
-  
+  console.log(productDetail)
 
   return (
     <motion.div className="bg-gradient-to-b from-orange-50 to-white min-h-screen"
@@ -227,8 +227,14 @@ function ProductDetail() {
             <div className="lg:col-span-2 p-6 border-l border-gray-100">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">{productDetail?.sanPham?.tenSanPham}</h1>
               
-              <div className="mb-6">
-                <span className="text-3xl font-bold text-orange-600">{productDetail?.donGia?.toLocaleString()}₫</span>
+              <div className="mb-6 flex space-x-12 items-center">
+
+               <span className="text-3xl font-bold text-orange-600">{productDetail?.donGia?.toLocaleString()}₫</span>
+               
+                {productDetail.donGiaCu && (
+                  <span className="text-xl font-bold line-through text-gray-500">{productDetail?.donGiaCu?.toLocaleString()}₫</span>
+                )}
+                
               </div>
               
               <div className="space-y-6">
