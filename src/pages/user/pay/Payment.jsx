@@ -77,10 +77,10 @@ function Payment() {
   useEffect(() => {
     const fetchListVoucher =async ()=>{
       try {
-        const response = await Voucher.lisVoucher(client.id);
+        const response = await Voucher.lisVoucher(client?.id || "");
         setListVoucher(response);
       }catch (error){
-        console.log("Không thể lấy được danh sách voucher");
+        console.log("Không thể lấy được danh sách voucher", error);
       }
     }
     fetchListVoucher();
