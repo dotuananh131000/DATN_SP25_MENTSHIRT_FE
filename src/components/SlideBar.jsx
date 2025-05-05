@@ -49,7 +49,7 @@ function SlideBar() {
     <div className="w-60 min-h-screen bg-base-200 shadow-lg p-4 relative ">
      <ScrollArea>
        <div className="flex justify-center mb-4">
-        <img src="/public/logo.png" alt="Logo" className="w-24" />
+        <img src="/public/logodone.png" alt="Logo" className="w-48 " />
       </div>
 
       <ul className="menu w-full ">
