@@ -53,6 +53,16 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                                         {UseFormatMoney(item.donGia)}
                                     </strong>
                                 </p>
+                                {item.donGiaCu && (
+                                    <div className="flex justify-center space-x-1">
+                                        <p>Giá cũ:</p>
+                                        <span class="line-through text-gray-500">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(item.donGiaCu)}</span>
+                                    </div>
+                                )}
                             </td>
                             <td>
                                 <input 

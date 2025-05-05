@@ -1,16 +1,29 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import usePrint from "@/lib/usePrint";
+import OrderService from "@/services/OrderService";
 import { motion } from "framer-motion";
 import { QRCodeCanvas } from "qrcode.react";
 import { useRef } from "react";
+import { toast } from "react-toastify";
 function ButtonTrangThai({hoaDon, 
     handleCapNhatDonHang, 
     handleClickHistory, 
     listHistoryHD, 
     setListHistoryHD, 
     handleTiepNhan, 
-    gioHang, lichSuThanhToan,}){
+    gioHang, lichSuThanhToan, setHoaDon}){
+
+        const cancleHoaDon = async () => {
+            try{
+                const response = await OrderService.cancelInvoice(hoaDon.id);
+                setHoaDon(response.data);
+                toast.success(response.message);
+            }catch (err){
+                console.log("Không thể hủy hóa đơn", err);
+                toast.error("Lỗi không thể hủy hóa đơn");
+            }
+        }
 
         const renderChiTietHTML = () => {
             return gioHang.map((item, i) => (
@@ -130,7 +143,7 @@ function ButtonTrangThai({hoaDon,
         </div>
         {(hoaDon.loaiDon === 0 || hoaDon.loaiDon === 2) && (
             <>
-                {hoaDon.trangThaiGiaoHang !== 5 && (
+                {(hoaDon.trangThaiGiaoHang !== 5 && hoaDon.trangThaiGiaoHang !== 7) && (
                     <Dialog>
                         <DialogTrigger asChild>
                             <button className="px-4 py-2 bg-orange-500 rounded-lg text-white hover:scale-105 duration-200">
@@ -216,7 +229,9 @@ function ButtonTrangThai({hoaDon,
                        
                     </DialogHeader>
                     <div className="w-full flex justify-center">
-                        <DialogClose className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3">
+                        <DialogClose 
+                        onClick={cancleHoaDon}
+                        className="px-4 py-3 text-white bg-orange-600 hover:scale-95 duration-200 rounded-lg w-1/3">
                             Xác nhận
                         </DialogClose>
                     </div>   
