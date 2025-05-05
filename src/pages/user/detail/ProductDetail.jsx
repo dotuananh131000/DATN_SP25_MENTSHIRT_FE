@@ -411,10 +411,10 @@ function ProductDetail() {
                     >
                       Thêm vào giỏ hàng
                     </button>
-                    <button 
+                    {/* <button 
                     className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-medium py-3 px-6 rounded-lg transition-colors">
                       Mua ngay
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
