@@ -125,9 +125,9 @@ function OrderHistory() {
                     >Đã hủy</p>
                 </div>
                 <div className="flex items-center justify-center space-x-4">
-                    <button className="border border-orange-500 p-1 rounded-lg">
+                    {/* <button className="border border-orange-500 p-1 rounded-lg">
                         <LuScanQrCode  className="text-orange-500 "/>
-                    </button>
+                    </button> */}
 
                     <input type="text"
                     onChange={(e) => setKeyword(e.target.value)}

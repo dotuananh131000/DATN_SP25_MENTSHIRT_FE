@@ -558,12 +558,10 @@ function Payment() {
                         <Dialog>
                           <DialogTrigger asChild>
                           <button
-                          // onClick={navigateAddAddress}
+                          onClick={navigateAddAddress}
                           className="text-gray-400">Thêm đia chỉ mới...</button>
                           </DialogTrigger>
-                          <DialogContent>
-                            njibhihhuh
-                          </DialogContent>
+                         
                         </Dialog>
                     
                     </PopoverContent>

@@ -19,9 +19,18 @@ function StepsTrangThaiHoaDon({hoaDon}){
         {id:9 , status: "Đã xác nhận", icon: <AiOutlineCheck className="text-green-600 text-2xl" /> },
         {id:9 , status: "Đã thanh toán", icon: <AiFillCheckCircle className="text-orange-600 text-2xl" /> },
     ]
+
+    if(hoaDon.trangThaiGiaoHang === 7){
+      return <>
+        <div className="flex justify-center space-x-28 w-full px-4 bg-white rounded-lg shadow p-4 mb-4">
+          <p className="text-xl text-orange-500">Đơn hàng đã hủy !</p>
+        </div>
+        
+      </>
+    }
     
 
-    if(hoaDon.loaiDon ===1){
+    if(hoaDon.loaiDon === 1 ){
         return <>
         <div className="flex justify-center space-x-28 w-full px-4 bg-white rounded-lg shadow p-4 mb-4">
         <motion.div

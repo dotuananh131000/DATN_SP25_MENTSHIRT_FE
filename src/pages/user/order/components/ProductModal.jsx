@@ -2,25 +2,48 @@ import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogT
 import UseFormatMoney from "@/lib/useFormatMoney";
 import OrderDetailService from "@/services/OrderDetailService";
 import Productdetail from "@/services/ProductDetailService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 
 export default function ProductModal ({setCartItems, order, fetchOrder}){
 
      // Hàm lấy danh sách sản phẩm
      const [productList, setProductList] = useState([]);
+     const [page, setPage] = useState(0);
+     const [size, setSize] = useState(10);
+     const [keyword, setKeyword] = useState("");
+    const [totalPages, setTotalPageSP] = useState(0);
      const fetchProduct = async () => {
          try {
-            const response = await Productdetail.getAllActive();
+            const response = await Productdetail.getAllActive(page, size, keyword);
             setProductList(response.data.content)
+            setTotalPageSP(response.data.totalPages)
          }catch (err){
              console.log("Không thể lấy danh sách hóa đơn", err);
          }
      }
 
-     const handleOnClick = () => {
+    //  const handleOnClick = () => {
+    //     fetchProduct();
+    //  }
+
+    const onCancle = () => {
+        setPage(0);
+        setKeyword("");
+    }
+
+    //Thay đôi key
+    const handleChangeKye = (e) => {
+        const newKey = e.target.value;
+        setKeyword(newKey);
+    }
+
+     useEffect(() => {
         fetchProduct();
-     }
+     }, [page, keyword])
+
+
 
     const [quantity, setQuantity] = useState("");
     const [error, setError] = useState("");
@@ -97,14 +120,17 @@ export default function ProductModal ({setCartItems, order, fetchOrder}){
         setQuantity("");
     }
 
+
+
+
     return <div className="w-full mt-4 flex justify-between">
         <div></div>
         <div className="relative">
             {order.trangThaiGiaoHang === 1 && (
-                <Dialog>
+                <Dialog onOpenChange={onCancle}>
                 <DialogTrigger asChild>
                     <button
-                    onClick={handleOnClick}
+                    // onClick={handleOnClick}
                     className="bg-orange-500 text-white rounded-lg px-2 py-2 active:scale-95 duration-200 mb-4 mr-3"
                     >Thêm sản phẩm</button>
                 </DialogTrigger>
@@ -116,6 +142,7 @@ export default function ProductModal ({setCartItems, order, fetchOrder}){
                     <div className="">
                         <div>
                             <input 
+                            onChange={(e) => handleChangeKye(e)}
                             className="w-full m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                             type="text"
                             placeholder="Tìm kiếm sản phẩm..."
@@ -212,11 +239,34 @@ export default function ProductModal ({setCartItems, order, fetchOrder}){
                                 ))}
                             </tbody>
                         </table>
+                        <div className="flex items-center mt-2 px-2 relative">
+                            <div className="flex items-center absolute right-2 top-1">
+                                <ReactPaginate
+                                previousLabel="<"
+                                nextLabel=">"
+                                breakLabel="..."
+                                pageCount={totalPages}
+                                marginPagesDisplayed={2}
+                                pageRangeDisplayed={5}
+                                onPageChange={(e) => setPage(e.selected)}
+                                forcePage={page}
+                                containerClassName="flex justify-center items-center space-x-2"
+                                pageClassName="border border-gray-300 rounded"
+                                pageLinkClassName="px-3 py-1"
+                                activeClassName="bg-orange-500 text-white"
+                                previousClassName="border border-gray-300 rounded px-3 py-1"
+                                nextClassName="border border-gray-300 rounded px-3 py-1"
+                                disabledClassName="text-gray-300"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </DialogContent>
                 </Dialog>
             )}
            
+           
         </div>
+        
     </div>
 }

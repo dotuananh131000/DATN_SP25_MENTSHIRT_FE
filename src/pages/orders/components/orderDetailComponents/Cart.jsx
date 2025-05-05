@@ -490,7 +490,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                             <td className="px-4 py-2 ">
                                 
                                 <div className="p-4 flex justify-center items-center space-x-4">
-                               {(hoaDon.trangThaiGiaoHang ===1 || hoaDon.trangThaiGiaoHang === 8) && (
+                               {((hoaDon.trangThaiGiaoHang ===1 || hoaDon.trangThaiGiaoHang === 8) && item.trangThai !== 1) && (
                                  <button onClick={() => prevSoLuongSanPham(item)} 
                                  className="px-4 py-1 bg-gray-200 rounded-lg text-lg">-</button>
                                )}
@@ -518,7 +518,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                             {item.soLuong}
                                         </motion.p>
                                     )}
-                               {(hoaDon.trangThaiGiaoHang ===1 || hoaDon.trangThaiGiaoHang === 8) && (
+                               {((hoaDon.trangThaiGiaoHang ===1 || hoaDon.trangThaiGiaoHang === 8) && item.trangThai !== 1) && (
                                  <button onClick={() => nextSoLuongSanPham(item)} 
                                  className="px-4 py-1 bg-gray-200 rounded-lg text-lg">+</button>
                                )}
