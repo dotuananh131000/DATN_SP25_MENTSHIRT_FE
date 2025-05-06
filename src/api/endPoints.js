@@ -10,6 +10,7 @@ const API_ENDPOINTS = {
     PAIDINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/paid/${idHD}`,
     UPDATEINFOINVOICE: `${API_BASE_URL}/hoa-don/updateInfo`,
     CANCELINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/cancel/${idHD}`,
+    WAITORDERS: `${API_BASE_URL}/hoa-don/cho`,
   },
 
   DETAILORDERS: {

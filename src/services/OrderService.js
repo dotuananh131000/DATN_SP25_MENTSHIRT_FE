@@ -22,6 +22,16 @@ const OrderService = {
       throw error;
     }
   },
+
+  async hoaDonCho(){
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.ORDERS.WAITORDERS);
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API hóa đơn chờ", err);
+      throw err;
+    }
+  },
   
   async getOrderById(id){
     try {

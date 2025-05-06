@@ -65,7 +65,7 @@ function SlideBar() {
 
         <li>
           <Link
-            to="/admin/counterSale"
+            to="/admin/pointOfSales"
             className={`menu-item my-1`}
             onClick={() => toggleMenu("banHangTaiQuay")}
           >
