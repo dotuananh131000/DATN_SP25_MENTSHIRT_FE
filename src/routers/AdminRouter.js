@@ -18,6 +18,7 @@ const order = lazy(() => import("../pages/orders/Order"));
 const discount = lazy(() => import("../pages/discounts/Discount"));
 const detailOrder = lazy(() => import("../pages/detailOrder/DetailOrder"));
 const counterSale = lazy(() => import("../pages/counterSales/CounterSale"));
+const pointOfSales = lazy(() => import("../pages/pointOfSales/PointOfSales"));
 const voucher = lazy(() => import("../pages/voucher/Voucher"));
 const login = lazy(() => import("../auth/login"));
 
@@ -40,6 +41,7 @@ const adminRoutes = [
   { path: "discount", component: discount, role: "admin" },
   { path: "detailOrder/:id", component: detailOrder, role: "admin" },
   { path: "counterSale", component: counterSale, role: "admin" },
+  { path: "pointOfSales", component: pointOfSales, role: "admin" },
   { path: "voucher", component: voucher, role: "admin" },
   { path: "login", component: login, },
 ];
