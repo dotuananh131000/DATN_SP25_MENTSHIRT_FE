@@ -3,6 +3,7 @@ const API_BASE_URL =
 const API_ENDPOINTS = {
   ORDERS: {
     BASE: `${API_BASE_URL}/hoa-don/hien-thi`,
+    ADDORCOUNTER: `${API_BASE_URL}/hoa-don`,
     SEARCH: `${API_BASE_URL}/hoa-don/search`,
     COUNT: `${API_BASE_URL}/hoa-don/count`,
     TIEPNHAN: (idHD) => `${API_BASE_URL}/hoa-don/${idHD}`,
