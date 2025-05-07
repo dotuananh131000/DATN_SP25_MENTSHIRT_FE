@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-function TabOrder({ waitOrder, fetchOrder }){
+function TabOrder({ waitOrder, fetchOrder, fetchAddHoaDon }){
 
 
     // Hóa đơn được chọn
     const [selectedBill, setSelectedBill] = useState(0);
+
 
     const onClickBill = (bill, i) => {
         setSelectedBill(i);
@@ -12,8 +13,8 @@ function TabOrder({ waitOrder, fetchOrder }){
     }
     
     const addNewBill = () => {
-        const newId = bills.length > 0 ? bills[bills.length - 1].id + 1 : 1;
-        setBills([...bills, { id: newId }]);
+        fetchAddHoaDon();
+        setSelectedBill(waitOrder.length );
     };
     return <>
         <div className="bg-white shadow rounded-lg p-2 mb-4 ">

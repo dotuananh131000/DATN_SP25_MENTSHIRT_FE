@@ -2,6 +2,17 @@ import apiClient from "../api/ApiClient";
 import API_ENDPOINTS from "../api/endPoints";
 
 const OrderService = {
+
+  async addHoaDonTaiQuay(idNhanVien) {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.ORDERS.ADDORCOUNTER, idNhanVien);
+      return response.data;
+    }catch (err) {
+      console.log("Lỗi khi gọi API add hóa đơn tại quầy", err);
+      throw err;
+    }
+  },
+
   async hoaDons(page = 0, size = 10, filters = {}){
     try {
       const params ={
