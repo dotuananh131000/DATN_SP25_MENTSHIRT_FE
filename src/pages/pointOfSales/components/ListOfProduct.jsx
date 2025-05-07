@@ -6,29 +6,16 @@ import { useEffect, useState } from "react";
 import { LuScanQrCode } from "react-icons/lu";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
-function ListOfProduct ({ setCartItems, order, setWaitOrder }) {
+function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, productList, setProductList, totalPages }) {
 
-    const [productList, setProductList] = useState([]);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
     const [keyword, setKeyword] = useState("");
-    const [totalPages, setTotalPageSP] = useState(0);
 
-    // Lấy ra danh sách sản phẩm
-    const fetchProductList = async () => {
-        try {
-            const response = await Productdetail.getAllActive(page, size, keyword);
-            setProductList(response.data.content)
-            setTotalPageSP(response.data.totalPages)
-        }catch(err) {
-            console.log("Lỗi khi lấy danh sách sản phẩm", err);
-            toast.error("Có lối khi lấy danh sách sản phẩm");
-        }
-    }
     useEffect(() => {
         // Thời gian trễ khi các phần tử thay đổi
         const delayDebounce = setTimeout(() => {
-            fetchProductList();
+            fetchProductList(page, size, keyword);
         }, 400);
 
         // Nếu tìm kiếm tiếp tục thì các lần chạy trước đó sẽ hủy
@@ -85,6 +72,7 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder }) {
     const fetchAdd = async (form) => {
         try {
             const response = await OrderDetailService.Add(form);
+            fetchProductList(page, size, keyword);
             const addedItem = response.data;
 
             //Check sản phẩm đã tông tại
@@ -137,16 +125,15 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder }) {
         setQuantity("1");
     }
 
-
     return <>
         <div className="bg-white rounded-lg shadow p-2 mb-4 flex justify-between items-center">
             <h1 className="text-lg font-bold">Hóa đơn: {order.maHoaDon}</h1>
             <div className="flex space-x-4">
-                <Dialog>
-                    <DialogTrigger>
-                        <button className="bg-orange-500 px-3 py-2 text-white rounded-lg active:scale-95 duration-200">
-                            Thêm sản phẩm
-                        </button>
+                <Dialog >
+                    <DialogTrigger 
+                    onClick={() => fetchProductList(page, size, keyword)}
+                    className="bg-orange-500 px-3 py-2 text-white rounded-lg active:scale-95 duration-200">
+                        Thêm sản phẩm
                     </DialogTrigger>
                     <DialogContent className="w-full max-w-5xl max-h-[700px] overflow-y-auto">
                         <DialogHeader>

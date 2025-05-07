@@ -8,10 +8,12 @@ import OrderService from "@/services/OrderService";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import OrderDetailService from "@/services/OrderDetailService";
+import Productdetail from "@/services/ProductDetailService";
 
 function PointOfSales (){
     const nhanVienID = useSelector((state)=> state.auth.user.id) 
     const [order, setOrder] = useState({});
+    const [productList, setProductList] = useState([]);
     const [cartItems, setCartItems] = useState([]);
 
     // Lấy hóa đơn chờ
@@ -56,6 +58,19 @@ function PointOfSales (){
         }
     }
 
+    // Lấy ra danh sách sản phẩm
+    const [totalPages, setTotalPageSP] = useState(0);
+    const fetchProductList = async (page, size, keyword) => {
+        try {
+            const response = await Productdetail.getAllActive(page, size, keyword);
+            setProductList(response.data.content)
+            setTotalPageSP(response.data.totalPages)
+        }catch(err) {
+            console.log("Lỗi khi lấy danh sách sản phẩm", err);
+            toast.error("Có lối khi lấy danh sách sản phẩm");
+        }
+    }
+
     // Danh sách sản phẩm có trong giỏ hàng
     const fetchCartOfItems = async (id) => {
         try {
@@ -76,8 +91,19 @@ function PointOfSales (){
         <div className="p-6 bg-gray-50 min-h-screen relative">
             <h1 className="text-xl font-bold mb-4">Bán hàng tại quầy</h1>
             <TabOrder waitOrder={waitOrder} fetchOrder={fetchOrder} fetchAddHoaDon={fetchAddHoaDon}/>
-            <ListOfProduct setCartItems={setCartItems} order={order} setWaitOrder={setWaitOrder} />
-            <CartOfBill cartItems={cartItems} setCartItems={setCartItems} order={order} />
+            <ListOfProduct setCartItems={setCartItems} 
+            order={order} 
+            setWaitOrder={setWaitOrder} 
+            fetchProductList={fetchProductList} 
+            productList={productList}
+            setProductList={setProductList}
+            totalPages={totalPages}
+            />
+            <CartOfBill 
+            cartItems={cartItems} 
+            setCartItems={setCartItems} 
+            order={order} 
+            />
             <CustomerOfBill />
             <PayMentOfBill />
         </div>

@@ -57,17 +57,17 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
                 <h1 className="text-xl">Thông tin đơn hàng</h1>
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Tổng tiền hàng: </p>
-                    <p className="font-bold">{UseFormatMoney(order.tongTien)}</p>
+                    <p className="font-bold">{UseFormatMoney(order.tongTien || 0)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Phí ship:</p>
-                    <p className="font-bold">{UseFormatMoney(order.phiShip)}</p>
+                    <p className="font-bold">{UseFormatMoney(order.phiShip || 0)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Giảm giá:</p>
-                    <p className="font-bold">{UseFormatMoney(soTienGiam)}</p>
+                    <p className="font-bold">{UseFormatMoney(soTienGiam || 0)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
