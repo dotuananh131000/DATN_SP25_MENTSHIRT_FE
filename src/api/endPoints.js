@@ -12,6 +12,8 @@ const API_ENDPOINTS = {
     UPDATEINFOINVOICE: `${API_BASE_URL}/hoa-don/updateInfo`,
     CANCELINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/cancel/${idHD}`,
     WAITORDERS: `${API_BASE_URL}/hoa-don/cho`,
+    CHONKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/chon-khach-hang/${idHD}`,
+    BOKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/bo-khach-hang/${idHD}`
   },
 
   DETAILORDERS: {
@@ -39,6 +41,10 @@ const API_ENDPOINTS = {
 
   CUSTOMER: {
     CHANGEPASSWORD: (id) => `${API_BASE_URL}/khach-hang/changePassword/${id}`,
+    GETBYID: (id) => `${API_BASE_URL}/khach-hang/${id}`,
+    SIGNUP: `${API_BASE_URL}/khach-hang/sign-up`,
+    THEMNHANH: `${API_BASE_URL}/khach-hang/themNhanh`,
+    GETALL: `${API_BASE_URL}/khach-hang`
   },
 
   NOTIFICATION: {
@@ -55,10 +61,6 @@ const API_ENDPOINTS = {
     GETALLACTIVE: `${API_BASE_URL}/san-pham-chi-tiet/active`,
   },
 
-  CUSTOMER: {
-    SIGNUP: `${API_BASE_URL}/khach-hang/sign-up`,
-    THEMNHANH: `${API_BASE_URL}/khach-hang/themNhanh`,
-  }
 };
 export default API_ENDPOINTS;
 export const TOKEN_GHN = "cfbc877c-f2a2-11ef-b8bc-72b37b984ae4";

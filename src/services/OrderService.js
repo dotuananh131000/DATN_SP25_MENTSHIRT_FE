@@ -130,6 +130,26 @@ const OrderService = {
       console.log("Lỗi khi gọi API cancelInvoice", err);
       throw err;
     }
+  },
+
+  async chonKhachHang (idHD, idKH) {
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.CHONKHACHHANG(idHD)}`,idKH)
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API chọn khách hàng", err);
+      throw err;
+    }
+  },
+
+  async boKhachHang (idHD) {
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.BOKHACHHANG(idHD)}`)
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API bỏ khách hàng", err);
+      throw err;
+    }
   }
 };
 

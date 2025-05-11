@@ -15,6 +15,7 @@ function PointOfSales (){
     const [order, setOrder] = useState({});
     const [productList, setProductList] = useState([]);
     const [cartItems, setCartItems] = useState([]);
+    const [customer, setCustomer] = useState({});
 
     // Lấy hóa đơn chờ
     const [waitOrder, setWaitOrder] = useState([]);
@@ -85,8 +86,6 @@ function PointOfSales (){
         fetchCartOfItems(order.id);
     },[order.id]);
 
-    console.log(order);
-
     return <>
         <div className="p-6 bg-gray-50 min-h-screen relative">
             <h1 className="text-xl font-bold mb-4">Bán hàng tại quầy</h1>
@@ -104,8 +103,16 @@ function PointOfSales (){
             setCartItems={setCartItems} 
             order={order} 
             />
-            <CustomerOfBill />
-            <PayMentOfBill />
+            <CustomerOfBill  
+            customer={customer} 
+            setCustomer={setCustomer} 
+            order={order}
+            setOrder={setOrder}
+            />
+            <PayMentOfBill order={order}
+            cartItems={cartItems}
+            customer={customer}
+            />
         </div>
     </>
 }
