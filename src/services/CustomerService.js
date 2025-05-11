@@ -34,6 +34,45 @@ const CustomerService = {
             console.log("Lỗi khi gọi API thêm nhanh khách hàng", err);
             throw err;
         }
+    },
+
+    async getAll(page = 0, size = 10, keyword = '', trangThai = null, sortKey = 'id', sortDirection = 'desc') {
+        try {
+            const validSortKeys = ["id", "maKhachHang", "tenDangNhap", "tenDangNhap", "email", "soDienThoai", "ngaySinh"];
+            if (!validSortKeys.includes(sortKey)) {
+                sortKey = "id"; 
+            }
+    
+            const params = {
+                page,
+                size,
+                keyword,
+                sort: sortKey,
+                direction: sortDirection
+            };
+    
+            if (trangThai !== null && !isNaN(trangThai)) {
+                params.trangThai = parseInt(trangThai, 10);
+            }
+    
+            const response = await apiClients.get(API_ENDPOINTS.CUSTOMER.GETALL, { params });
+            console.log(response);
+
+            return response.data.data;
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+            throw error;
+        }
+    },
+
+    async getCustomerById (idKH){
+        try {
+            const response = await apiClients.get(API_ENDPOINTS.CUSTOMER.GETBYID(idKH));
+            return response.data;
+        }catch (err){
+            console.log("Lỗi khi gọi API tìm khách hang theo Id", err);
+            throw err;
+        }
     }
 }
 export default CustomerService;
