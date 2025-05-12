@@ -13,7 +13,8 @@ const API_ENDPOINTS = {
     CANCELINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/cancel/${idHD}`,
     WAITORDERS: `${API_BASE_URL}/hoa-don/cho`,
     CHONKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/chon-khach-hang/${idHD}`,
-    BOKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/bo-khach-hang/${idHD}`
+    BOKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/bo-khach-hang/${idHD}`,
+    DOILOAIDON: (idHD) =>  `${API_BASE_URL}/hoa-don/doi-loai-don/${idHD}`
   },
 
   DETAILORDERS: {

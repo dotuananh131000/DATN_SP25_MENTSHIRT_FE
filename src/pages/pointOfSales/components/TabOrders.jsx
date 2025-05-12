@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 function TabOrder({ waitOrder, fetchOrder, fetchAddHoaDon }){
 
@@ -13,6 +14,10 @@ function TabOrder({ waitOrder, fetchOrder, fetchAddHoaDon }){
     }
     
     const addNewBill = () => {
+        if(waitOrder.length > 10){
+            toast.info("Hóa đơn chờ tối đa là 10");
+            return;
+        }
         fetchAddHoaDon();
         setSelectedBill(waitOrder.length );
     };
