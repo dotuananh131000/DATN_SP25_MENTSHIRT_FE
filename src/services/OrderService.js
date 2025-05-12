@@ -170,7 +170,27 @@ const OrderService = {
       console.log("Lỗi khi gọi API bỏ phiếu giảm ra khỏi vouncher", err);
       throw err;
     }
-  }
+  },
+
+  async confirmInvoice (idHD, form) {
+    const data ={
+      hoTenNguoiNhan: form.hoTenNguoiNhan || "",
+      soDienThoai: form.soDienThoai || "",
+      email: form.email || "",
+      diaChiNhanHang: form.diaChiNhanHang || "",
+      phiShip: form.phiShip || 0,
+      tongTien: form.tongTien || 0,
+    }
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.CONFIRMINVOICE(idHD)}`, data)
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API xác nhậ hóa đơn", err);
+      throw err;
+    }
+  },
+
+
 };
 
 export default OrderService;
