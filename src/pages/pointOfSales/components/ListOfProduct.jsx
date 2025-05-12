@@ -265,7 +265,9 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                         </div>
                     </DialogContent>
                 </Dialog>
-                <button className="bg-orange-500 px-3 py-2 text-white rounded-lg active:scale-95 duration-200">
+                <button
+                
+                className="bg-orange-500 px-3 py-2 text-white rounded-lg active:scale-95 duration-200">
                    <LuScanQrCode/>
                 </button>
             </div>

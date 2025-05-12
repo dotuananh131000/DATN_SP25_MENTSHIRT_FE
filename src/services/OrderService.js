@@ -160,6 +160,16 @@ const OrderService = {
       console.log("Lỗi khi gọi API bỏ khách hàng", err);
       throw err;
     }
+  },
+
+  async hoanPhieuGiam (idHD, tongTien) {
+    try {
+      const response = await apiClient.put(`${API_ENDPOINTS.ORDERS.HOAMPHIEUGIAM(idHD)}`, tongTien)
+      return response.data;
+    }catch (err){
+      console.log("Lỗi khi gọi API bỏ phiếu giảm ra khỏi vouncher", err);
+      throw err;
+    }
   }
 };
 

@@ -14,7 +14,8 @@ const API_ENDPOINTS = {
     WAITORDERS: `${API_BASE_URL}/hoa-don/cho`,
     CHONKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/chon-khach-hang/${idHD}`,
     BOKHACHHANG: (idHD) =>  `${API_BASE_URL}/hoa-don/bo-khach-hang/${idHD}`,
-    DOILOAIDON: (idHD) =>  `${API_BASE_URL}/hoa-don/doi-loai-don/${idHD}`
+    DOILOAIDON: (idHD) =>  `${API_BASE_URL}/hoa-don/doi-loai-don/${idHD}`,
+    HOAMPHIEUGIAM: (idHD) => `http://localhost:8080/hoanPhieuGiam/${idHD}`
   },
 
   DETAILORDERS: {
