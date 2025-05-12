@@ -109,7 +109,9 @@ function PointOfSales (){
             order={order}
             setOrder={setOrder}
             />
-            <PayMentOfBill order={order}
+            <PayMentOfBill 
+            order={order}
+            setOrder={setOrder}
             cartItems={cartItems}
             customer={customer}
             />

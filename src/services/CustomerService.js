@@ -56,7 +56,6 @@ const CustomerService = {
             }
     
             const response = await apiClients.get(API_ENDPOINTS.CUSTOMER.GETALL, { params });
-            console.log(response);
 
             return response.data.data;
         } catch (error) {

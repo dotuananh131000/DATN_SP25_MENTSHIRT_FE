@@ -149,8 +149,6 @@ function CustomerOfBill ({ customer, setCustomer, order, setOrder }) {
         
       };
 
-      console.log(order)
-      console.log(customer)
 
       const renderSortableHeader = (label, sortKey) => {
           const isSorted = sortConfig.key === sortKey;

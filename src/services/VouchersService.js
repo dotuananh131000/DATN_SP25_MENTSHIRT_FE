@@ -20,10 +20,11 @@ const voucherService = {
         }
     },
 
-    async theBestVoucher (idKH, tongTien) {
+    async theBestVoucher (idKH, idHD, tongTien) {
         try {
             const params = {
                 idKH: idKH,
+                idHD: idHD,
                 tongTien: tongTien,
             }
 

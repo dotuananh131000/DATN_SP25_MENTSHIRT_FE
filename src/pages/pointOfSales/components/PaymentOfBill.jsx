@@ -8,15 +8,30 @@ import { useEffect, useState } from "react";
 import voucherService from "@/services/VouchersService";
 import UseFormatDate from "@/lib/useFomatDay";
 import { toast } from "react-toastify";
-function PayMentOfBill ( {order, cartItems, customer} ) {
-    const [isShipping, setShipping] = useState(false);
+import OrderService from "@/services/OrderService";
+import HDPTTTService from "@/services/HDPTTTService";
+import { useSelector } from "react-redux";
+function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     const [listVoucher, setListVoucher] = useState([]);
-     const [fee, setFee] = useState("");
+    const [fee, setFee] = useState("");
+    const [listLSTT, setListLSTT] = useState([]);
+    const user = useSelector((state)=> state.auth.user);
+
 
     // Tính tổng tiền sản phẩm trong giỏ hàng
     const totalItemsPrice = cartItems.reduce((total, item) => {
         return total + item.thanhTien
     },0);
+
+   // Tiền khách đã thanh toán
+    function tienDaThanhToan(list) {
+        if (!Array.isArray(list) || list.length === 0) {
+            return 0;
+        }
+        return list.reduce((total, item) => {
+            return total + (item.soTienThanhToan || 0);
+        }, 0);
+    }
 
     // Lấy danh sách phiếu giảm giá
     const fetchVouchers = async () => {
@@ -30,7 +45,7 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
     }
     useEffect(() => {
         fetchVouchers();
-    }, []);
+    }, [order, customer]);
 
     // Lấy voucher áp dụng cho hóa đơn
     const [voucher, setVoucher] = useState({});
@@ -40,16 +55,9 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
 
     // Lấy phiếu giảm giá tốt nhất cho khách hàng
     const [voucherBest, setVoucherBest] = useState({});
-    const fetchTheBestVoucher = async () => {
-        const idKH = order.idKhachHang || "";
-        const tongTien = totalItemsPrice;
-        if(tongTien <= 0) {
-            setVoucher({});
-            setVoucherBest({})
-            return;
-        }
+    const fetchTheBestVoucher = async (idKH, idHD, tongTien) => { 
         try {
-            const response = await voucherService.theBestVoucher(idKH, tongTien);
+            const response = await voucherService.theBestVoucher(idKH, idHD, tongTien);
             setVoucher(response.data);
             setVoucherBest(response.data);
         }catch (err) {
@@ -57,8 +65,22 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
         }
     }
     useEffect(() => {
-        fetchTheBestVoucher();
-    }, [totalItemsPrice, order.id]);
+        const idKH = order.idKhachHang || "";
+        const idHD = order.id || "";
+        const tongTien = totalItemsPrice;
+
+        if(tongTien <= 0) {
+                setVoucher({});
+                setVoucherBest({})
+                return;
+        }
+        const timeout = setTimeout(() => {
+            fetchTheBestVoucher(idKH, idHD, tongTien);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+
+    }, [totalItemsPrice, order.id, customer]);
 
 
 
@@ -93,7 +115,26 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
         return tongTien;
     }
 
-    console.log(voucher);
+    // Đổi loại đơn từ tại quầy thành giao hàng và ngược lại
+    const fetchDoiLoaiDon = async () => {
+        try {
+            const response = await OrderService.doiLoaiDon(order.id);
+            setOrder(response.data);
+            if(response.data.loaiDon === 1){
+                setFee(0);
+            }
+        }catch (err){
+            console.log("Không thể đổi loại đơn", err);
+            toast.error("Lỗi khi đổi loại đơn");
+        }
+    }
+    useEffect(() => {
+        setFee(0)
+    }, [order.id]);
+
+    const handleDoiLoaiDon = () => {
+        fetchDoiLoaiDon();
+    }
 
     const ListPhieuGiamGia = () => {
         return <Dialog>
@@ -149,7 +190,129 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
         </Dialog>
     }
 
-    console.log(fee);
+
+    // Phần về hóa đơn phương thức thanh toán
+    const [phuongThucThanhToan, setPhuongThucThanhToan] = useState(1);
+    const [soTienThanhToan, setSoTienThanhToan] = useState("");
+    const tongTien = tongTienHD(totalItemsPrice, tienGiam, fee)
+    useEffect(() => {
+        setSoTienThanhToan(tongTien);
+    },[tongTien])
+
+    const onChangeTien = (e) => {
+        const input = e.target.value;
+        const soChiSo = input.replace(/\D/g, ""); 
+        setSoTienThanhToan(soChiSo);
+    }
+
+    // Gọi hàm thêm tiền
+    const fetchAddHDPTTT = async () => {
+        try {
+            const form = {
+                hoaDonId: order.id || "",
+                phuongThucThanhToanId: phuongThucThanhToan || "",
+                soTienThanhToan: soTienThanhToan || "",
+                nguoiXacNhan:  user.id ?? "",
+            }
+            const response = await HDPTTTService.Add(form);
+            toast.success(response.success);
+        }catch (err){
+            console.log("Không thể thanh toán hóa đơn", err);
+            toast.error("Có lỗi khi thêm tiền");
+
+        }
+    }
+    // Lấy danh sách thanh toán của hóa đơn
+    const fetchListHDPTTT = async () => {
+        try {
+            const response = await HDPTTTService.getAllByIdHd(order.id);
+            setListLSTT(response);
+        }catch (err){
+            console.log("Lỗi khi lấy danh sách lịch sử thanh toán", err);
+        }
+    }
+    useEffect(() =>{
+        fetchListHDPTTT();
+    }, [order.id])
+    console.log(listLSTT)
+
+    const modalTotal = () => {
+        return <Dialog >
+                    <DialogTrigger className="text-orange-500"
+                    onClick={fetchListHDPTTT}
+                    >
+                        <AiFillCreditCard />
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogTitle className="text-lg">
+                            Thanh toán
+                        </DialogTitle>
+                        <div className="grid grid-cols-1" >
+                            <div className="flex justify-between items-center">
+                                <span>Tổng tiền cần thanh toán</span>
+                                <span>{UseFormatMoney(tongTienHD(totalItemsPrice, tienGiam, fee))}</span>
+                            </div>
+                                            
+                            <label htmlFor="soTien" className="mt-2">Số tiền</label>
+                            <input type="text"
+                            id="soTien" 
+                            onChange={(e) => onChangeTien(e)}
+                            value={new Intl.NumberFormat("vi-VN").format(soTienThanhToan)}
+                            className="border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            />
+
+                            <div className="flex justify-center space-x-4 items-center mt-4">
+                                <button className={`px-4 py-2 ${phuongThucThanhToan === 1 ? "bg-orange-500":"bg-gray-500"}  
+                                text-white rounded-lg shadow 
+                                active:scale-90 duration-200`}
+                                onClick={() => setPhuongThucThanhToan(1)}
+                                >
+                                    Tiền mặt
+                                </button>
+                                <button className={`px-4 py-2 ${phuongThucThanhToan === 2 ? "bg-orange-500":"bg-gray-500"}  
+                                text-white rounded-lg shadow 
+                                active:scale-90 duration-200`}
+                                onClick={() => setPhuongThucThanhToan(2)}
+                                >
+                                    Chuyển khoản
+                                </button>
+                            </div>
+
+                            <span className="text-center mt-4">Lịch sử thanh toán</span>
+
+                            <table className="mt-4 table-auto w-full bg-white rounded-lg shadow overflow-hidden text-center text-xs">
+                                <thead>
+                                    <tr>
+                                        <th className="px-4 py-2">STT</th>
+                                        <th className="px-4 py-2">Mã giao dịch</th>
+                                        <th className="px-4 py-2">Phương Thức</th>
+                                        <th className="px-4 py-2">Số tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {listLSTT.map((item, i) => (
+                                        <tr>
+                                            <td className="px-4 py-2">{i + 1}</td>
+                                            <td className="px-4 py-2">{item.maGiaoDich}</td>
+                                            <td className="px-4 py-2">{item.tenPhuongThuc}</td>
+                                            <td className="px-4 py-2">{UseFormatMoney(item.soTienThanhToan)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div className="flex justify-end mt-4">
+                                <button 
+                                onClick={fetchAddHDPTTT}
+                                className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow active:scale-90 duration-200">
+                                    Xác nhân
+                                </button>
+                            </div>
+
+                        </div>
+                    </DialogContent>
+                </Dialog>
+    }
 
     return <>
         <div className="bg-white shadow rounded-lg p-2 mb-4">
@@ -157,7 +320,7 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
             <div className="grid grid-cols-5">
                 {/* thẻ div chứa thông tin địa chỉ */}
                 <div className="col-span-3">
-                    {isShipping && (
+                    {order.loaiDon === 0 && (
                         <ContactAddress customer={customer} setFee={setFee} />
                     )}
                 </div>
@@ -175,9 +338,9 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
                             <h1 className="text-xs">Mã giảm giá :</h1>
                         </div>    
                         <p className="px-4 py-2 rounded-lg bg-gray-600 text-center text-white w-2/4 ">
-                            {voucher.maPhieuGiamGia}
+                            {voucher?.maPhieuGiamGia}
                         </p>
-                        {voucher.id === voucherBest.id && (
+                        {voucher?.id === voucherBest?.id && (
                             <p className="text-sm text-red-500">Phiếu giảm tốt nhất</p>
                         )}
                         
@@ -200,8 +363,8 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
                         <div className="flex justify-between items-center mb-2">
                             <h2>Giao hàng:</h2>
                             <Switch 
-                            checked={isShipping}
-                            onCheckedChange={() => setShipping(!isShipping)}
+                            checked={order.loaiDon === 0}
+                            onCheckedChange={handleDoiLoaiDon}
                             className="data-[state=checked]:bg-orange-500" />
                         </div>
 
@@ -228,26 +391,14 @@ function PayMentOfBill ( {order, cartItems, customer} ) {
                         <div className="flex justify-between items-center mb-2">
                             <div className="flex items-center space-x-4">
                                 <h2>Đã thanh toán:</h2>
-                                <Dialog>
-                                    <DialogTrigger>
-                                        <button className="text-orange-500"><AiFillCreditCard /></button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle className="text-md">
-                                            Thanh toán
-                                        </DialogTitle>
-                                        <div>
-
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                                {modalTotal()}
                             </div>
-                            <h2 className="text-orange-500">{UseFormatMoney(0)}</h2>
+                            <h2 className="text-orange-500">{UseFormatMoney(tienDaThanhToan(listLSTT))}</h2>
                         </div>
 
                         <div className="flex justify-between items-center mb-2">
-                            <h2>Tiền thiếu:</h2>
-                            <h2 className="text-orange-500">{UseFormatMoney(0)}</h2>
+                            <h2>{tongTien >= tienDaThanhToan(listLSTT)? "Tiền thiếu:":"Tiền thừa:"}</h2>
+                            <h2 className="text-orange-500">{UseFormatMoney(Math.abs(tienDaThanhToan(listLSTT) - tongTien))}</h2>
                         </div>
                         
                         <div className="flex justify-between">
