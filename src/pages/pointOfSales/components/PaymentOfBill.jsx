@@ -82,6 +82,30 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
 
     }, [totalItemsPrice, order.id, customer]);
 
+    // Hoàn lại phiếu giảm giá khi tiền hàng bằng 0
+    const fetchHoanPhieuGiam = async (idHD, tienHang) => {
+        try {
+            const response = await OrderService.hoanPhieuGiam(idHD, tienHang);
+            console.log("Đã hoàn")
+            setOrder(response.data);
+        }catch (err) {
+            console.log("Không thể loại phiếu giảm ra khỏi hóa đơn", err);
+        }
+    }
+    useEffect(() => {
+        if(!order.giaTriGiam) {
+            return;
+        }
+        if(totalItemsPrice <= 0){
+            const timeout = setTimeout(() => {
+                fetchHoanPhieuGiam(order.id, totalItemsPrice);
+            }, 500);  
+            return () => clearTimeout(timeout); 
+        } 
+    }, [totalItemsPrice, order.id]);
+
+    console.log(order)
+
 
 
     // Số tiền giảm khi áp dụng phiều giảm giá
