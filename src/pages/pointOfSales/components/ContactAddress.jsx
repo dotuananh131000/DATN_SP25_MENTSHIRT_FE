@@ -4,7 +4,7 @@ import api_giaoHangNhanh from "@/services/GiaoHangNhanhService";
 import { useEffect, useState } from "react";
 import { MdPlace } from "react-icons/md";
 
-function ContactAddress ({ customer, setFee }) {
+function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
 
     // Lấy danh sách tỉnh thành
     const [province, setProvince] = useState([]);
@@ -117,7 +117,58 @@ function ContactAddress ({ customer, setFee }) {
 
     useEffect(() => {
         fetchFee();
-    }, [serviceId, districtID, wardID])
+    }, [serviceId, districtID, wardID]);
+
+    //Hàm lấy địa chỉ nhận hàng
+    const [provinceName, setProvinceName] = useState("");
+    const [districtName, setDistrictName] = useState("");
+    const [wardName, setWardName] = useState("");
+    const [cuThe, setCuThe] = useState("");
+
+    useEffect(()=>{
+        if(provinceID){
+        const selectProvince = province.find(prov => prov.ProvinceID === Number(provinceID));
+        if(selectProvince){
+            setProvinceName(selectProvince.ProvinceName);
+            if(districtID){
+            const selectDistrict = district.find(dis => dis.DistrictID === Number(districtID));
+            if(selectDistrict){
+                setDistrictName(selectDistrict.DistrictName)
+                if(wardID){
+                const selectWard = ward.find(ward => ward.WardCode === wardID.toString());
+                if(selectWard){
+                    setWardName(selectWard.WardName);
+                }
+                }
+            }
+            }
+        }
+        }
+    },[provinceID, province, districtID, districtName, district, ward, wardID])
+
+    // Lấy thông tin địa chỉ nhanah hàng
+    useEffect(() => {
+        if(cuThe && wardName && districtName && provinceName){
+             setFormOrder((prev) => (
+                {...prev,
+                    diaChiNhanHang: `${cuThe}, ${wardName}, ${districtName}, ${provinceName}`,
+                }
+            ))
+        }
+    }, [provinceName, districtName, wardName, addressDefault]);
+
+
+    useEffect(() => {
+        setFormOrder((prev) => (
+            {...prev,
+                hoTenNguoiNhan: customer.tenKhachHang || "",
+                soDienThoai: customer.soDienThoai || "",
+                email: customer.email || "",
+            }
+        ))
+        setCuThe(addressDefault.diaChiChiTiet)
+    },[customer, addressDefault]);
+
 
     return <>
         <div className="relative bg-gray-200 mr-3 rounded-lg p-2 ">
@@ -128,14 +179,14 @@ function ContactAddress ({ customer, setFee }) {
                 <div className="grid grid-cols-1 mx-2 my-2">
                     <label htmlFor="hoTenNguoiNhan">Họ tên người nhận</label>
                     <input type="text" id="hoTenNguoiNhan"
-                    value={customer.tenKhachHang} 
+                    value={formOrder.hoTenNguoiNhan} 
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300" />
                 </div>
 
                 <div className="grid grid-cols-1 mx-2 my-2">
                     <label htmlFor="soDienThoai">Số điện thoại</label>
                     <input type="text" id="soDienThoai" 
-                    value={customer.soDienThoai} 
+                    value={formOrder.soDienThoai} 
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>
@@ -143,7 +194,7 @@ function ContactAddress ({ customer, setFee }) {
                 <div className="grid grid-cols-1 mx-2 my-2">
                     <label htmlFor="email">Email</label>
                     <input type="text" id="email" 
-                    value={customer.email} 
+                    value={formOrder.email} 
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>
@@ -205,7 +256,7 @@ function ContactAddress ({ customer, setFee }) {
                 <div className="grid grid-cols-1 mx-2 my-2">
                     <label htmlFor="diaChiCuThe">Địa chỉ cụ thể</label>
                     <input type="text" id="diaChiCuThe" 
-                    value={addressDefault.diaChiChiTiet}
+                    value={cuThe}
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>

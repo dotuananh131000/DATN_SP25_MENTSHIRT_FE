@@ -16,7 +16,14 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     const [fee, setFee] = useState("");
     const [listLSTT, setListLSTT] = useState([]);
     const user = useSelector((state)=> state.auth.user);
-
+    const [formOrder, setFormOrder] = useState({
+        hoTenNguoiNhan: "",
+        soDienThoai: "",
+        email: "",
+        diaChiNhanHang: "",
+        phiShip: "",
+        tongTien: "",
+    });
 
     // Tính tổng tiền sản phẩm trong giỏ hàng
     const totalItemsPrice = cartItems.reduce((total, item) => {
@@ -104,10 +111,6 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
         } 
     }, [totalItemsPrice, order.id]);
 
-    console.log(order)
-
-
-
     // Số tiền giảm khi áp dụng phiều giảm giá
     function tinhTienGiam(voucher, tongTienHang) {
         let tienGiam = 0;
@@ -158,6 +161,43 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
 
     const handleDoiLoaiDon = () => {
         fetchDoiLoaiDon();
+    }
+
+    // Phần xác nhận hóa đơn
+    const [printInvoice, setPrintInvoice] = useState(false);
+    const handleConfirm = async () => {
+        const form = {
+            hoTenNguoiNhan: formOrder.hoTenNguoiNhan || "",
+            soDienThoai: formOrder.soDienThoai || "",
+            email: formOrder.email || "",
+            diaChiNhanHang: formOrder.diaChiNhanHang || "",
+            phiShip: fee || 0,
+            tongTien: tongTien || 0,
+        }
+
+        if(totalItemsPrice <= 0){
+            toast.warning("Số lượng sản phẩm trong hóa đơn chưa có.");
+            return;
+        }
+        try {
+            const response = await OrderService.confirmInvoice(order.id, form);
+            setOrder(response.data);
+            toast.success("Hóa đơn đã được xác nhận.");
+            
+            // In hoa đơn
+            if(printInvoice){
+                console.log("Đang in hóa đơn...")
+            }
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 500)
+        }catch (err){
+            console.log("Lỗi khi xác nhận hóa đơn", err);
+        }
+
+        console.log(form);
+        
     }
 
     const ListPhieuGiamGia = () => {
@@ -218,7 +258,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     // Phần về hóa đơn phương thức thanh toán
     const [phuongThucThanhToan, setPhuongThucThanhToan] = useState(1);
     const [soTienThanhToan, setSoTienThanhToan] = useState("");
-    const tongTien = tongTienHD(totalItemsPrice, tienGiam, fee)
+    const tongTien = tongTienHD(totalItemsPrice, tienGiam, fee);
     useEffect(() => {
         setSoTienThanhToan(tongTien);
     },[tongTien])
@@ -236,7 +276,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                 hoaDonId: order.id || "",
                 phuongThucThanhToanId: phuongThucThanhToan || "",
                 soTienThanhToan: soTienThanhToan || "",
-                nguoiXacNhan:  user.id ?? "",
+                nguoiXacNhan:  user.tenNhanVien ?? "",
             }
             const response = await HDPTTTService.Add(form);
             toast.success(response.success);
@@ -258,7 +298,6 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     useEffect(() =>{
         fetchListHDPTTT();
     }, [order.id])
-    console.log(listLSTT)
 
     const modalTotal = () => {
         return <Dialog >
@@ -345,7 +384,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                 {/* thẻ div chứa thông tin địa chỉ */}
                 <div className="col-span-3">
                     {order.loaiDon === 0 && (
-                        <ContactAddress customer={customer} setFee={setFee} />
+                        <ContactAddress customer={customer} setFee={setFee} setFormOrder={setFormOrder} formOrder={formOrder} />
                     )}
                 </div>
 
@@ -426,12 +465,16 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                         </div>
                         
                         <div className="flex justify-between">
-                            <button className="px-3 py-2 bg-orange-500 text-white rounded-lg active:scale-95 duration-200">
+                            <button 
+                            onClick={handleConfirm}
+                            className="px-3 py-2 bg-orange-500 text-white rounded-lg active:scale-95 duration-200">
                                 Hoàn tất hóa đơn
                             </button>
                             <div className="flex items-center space-x-2">
                                 <label htmlFor="print">In hóa đơn</label>
                                 <Switch id="print"
+                                checked={printInvoice}
+                                onCheckedChange={(pre) => setPrintInvoice(pre)}
                                  className="data-[state=checked]:bg-orange-500"
                                 />
                             </div>
