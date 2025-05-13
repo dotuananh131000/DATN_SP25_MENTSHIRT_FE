@@ -39,7 +39,9 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
         }
     };
     useEffect(() => {
-        fetchAPIDistrict();
+        setTimeout(() =>{
+           fetchAPIDistrict();
+        },200);  
     },[provinceID]);
 
     // Lấy danh sách xã
@@ -62,7 +64,7 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
     useEffect(() => {
         setTimeout(() =>{
             fetchAPIWard();
-        },200);   
+        },400);   
     },[districtID]);
 
     // Hàm lấy mã dịch vụ vận chuyển
@@ -153,10 +155,9 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
                 {...prev,
                     diaChiNhanHang: `${cuThe}, ${wardName}, ${districtName}, ${provinceName}`,
                 }
-            ))
+            ));
         }
-    }, [provinceName, districtName, wardName, addressDefault]);
-
+    }, [provinceName, districtName, wardName, cuThe, addressDefault]);
 
     useEffect(() => {
         setFormOrder((prev) => (
@@ -169,6 +170,15 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
         setCuThe(addressDefault.diaChiChiTiet)
     },[customer, addressDefault]);
 
+    const onchangeForm = (e) => {
+
+        const {id, value} = e.target;
+
+        setFormOrder(prev => ({
+            ...prev, [id]: value
+        }));
+    }
+
 
     return <>
         <div className="relative bg-gray-200 mr-3 rounded-lg p-2 ">
@@ -180,6 +190,7 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
                     <label htmlFor="hoTenNguoiNhan">Họ tên người nhận</label>
                     <input type="text" id="hoTenNguoiNhan"
                     value={formOrder.hoTenNguoiNhan} 
+                    onChange={(e) => onchangeForm(e)}
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300" />
                 </div>
 
@@ -187,6 +198,7 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
                     <label htmlFor="soDienThoai">Số điện thoại</label>
                     <input type="text" id="soDienThoai" 
                     value={formOrder.soDienThoai} 
+                    onChange={(e) => onchangeForm(e)}
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>
@@ -195,6 +207,7 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
                     <label htmlFor="email">Email</label>
                     <input type="text" id="email" 
                     value={formOrder.email} 
+                    onChange={(e) => onchangeForm(e)}
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>
@@ -257,6 +270,7 @@ function ContactAddress ({ customer, setFee, setFormOrder, formOrder }) {
                     <label htmlFor="diaChiCuThe">Địa chỉ cụ thể</label>
                     <input type="text" id="diaChiCuThe" 
                     value={cuThe}
+                    onChange={(e) => setCuThe(e.target.value)}
                     className="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                     />
                 </div>
