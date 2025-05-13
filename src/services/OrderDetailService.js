@@ -35,6 +35,19 @@ const OrderDetailService = {
             throw err;
         }
         
+    },
+
+    async updateQuantity (idHDCT, soLuong) {
+        const form = {
+            soLuong: soLuong || 0
+        }
+        try {
+            const response = await apiClients.put(API_ENDPOINTS.DETAILORDERS.UPDATEQUANTITY(idHDCT), form);
+            return response.data;
+        }catch(err) {
+            console.log("Lỗi khi gọi API cập nhật số lượng",err);
+            throw err;
+        }
     }
 }
 export default OrderDetailService;

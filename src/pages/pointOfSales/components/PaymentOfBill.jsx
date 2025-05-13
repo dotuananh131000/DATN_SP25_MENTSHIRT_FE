@@ -175,10 +175,17 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
             tongTien: tongTien || 0,
         }
 
+
         if(totalItemsPrice <= 0){
             toast.warning("Số lượng sản phẩm trong hóa đơn chưa có.");
             return;
         }
+
+        if(tienDaThanhToan(listLSTT) === 0) {
+            toast.warning("Vui lòng thanh toán hóa đơn.");
+            return;
+        }
+        
         try {
             const response = await OrderService.confirmInvoice(order.id, form);
             setOrder(response.data);
@@ -196,8 +203,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
             console.log("Lỗi khi xác nhận hóa đơn", err);
         }
 
-        console.log(form);
-        
+        console.log("Đã thành công");
     }
 
     const ListPhieuGiamGia = () => {

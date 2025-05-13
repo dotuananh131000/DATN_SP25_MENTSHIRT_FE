@@ -24,6 +24,8 @@ const API_ENDPOINTS = {
     GETBYID: (idHD) =>  `${API_BASE_URL}/hdct/${idHD}`,
     ADD: `${API_BASE_URL}/hdct`,
     DELETE:(idHDCT) => `${API_BASE_URL}/hdct/${idHDCT}`,
+    UPDATEQUANTITY:(idHDCT) => `${API_BASE_URL}/hdct/${idHDCT}`,
+
   },
 
   VOUCHERS: {
