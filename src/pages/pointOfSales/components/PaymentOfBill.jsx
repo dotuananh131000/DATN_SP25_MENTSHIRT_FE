@@ -52,12 +52,23 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     }
     useEffect(() => {
         fetchVouchers();
-    }, [order, customer]);
+    }, [order.id, order.idKhachHang]);
 
     // Lấy voucher áp dụng cho hóa đơn
     const [voucher, setVoucher] = useState({});
+    const fetchChonPhieuGiam = async(idHD, PGG) => {
+        try {
+            const response = await OrderService.chonPhieuGiamGia(idHD, PGG.id);
+            // setOrder(response.data);
+            setVoucher(PGG);
+            toast.success(response.message);
+        } catch(err) {
+            console.log("Lỗi khi thay đổi phiếu giảm của hóa đơn", err);
+            toast.error("Có lỗi khi thay đổi phiểu giảm! Vui long thử lại.");
+        }
+    }
     const getVouCher = (item) => {
-        setVoucher(item); 
+        fetchChonPhieuGiam(order.id, item);
     }
 
     // Lấy phiếu giảm giá tốt nhất cho khách hàng
@@ -87,7 +98,8 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
 
         return () => clearTimeout(timeout);
 
-    }, [totalItemsPrice, order.id, customer]);
+    }, [totalItemsPrice, listVoucher, order.id]);
+
 
     // Hoàn lại phiếu giảm giá khi tiền hàng bằng 0
     const fetchHoanPhieuGiam = async (idHD, tienHang) => {
@@ -146,7 +158,8 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     const fetchDoiLoaiDon = async () => {
         try {
             const response = await OrderService.doiLoaiDon(order.id);
-            setOrder(response.data);
+            const updateOrder = response.data;
+            setOrder(prev => ({...prev, loaiDon: updateOrder.loaiDon}));
             if(response.data.loaiDon === 1){
                 setFee(0);
             }
@@ -162,6 +175,8 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     const handleDoiLoaiDon = () => {
         fetchDoiLoaiDon();
     }
+
+    console.log(order);
 
     // Phần xác nhận hóa đơn
     const [printInvoice, setPrintInvoice] = useState(false);
@@ -242,7 +257,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                                       </p>
                                     </td>
                                     <td className="px-4 py-2">
-                                        {order.tongTien >= item.soTienToiThieuHd && (
+                                        {totalItemsPrice >= item.soTienToiThieuHd && (
                                             <button
                                             className="text-orange-500 active:scale-75 duration-200"
                                             onClick={() => getVouCher(item)}>
@@ -285,6 +300,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                 nguoiXacNhan:  user.tenNhanVien ?? "",
             }
             const response = await HDPTTTService.Add(form);
+            fetchListHDPTTT();
             toast.success(response.success);
         }catch (err){
             console.log("Không thể thanh toán hóa đơn", err);
@@ -294,6 +310,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     }
     // Lấy danh sách thanh toán của hóa đơn
     const fetchListHDPTTT = async () => {
+        if(!order.id) return;
         try {
             const response = await HDPTTTService.getAllByIdHd(order.id);
             setListLSTT(response);
@@ -360,7 +377,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                                 </thead>
                                 <tbody>
                                     {listLSTT.map((item, i) => (
-                                        <tr>
+                                        <tr key={i}>
                                             <td className="px-4 py-2">{i + 1}</td>
                                             <td className="px-4 py-2">{item.maGiaoDich}</td>
                                             <td className="px-4 py-2">{item.tenPhuongThuc}</td>

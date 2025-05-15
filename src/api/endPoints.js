@@ -17,6 +17,7 @@ const API_ENDPOINTS = {
     DOILOAIDON: (idHD) =>  `${API_BASE_URL}/hoa-don/doi-loai-don/${idHD}`,
     HOAMPHIEUGIAM: (idHD) => `http://localhost:8080/hoanPhieuGiam/${idHD}`,
     CONFIRMINVOICE: (idHD) => `${API_BASE_URL}/hoa-don/confirm-hoa-don/${idHD}`,
+    CHONPGG: (idHD) => `${API_BASE_URL}/hoa-don/chon-phieu-giam-gia/${idHD}`,
   },
 
   DETAILORDERS: {
@@ -64,6 +65,7 @@ const API_ENDPOINTS = {
 
   PRODUCT: {
     GETALLACTIVE: `${API_BASE_URL}/san-pham-chi-tiet/active`,
+    GETBYID: (id) => `${API_BASE_URL}/san-pham-chi-tiet/${id}`
   },
 
 };

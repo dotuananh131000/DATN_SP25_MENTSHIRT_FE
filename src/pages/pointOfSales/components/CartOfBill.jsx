@@ -111,8 +111,7 @@ function CartOfBill ({ cartItems, setCartItems, order }) {
             toast.error("Không thể thay đổi số lượng sản phẩm!")
         }
     }
-
-    console.log(cartItems);
+    
     return <>
         <div className="bg-white rounded-lg shadow p-2 mb-4">
             <h1 className="text-lg font-bold mb-2">Giỏ hàng</h1>

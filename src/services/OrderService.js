@@ -190,6 +190,19 @@ const OrderService = {
     }
   },
 
+  async chonPhieuGiamGia (idHD, idPGG) {
+    const form = {
+      idPGG: idPGG ?? null,
+    }
+    try {
+      const response = await apiClient.put(API_ENDPOINTS.ORDERS.CHONPGG(idHD), form);
+      return response.data;
+    }catch(err) {
+      console.log("Lỗi khi gọi API thay đổi phiểu giảm giá hóa đơn", err);
+      throw err;
+    }
+  }
+
 
 };
 
