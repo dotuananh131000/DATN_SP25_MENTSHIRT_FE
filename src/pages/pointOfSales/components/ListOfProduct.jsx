@@ -1,4 +1,5 @@
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import QRCodeScanner from "@/containers/QRCodeScanner";
 import UseFormatMoney from "@/lib/useFormatMoney";
 import OrderDetailService from "@/services/OrderDetailService";
 import Productdetail from "@/services/ProductDetailService";
@@ -11,6 +12,76 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
     const [keyword, setKeyword] = useState("");
+    const [isQR, setIsQR] = useState(false);
+    const [isModalSPCT, setIsModalSPCT] = useState(false);
+
+    // Tìm sản phẩm vhi tiết với id
+    const [pro, setPro] = useState({});
+    const handleScanQR  = async (decodedText)  => {
+        if(decodedText) {
+            try {
+                const response = await Productdetail.getProductById(decodedText);
+                setIsModalSPCT(true);
+                setPro(response.data);
+            } catch(err){
+                console.log("Không thẻ lấy được sản phẩm với id", decodedText);
+                console.log("Không thẻ lấy được sản phẩm với id", err);
+                toast.error("Mã QR không hợp lệ.")
+            }
+            setIsQR(false);
+        }
+    }
+
+    // Modal sản phẩm chi tiết
+    const modalSPCT = (item) => {
+        return <div className="modal modal-open">
+            <div className="modal-box">
+                <h1>Chi tiết sản phẩm</h1>
+                <div className="flex space-x-4">
+                    <img
+                    className="skeleton w-[160px] h-[180px] object-cover rounded-lg shadow"
+                    src={item.hinhAnh} alt=""
+                    />
+                    <div>
+                        <p className="text-lg text-orange-500">{item.sanPham.tenSanPham}</p>
+                    <div className="flex items-center space-x-4">
+                    <p className="text-sm">Màu sắc: {item.mauSac.tenMauSac}</p>
+                                <p>-</p>
+                                <p className="text-sm">Kích thước: {item.kichThuoc.tenKichThuoc}</p>
+                            </div>
+                            <p className="text-sm">Giá: 
+                                <span className="text-red-600 ml-2">{UseFormatMoney(item.donGia)}</span>
+                            </p>
+                            <p className="text-sm mt-2">Số lượng: 
+                                <span className="ml-3">
+                                <input type="text"
+                                value={quantity} 
+                                onChange={(e) => handleOnchange(e)}
+                                className="w-1/3 m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
+                                />
+                                </span>
+                            </p>  
+                            {error && (<p className="text-sm text-red-500">{error}</p>)}  
+                            <p className="text-sm mt-2">Số lượng tồn: <span>{item.soLuong}</span></p>    
+                        </div>                                              
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                        <div>
+                            <button
+                            onClick={handleClose}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg">
+                                Hủy
+                            </button>
+                            <button 
+                            onClick={() => handleAddProduct(item)}
+                            className="bg-orange-500 text-white px-3 py-2 rounded-lg active:scale-95 duration-200">
+                                Thêm
+                            </button>
+                        </div>
+                    </div>`
+            </div>
+        </div>
+    }
 
     useEffect(() => {
         // Thời gian trễ khi các phần tử thay đổi
@@ -72,6 +143,7 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
     const fetchAdd = async (form) => {
         try {
             const response = await OrderDetailService.Add(form);
+            console.log(response.data);
             fetchProductList(page, size, keyword);
             const addedItem = response.data;
 
@@ -88,6 +160,7 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                         ...updatedItems[existingIndex],
                         soLuong: addedItem.soLuong,
                         thanhTien: addedItem.thanhTien,
+                        soLuongTon: addedItem.soLuongTon,
                     };
                     return updatedItems;
                 } else {
@@ -96,6 +169,9 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                     return [...prev,addedItem];
                 }
             });
+            setTimeout(() => {
+                setIsModalSPCT(false);
+            }, 500)
             toast.success("Đã thêm sản phẩm và đơn hàng");
             
         }catch(err) {
@@ -121,12 +197,16 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
     }
 
     const handleClose = () => {
+        setIsModalSPCT(false);
         setError("");
         setQuantity("1");
     }
 
     return <>
         <div className="bg-white rounded-lg shadow p-2 mb-4 flex justify-between items-center">
+            {isModalSPCT && (
+                modalSPCT(pro)
+            )}
             <h1 className="text-lg font-bold">Hóa đơn: {order.maHoaDon}</h1>
             <div className="flex space-x-4">
                 <Dialog >
@@ -184,22 +264,23 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                                             <td className="border p-2">
                                                 <Dialog onOpenChange={handleClose} >
                                                     <DialogTrigger asChild>
-                                                        <button 
-                                                        className="text-orange-500 active:scale-75 duration-200">Thêm</button>
+                                                        <button className="text-orange-500 active:scale-75 duration-200">
+                                                            Thêm
+                                                        </button>
                                                     </DialogTrigger>
                                                     <DialogContent>
-                                                        <DialogHeader>
-                                                            <DialogTitle>Chi tiết sản phẩm</DialogTitle>
-                                                        </DialogHeader>
-                                                        <div className="flex space-x-4">
-                                                            <img
-                                                            className="skeleton w-[160px] h-[180px] object-cover rounded-lg shadow"
-                                                            src={item.hinhAnh} alt=""
-                                                            />
-                                                            <div>
+                                                    <DialogHeader>
+                                                        <DialogTitle>Chi tiết sản phẩm</DialogTitle>
+                                                    </DialogHeader>
+                                                    <div className="flex space-x-4">
+                                                        <img
+                                                        className="skeleton w-[160px] h-[180px] object-cover rounded-lg shadow"
+                                                        src={item.hinhAnh} alt=""
+                                                        />
+                                                        <div>
                                                             <p className="text-lg text-orange-500">{item.sanPham.tenSanPham}</p>
-                                                                <div className="flex items-center space-x-4">
-                                                                    <p className="text-sm">Màu sắc: {item.mauSac.tenMauSac}</p>
+                                                        <div className="flex items-center space-x-4">
+                                                        <p className="text-sm">Màu sắc: {item.mauSac.tenMauSac}</p>
                                                                     <p>-</p>
                                                                     <p className="text-sm">Kích thước: {item.kichThuoc.tenKichThuoc}</p>
                                                                 </div>
@@ -222,7 +303,6 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                                                         <div className="absolute bottom-4 right-4">
                                                             <DialogFooter>
                                                                 <DialogClose
-                                                                onClick={handleClose}
                                                                 className="px-4 py-2 bg-gray-500 text-white rounded-lg">
                                                                     Hủy
                                                                 </DialogClose>
@@ -266,13 +346,17 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
                     </DialogContent>
                 </Dialog>
                 <button
-                
+                onClick={() => setIsQR(true)}
                 className="bg-orange-500 px-3 py-2 text-white rounded-lg active:scale-95 duration-200">
                    <LuScanQrCode/>
                 </button>
             </div>
         </div>
+        {isQR && (
+            <QRCodeScanner onScan={handleScanQR} onClose={() => setIsQR(false)} />
+        )}
         
+
     </>
 }
 export default ListOfProduct;

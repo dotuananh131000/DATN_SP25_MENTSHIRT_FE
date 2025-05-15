@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
-export default function QRCodeScanner({ onScan, onError, onClose }) {
+export default function QRCodeScanner({ onScan, onClose }) {
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("qr-reader", {
       fps: 10, // Giảm tốc độ quét để tăng độ chính xác
