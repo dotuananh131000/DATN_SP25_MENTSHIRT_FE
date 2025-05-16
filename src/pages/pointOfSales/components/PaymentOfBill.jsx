@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import OrderService from "@/services/OrderService";
 import HDPTTTService from "@/services/HDPTTTService";
 import { useSelector } from "react-redux";
+import { printBill } from "./PrintOfBill";
 function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
     const [listVoucher, setListVoucher] = useState([]);
     const [fee, setFee] = useState("");
@@ -176,8 +177,6 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
         fetchDoiLoaiDon();
     }
 
-    console.log(order);
-
     // Phần xác nhận hóa đơn
     const [printInvoice, setPrintInvoice] = useState(false);
     const handleConfirm = async () => {
@@ -203,17 +202,18 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
         
         try {
             const response = await OrderService.confirmInvoice(order.id, form);
-            setOrder(response.data);
+            const orderConfirm = response.data;
+            setOrder(orderConfirm);
             toast.success("Hóa đơn đã được xác nhận.");
             
             // In hoa đơn
             if(printInvoice){
-                console.log("Đang in hóa đơn...")
+                printBill(orderConfirm, cartItems, listLSTT, tienGiam, totalItemsPrice, fee);
             }
 
-            setTimeout(() => {
-                window.location.reload();
-            }, 500)
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, 500)
         }catch (err){
             console.log("Lỗi khi xác nhận hóa đơn", err);
         }
@@ -399,6 +399,8 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                     </DialogContent>
                 </Dialog>
     }
+
+    console.log(totalItemsPrice)
 
     return <>
         <div className="bg-white shadow rounded-lg p-2 mb-4">

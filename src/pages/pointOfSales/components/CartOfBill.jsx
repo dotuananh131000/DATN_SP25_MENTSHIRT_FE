@@ -193,7 +193,7 @@ function CartOfBill ({ cartItems, setCartItems, order }) {
                                         {order.trangThaiGiaoHang === 8 && (
                                             <Dialog>
                                             <DialogTrigger asChild>
-                                                <button className="bg-orange-">
+                                                <button className="">
                                                     <FaRegTrashAlt className="text-orange-500 text-lg cursor-pointer"/>
                                                 </button>
                                             </DialogTrigger>
