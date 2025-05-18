@@ -17,7 +17,8 @@ const Order = {
                 danhSachChiTiet: orderData.danhSachChiTiet.map(item => ({
                     sanPhamChiTietId: item.sanPhamChiTietId,
                     soLuong: item.soLuong
-                }))
+                })),
+                tongTien: orderData.tongTien ?? "",
             };
             console.log("formattedOrderData", formattedOrderData);
             const response = await axios.post(`http://localhost:8080/creatOrder`,formattedOrderData,

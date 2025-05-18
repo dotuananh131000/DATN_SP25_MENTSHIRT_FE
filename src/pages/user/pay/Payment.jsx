@@ -86,7 +86,6 @@ function Payment() {
     fetchListVoucher();
   },[])
 
-  console.log(listVoucher)
 
   const handleGetVoucher = (voucher) =>{
     if(!voucher){
@@ -179,6 +178,9 @@ function Payment() {
   },[districtID, addressDefault])
   
   const fetchShippingFee = async() => {
+
+    if(!serviceID) return;
+
     try{
       if(client){
         if(Object.keys(addressDefault).length > 0){
@@ -276,7 +278,7 @@ function Payment() {
 
     return 0;
   }
-  const voucherDiscount = caculatorDiscount(selectedVoucher, totalAmount);
+  const voucherDiscount = Math.min(caculatorDiscount(selectedVoucher, totalAmount),totalAmount);
   const finalTotal = totalAmount + shippingFee - voucherDiscount ;
 
   // Xử lý thay đổi input
@@ -331,7 +333,8 @@ function Payment() {
       danhSachChiTiet: items.map((item) => ({
         sanPhamChiTietId: item.detailId,
         soLuong: item.quantity,
-      }))
+      })),
+      tongTien: finalTotal || null
     };
 
     try{

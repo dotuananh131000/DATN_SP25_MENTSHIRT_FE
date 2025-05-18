@@ -91,8 +91,6 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong - 1);
     }
 
-    console.log(gioHang)
-
     const nextSoLuongSanPham = (hoaDonChiTiet) => {
         if(!hoaDonChiTiet) {
             toast.error("Lỗi khi thêm số lượng sản phẩm.");
@@ -155,6 +153,10 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
     //Hàm xóa sản phẩm ra khỏi giỏ hàng
 
     const deleteSP = (hoaDonChiTiet) => {
+        if(gioHang.length === 1) {
+            toast.warning("Hóa đơn phải có ít nhất một sản phẩm !");
+            return;
+        }
         const fetchDeleteSP = async () => {
             try{
                 const response = await HoaDonChiTietService.deleteHDCT(hoaDonChiTiet.id)

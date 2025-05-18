@@ -14,7 +14,7 @@ function TabOrder({ waitOrder, fetchOrder, fetchAddHoaDon }){
     }
     
     const addNewBill = () => {
-        if(waitOrder.length > 10){
+        if(waitOrder.length >= 10){
             toast.info("Hóa đơn chờ tối đa là 10");
             return;
         }

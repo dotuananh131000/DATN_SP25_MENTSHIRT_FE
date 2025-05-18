@@ -12,6 +12,7 @@ import CartOfOrder from "./components/CartOfOrder";
 import OrderDetailService from "@/services/OrderDetailService";
 import HDPTTTService from "@/services/HDPTTTService";
 import ConfirmOrder from "./components/ConfirmOrder";
+
 function OrderDetail(){
     const { id } = useParams(); 
     const [order, setOrder] = useState({});
@@ -87,7 +88,7 @@ function OrderDetail(){
                 <ProductModal setCartItems={setCartItems} order={order} fetchOrder={fetchOrder} />
                 <div className="bg-white p-4 rounded-lg shadow">
                     <CartOfOrder cartItems={cartItems} order={order} setCartItems={setCartItems} fetchOrder={fetchOrder}  />
-                    <ConfirmOrder order={order} historyPayment={historyPayment} setOrder={setOrder} />
+                    <ConfirmOrder order={order} historyPayment={historyPayment} setOrder={setOrder} cartItems={cartItems} />
                 </div>
                 
             </div>

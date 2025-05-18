@@ -2,12 +2,18 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import UseFormatMoney from "@/lib/useFormatMoney";
 import OrderDetailService from "@/services/OrderDetailService";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify"; 
+
 
 export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder }) {
 
     //Gọi hàm xóa sản phẩm chi tiết
     const fetchDelete = async (idHDCT) => {
+        if(cartItems.length === 1) {
+            toast.warning("Phải có ít nhất một sản phẩm ở trong hóa đơn !!");
+            return;
+        }
+
         try{
             const response = await OrderDetailService.delete(idHDCT);
             setCartItems(response.data);
@@ -20,7 +26,9 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
         }
     }
     
-    return <div>
+    return <>
+    <ToastContainer />
+    <div>
             <table className="table table-auto w-full bg-white rounded-lg shadow text-center text-xs mt-2">
                 <thead className="bg-gray-200">
                     <tr className="text-center">
@@ -116,4 +124,6 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                 </tbody>
             </table>
         </div>
+    </>
+    
 }

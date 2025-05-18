@@ -211,9 +211,9 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                 printBill(orderConfirm, cartItems, listLSTT, tienGiam, totalItemsPrice, fee);
             }
 
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 500)
+            setTimeout(() => {
+                window.location.reload();
+            }, 500)
         }catch (err){
             console.log("Lỗi khi xác nhận hóa đơn", err);
         }
