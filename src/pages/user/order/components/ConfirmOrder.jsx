@@ -3,26 +3,38 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import OrderService from "@/services/OrderService";
 import { toast } from "react-toastify";
 
-export default function ConfirmOrder({order, historyPayment, setOrder}){
+export default function ConfirmOrder({order, historyPayment, setOrder, cartItems}){
     
     // Tính tổng số tiền đã thanh toán
     const soTienDaThanhToan = historyPayment.reduce((tong, item) => tong + item.soTienThanhToan, 0)
 
-    let soTienGiam = 0;
-    if(order.hinhThucGiamGia === 0) {
-        soTienGiam = (order.tongTien * order.giaTriGiam) / 100;
-        if(soTienGiam > order.soTienGiamToiDa){
-            soTienGiam = order.soTienGiamToiDa;
+
+    const tongTienHang = (cartItems) => {
+
+        if(cartItems.length <= 0) return 0;
+
+        return cartItems.reduce((tong, item) => {
+            return tong + item.thanhTien;
+        }, 0);
+    };
+
+    const tinhSoTienGiam = (order, tongTienHang) => {
+
+        if(!order.hinhThucGiamGia) return 0;
+
+        if(order.hinhThucGiamGia === 0) {
+            let tienGiam = (order.tongTien * order.giaTriGiam) / 100;
+            tienGiam = Math.min(tienGiam, order.soTienGiamToiDa);
+            return Math.min(tienGiam, tongTienHang);
+        }else {
+            return Math.min(order.giaTriGiam, tongTienHang);
         }
-    }else {
-        soTienGiam = order.giaTriGiam;
+
     }
 
     const phuPhi = typeof order.phuPhi === "string"
         ? Number(order.phuPhi)
         : order.phuPhi ?? 0;
-
-    const tongTien = order.tongTien + order.phiShip + phuPhi - soTienGiam;
 
     // Gọi service cancel hóa đơn
     const handleCancel = async (order) =>{
@@ -57,7 +69,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
                 <h1 className="text-xl">Thông tin đơn hàng</h1>
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Tổng tiền hàng: </p>
-                    <p className="font-bold">{UseFormatMoney(order.tongTien || 0)}</p>
+                    <p className="font-bold">{UseFormatMoney(tongTienHang(cartItems) || 0)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
@@ -67,7 +79,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
 
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Giảm giá:</p>
-                    <p className="font-bold">{UseFormatMoney(soTienGiam || 0)}</p>
+                    <p className="font-bold">{UseFormatMoney(tinhSoTienGiam(order, tongTienHang(cartItems)) || 0)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
@@ -77,7 +89,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder}){
 
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Tổng tiền:</p>
-                    <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tongTien)}</p>
+                    <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tongTien)}</p>
                 </div>
 
                 <div className="flex justify-center items-center space-x-3 p-2">
