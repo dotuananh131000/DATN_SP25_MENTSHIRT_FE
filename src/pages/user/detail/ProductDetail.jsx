@@ -143,6 +143,7 @@ function ProductDetail() {
       image: productDetail.hinhAnh,
       price: productDetail.donGia,
       quantity: Math.min(quantity, productDetail.soLuong),
+      ton: productDetail.soLuong,
       cartAttributes: cartAttributes || {}, // Đảm bảo không bị undefined
     };
   

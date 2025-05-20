@@ -79,7 +79,7 @@ function Cart() {
         item.sanPhamId === sanPhamId &&
         JSON.stringify(item.cartAttributes) === JSON.stringify(cartAttributes)
       ) {
-        const newQuantity = type === "increment" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
+        const newQuantity = type === "increment" ? Math.min(item.quantity + 1, item.ton) : Math.max(1, item.quantity - 1);
         return { ...item, quantity: newQuantity };
       }
       return item;
@@ -97,6 +97,8 @@ function Cart() {
       );
     });
   };
+
+  console.log(cartItems);
 
   const formatAttributeName = (key) => {
     const attributeMap = {

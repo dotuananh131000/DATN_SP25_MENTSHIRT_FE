@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 
-export default function ProductModal ({setCartItems, order, fetchOrder}){
+export default function ProductModal ({setCartItems, cartItems, order, fetchOrder}){
 
      // Hàm lấy danh sách sản phẩm
      const [productList, setProductList] = useState([]);
@@ -89,7 +89,7 @@ export default function ProductModal ({setCartItems, order, fetchOrder}){
             fetchOrder();
         }catch(err) {
             console.log("Lỗi khi thêm hóa đơn chi tiết", err);
-            toast.error("Không thể thêm sản phẩm và giỏ hàng, vui lòng thử lại");
+            toast.error("Sản phẩm bạn muốn thêm vượt quá số lượng trong kho.");
         }
     };
     
@@ -108,8 +108,9 @@ export default function ProductModal ({setCartItems, order, fetchOrder}){
                 let form = {
                     idHoaDon: order.id || null,
                     idSPCT: item.id || null,
-                    soLuong: quantity ?? "",
+                    soLuong: Number(quantity) ?? "",
                 }
+
                 fetchAdd(form);
             } 
         }

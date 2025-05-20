@@ -50,7 +50,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
     }
 
     return <>
-        {order.phuPhi && (
+        {(order.phuPhi || order.phuPhi > 0) && (
             <div className="flex space-x-1 items-center shadow rounded-lg mt-4 p-3 bg-orange-100">
                 <p>Đã trả </p>
                 <p className="text-red-500 font-bold">
@@ -82,10 +82,10 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
                     <p className="font-bold">{UseFormatMoney(tinhSoTienGiam(order, tongTienHang(cartItems)) || 0)}</p>
                 </div>
 
-                <div className="flex justify-center items-center space-x-3 p-2">
+                {/* <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Phụ phí:</p>
                     <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(phuPhi) }</p>
-                </div>
+                </div> */}
 
                 <div className="flex justify-center items-center space-x-3 p-2">
                     <p>Tổng tiền:</p>
