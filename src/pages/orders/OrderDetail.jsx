@@ -297,8 +297,6 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
       }
     }
 
-    console.log(dataTotal);
-
     return <>
         <div className="p-6 bg-gray-50 min-h-screen">
             <Breadcrumb className="mb-4">

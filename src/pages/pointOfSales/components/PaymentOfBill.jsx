@@ -381,7 +381,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                                             <td className="px-4 py-2">{i + 1}</td>
                                             <td className="px-4 py-2">{item.maGiaoDich}</td>
                                             <td className="px-4 py-2">{item.tenPhuongThuc}</td>
-                                            <td className="px-4 py-2">{UseFormatMoney(item.soTienThanhToan)}</td>
+                                            <td className="px-4 py-2">{UseFormatMoney(item.soTienThanhToan || 0)}</td>
                                         </tr>
                                     ))}
                                 </tbody>

@@ -84,10 +84,8 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             toast.error("Lỗi khi trừ số lượng.")
             return;
         }
-        if(hoaDonChiTiet.soLuong <=1) {
-            toast.warning("Số lượng sản phẩm tối thiểu là 1.");
-            return;
-        }
+        if(hoaDonChiTiet.soLuong === 1) return;
+
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong - 1);
     }
 
@@ -96,13 +94,12 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             toast.error("Lỗi khi thêm số lượng sản phẩm.");
             return;
         }
-        if(quantity > hoaDonChiTiet.soLuongTon) {
-            toast.error("Số lượng thêm vượt quá số lượng sản phẩm sẵn có");
-            setHoaDonChiTietUpdate(null);
-            return;
-        }
+        if(hoaDonChiTiet.soLuong >= hoaDonChiTiet.soLuongTon) return;
+            
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong + 1);
     }
+
+    console.log(hoaDon);
 
     //Hàm thêm sản phẩm vào giỏ hàng.
     const fetchThemHoaDonChiTiet = async() => {
@@ -116,7 +113,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             fetchHoaDonById(hoaDon.id);
             toast.success("Đã thêm sản phẩm vào giỏ hàng.");
         }catch (error) {
-            toast.error("Lỗi khi thêm sản phẩm, vui lòng thử lại.");
+            toast.error("Số lượng sản phẩm vượt quá số lượng kho");
             console.log("Không thể thêm được sản phẩm vào giỏ hàng", error);
         }
     }
@@ -172,7 +169,6 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         fetchDeleteSP();
     }
 
-    console.log(spcts)
     return <>
         <motion.div className="bg-white rounded-lg shadow w-full p-4 relative"
             initial={{ opacity: 0, y: 10 }}
@@ -478,7 +474,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                     }).format(item.donGia)}
                                     </strong>
                                 </p>
-                                {item.donGiaCu && (
+                                {item?.donGiaCu && (
                                     <div className="flex justify-center space-x-1">
                                         <p>Giá cũ:</p>
                                         <span class="line-through text-gray-500">
@@ -488,6 +484,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                             }).format(item.donGiaCu)}</span>
                                     </div>
                                 )}
+                                <span>Kho: {item.soLuongTon}</span>
                             </td>
                             <td className="px-4 py-2 ">
                                 

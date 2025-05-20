@@ -85,7 +85,7 @@ function OrderDetail(){
                 <StepsTrangThaiHoaDon hoaDon={order}/>
                 <ButtonDetail order={order} setOrder={setOrder} historyPayment={historyPayment}  />
                 <OrderInfo order={order} />
-                <ProductModal setCartItems={setCartItems} order={order} fetchOrder={fetchOrder} />
+                <ProductModal setCartItems={setCartItems} cartItems={cartItems} order={order} fetchOrder={fetchOrder} />
                 <div className="bg-white p-4 rounded-lg shadow">
                     <CartOfOrder cartItems={cartItems} order={order} setCartItems={setCartItems} fetchOrder={fetchOrder}  />
                     <ConfirmOrder order={order} historyPayment={historyPayment} setOrder={setOrder} cartItems={cartItems} />
