@@ -106,7 +106,7 @@ function ProductDetail() {
   const handleQuantityChange = (type) => {
     setQuantity((prev) => {
       if (type === "increment") {
-        return Math.min(prev + 1, productDetail.soLuong);
+        return Math.min(prev + 1, productDetail?.soLuong || 1);
       }
       return Math.max(1, prev - 1);
     });
