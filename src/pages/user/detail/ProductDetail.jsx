@@ -148,7 +148,6 @@ function ProductDetail() {
     };
   
     const existingItem = cart.find((item) => isSameProduct(item, newItem));
-    console.log(existingItem);
   
     if (existingItem) {
       existingItem.quantity = Math.min(existingItem.quantity + quantity, productDetail.soLuong);
@@ -232,7 +231,7 @@ function ProductDetail() {
 
                <span className="text-3xl font-bold text-orange-600">{productDetail?.donGia?.toLocaleString()}₫</span>
                
-                {productDetail.donGiaCu && (
+                {(productDetail && productDetail.donGiaCu) && (
                   <span className="text-xl font-bold line-through text-gray-500">{productDetail?.donGiaCu?.toLocaleString()}₫</span>
                 )}
                 
