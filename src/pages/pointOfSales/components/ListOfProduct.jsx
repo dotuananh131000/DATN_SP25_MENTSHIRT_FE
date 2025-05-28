@@ -112,6 +112,10 @@ function ListOfProduct ({ setCartItems, order, setWaitOrder, fetchProductList, p
             newError = "Số lượng không hợp lệ";
             isValid = false;
         }
+        if(quantity <= 0) {
+            newError = "Số lượng phải lớn hơn 0.";
+            isValid = false;
+        }
         setError(newError);
         return isValid;
     }

@@ -8,6 +8,7 @@ import HoaDonChiTietService from "@/pages/detailOrder/service/HoaDonChiTietServi
 import Select from 'react-select';
 import ReactPaginate from "react-paginate";
 import HoaDonService from "@/pages/counterSales/services/HoaDonService";
+import UseFormatMoney from "@/lib/useFormatMoney";
 
 function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonById,
     spcts,
@@ -38,6 +39,18 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
         soLuong: 1,
     });
 
+    const tongTienHang = (cartItems) => {
+
+        if(cartItems.length <= 0) return 0;
+
+        return cartItems.reduce((tong, item) => {
+            return tong + item.thanhTien;
+        }, 0);
+    };
+
+    const tongTien = tongTienHang(gioHang);
+    const soTienToiThieu = hoaDon?.soTienToiThieuHd || 0;
+
     //Hàm cập nhật số lượng hóa đơn chi tiết
     const fetchSoLuong = async(idHDCT, sl) => {
         try {
@@ -50,6 +63,18 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
     }
 
     const handleBlur = (hoaDonChiTiet) => {
+
+        let khoangSoLuong = hoaDonChiTiet.soLuong - quantity;
+        if(khoangSoLuong > 0) {
+            const tienSauTru = tongTien - hoaDonChiTiet.donGia;
+
+            // Nếu tổng tiền hàng < điều kiện tối thiểu => báo lỗi và không cho cập nhật
+            if (soTienToiThieu > tienSauTru) {
+                toast.error(`Không thể giảm số lượng. Đơn hàng cần tối thiểu ${UseFormatMoney(soTienToiThieu)} để giữ mã giảm giá.`);
+                return;
+            }
+        }
+
         if(!hoaDonChiTiet) {
             toast.success("Lỗi khi cập nhật số lượng.");
             return;
@@ -84,6 +109,15 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             toast.error("Lỗi khi trừ số lượng.")
             return;
         }
+
+        const tienSauTru = tongTien - hoaDonChiTiet.donGia;
+
+        // Nếu tổng tiền hàng < điều kiện tối thiểu => báo lỗi và không cho cập nhật
+        if (soTienToiThieu > tienSauTru ) {
+            toast.error(`Không thể giảm số lượng. Đơn hàng cần tối thiểu ${UseFormatMoney(soTienToiThieu)} để giữ mã giảm giá.`);
+            return;
+        }
+
         if(hoaDonChiTiet.soLuong === 1) return;
 
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong - 1);
@@ -98,8 +132,6 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             
         fetchSoLuong(hoaDonChiTiet.id, hoaDonChiTiet.soLuong + 1);
     }
-
-    console.log(hoaDon);
 
     //Hàm thêm sản phẩm vào giỏ hàng.
     const fetchThemHoaDonChiTiet = async() => {
@@ -154,6 +186,14 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
             toast.warning("Hóa đơn phải có ít nhất một sản phẩm !");
             return;
         }
+
+        const tongSauTru = tongTien - hoaDonChiTiet.thanhTien;
+        
+        if(tongSauTru < soTienToiThieu) {
+            toast.warning("Không thể xóa sản phẩm do mã giảm giá đang được áp dụng.");
+            return;
+        }
+
         const fetchDeleteSP = async () => {
             try{
                 const response = await HoaDonChiTietService.deleteHDCT(hoaDonChiTiet.id)
@@ -493,7 +533,7 @@ function Cart({hoaDon, gioHang, fetchGioHang,fetchSanPhamChiTiet, fetchHoaDonByI
                                  <button onClick={() => prevSoLuongSanPham(item)} 
                                  className="px-4 py-1 bg-gray-200 rounded-lg text-lg">-</button>
                                )}
-                                    {(hoaDonChiTietUpdate === item.id && 
+                                    {(hoaDonChiTietUpdate === item.id && item.trangThai !== 1 &&
                                     (hoaDon.trangThaiGiaoHang === 1 || hoaDon.trangThaiGiaoHang === 8)) ? (
                                         <motion.input
                                             type="number"

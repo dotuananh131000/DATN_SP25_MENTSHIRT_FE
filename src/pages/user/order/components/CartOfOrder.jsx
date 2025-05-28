@@ -20,8 +20,6 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
 
     const tongTien = tongTienHang(cartItems);
     const soTienToiThieu = order?.soTienToiThieuHd || 0;
-    // console.log(tongTienHang(cartItems) < order?.soTienToiThieuHd );
-    // console.log(order);
 
     // Gọi hàm cập nhật số lượng sản phẩm
         const timeoutRef = useRef(null);
@@ -50,7 +48,7 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
             // Đặt timeout mới
             timeoutRef.current = setTimeout(() => {
                 fetchUpdateSoLuong(itemHDCT.id, soLuongMoi);
-            }, 500);
+            }, 100);
         }
     
         const tangSoLuong = (itemHDCT, soLuongMoi) => {
@@ -77,6 +75,10 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
     
             if(!soLuongMoi) {
                 soLuongMoi = 1;
+            }
+
+            if(soLuongMoi > itemHDCT.soLuongTon) {
+                return;
             }
     
             let khoangSoLuong = itemHDCT.soLuong - soLuongMoi;
@@ -135,14 +137,21 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
         }
 
     //Gọi hàm xóa sản phẩm chi tiết
-    const fetchDelete = async (idHDCT) => {
+    const fetchDelete = async (item) => {
         if(cartItems.length === 1) {
             toast.warning("Phải có ít nhất một sản phẩm ở trong hóa đơn !!");
             return;
         }
 
+        const tongSauTru = tongTien - item.thanhTien;
+        
+        if(tongSauTru < soTienToiThieu) {
+            toast.warning("Không thể xóa sản phẩm do mã giảm giá đang được áp dụng.");
+            return;
+        }
+
         try{
-            const response = await OrderDetailService.delete(idHDCT);
+            const response = await OrderDetailService.delete(item.id);
             setCartItems(response.data);
             toast.success("Đã loại sản phẩm ra khỏi giỏ hàng.");
             fetchOrder();
@@ -204,12 +213,12 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                                 <div className="flex justify-center">
                                     <input 
                                     value={item.soLuong}
-                                    readOnly={item.trangThai === 1}
+                                    readOnly={item.trangThai === 1 || order.trangThaiGiaoHang !== 1}
                                     onChange={(e) => capNhatSoLuong(item, parseInt(e.target.value))}
                                     className="w-1/5 text-center m-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-300"
                                     type="text" />
 
-                                    {item.trangThai !== 1 && (
+                                    {(item.trangThai !== 1 && (order.trangThaiGiaoHang === 1)) && (
                                         <div className="relative">
                                             <button 
                                             onClick={() => tangSoLuong(item, item.soLuong + 1)}
@@ -255,7 +264,7 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                                             </DialogClose>
 
                                             <DialogClose 
-                                            onClick={() => fetchDelete(item.id)}
+                                            onClick={() => fetchDelete(item)}
                                             className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 duration-200">
                                                 Xóa
                                             </DialogClose>
