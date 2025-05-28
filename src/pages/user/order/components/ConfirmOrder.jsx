@@ -77,7 +77,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
                 
             </div>
         )}
-        <div className="grid grid-cols-3 mt-4 ">
+        <div className="grid grid-cols-3 my-6 relative ">
             <div className="col-span-1"></div>
             <div className="col-span-1 text-center">
                 <h1 className="text-xl">Thông tin đơn hàng</h1>
@@ -102,7 +102,7 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
                 </div> */}
 
                 <div className="flex justify-center items-center space-x-3 p-2">
-                    <p>Tổng tiền:</p>
+                    <p>Tổng tiền {order.trangThai === 1 ? "ban đầu": ""}:</p>
                     <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tongTien)}</p>
                 </div>
 
@@ -110,6 +110,13 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
                     <p>Đã thanh toán:</p>
                     <p className="font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(soTienDaThanhToan)}</p>
                 </div>
+
+                {order.trangThai === 1 && (
+                    <p className="w-full absolute left-1 -bottom-8">
+                        Ghi chú: Sau khi thanh toán, mọi chi phí phát sinh (như thêm sản phẩm, thay đổi địa chỉ) sẽ được cộng vào phần “Phụ phí”. 
+                        Tổng tiền ban đầu vẫn được giữ nguyên để đảm bảo tính minh bạch.
+                    </p>
+                )}
 
                {order.trangThaiGiaoHang === 1 && (
                 <Dialog>

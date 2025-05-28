@@ -1,4 +1,5 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb";
+import UseFormatMoney from "@/lib/useFormatMoney";
 import { motion } from "framer-motion";
 function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
    
@@ -24,6 +25,13 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
         }
 
     }
+
+    // Tính tổng số tiền đã thanh toán
+    const soTienDaThanhToan = lichSuThanhToan.reduce((tong, item) => tong + item.soTienThanhToan, 0);
+
+    const phuPhi = typeof hoaDon.phuPhi === "string"
+    ? Number(hoaDon.phuPhi)
+    : hoaDon.phuPhi ?? 0;
     
     const itemsInfo = (text, content) => {
         return <div className="w-1/4 border border-gray-200 shadow text-center rounded-lg p-4">
@@ -59,14 +67,17 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
                     new Intl.NumberFormat("vi-VN", {style: "currency",currency: "VND",}).format(hoaDon.phiShip))}
                 {itemsInfo("Tổng tiền",
                 new Intl.NumberFormat("vi-VN", {style: "currency",currency: "VND",}).format(hoaDon.tongTien))}
+                {(hoaDon?.phuPhi > 0) && (
+                    itemsInfo("Phụ Phí", UseFormatMoney(hoaDon.phuPhi))
+                )}
             </div>
                 <div className="relative mb-4">
                     <h1 className="w-full text-lg text-gray-500 ">Thông tin khách hàng</h1>
-                    {((hoaDon.loaiDon ===0 || hoaDon.loaiDon ===2 ) && hoaDon.trangThaiGiaoHang < 2) && (
+                    {/* {((hoaDon.loaiDon ===0 || hoaDon.loaiDon ===2 ) && hoaDon.trangThaiGiaoHang < 2) && (
                         <button className="absolute right-4 top-[-8px] px-4 py-2 bg-orange-500 text-white rounded-lg hover:scale-105 duration-200">
                             Thay đổi thông tin
                         </button>
-                    )}
+                    )} */}
                 </div>
                 <div className="flex justify-center space-x-4">
                     <div className="w-1/2 border border-gray-200 shadow rounded-lg p-4">
@@ -93,7 +104,7 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
                 </>
                 )}
         </motion.div>
-        <div className="w-full bg-white rounded-lg shadow p-4 mb-4">
+        <div className="w-full bg-white rounded-lg shadow p-4 mb-2">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem className="text-lg mb-2">
@@ -126,6 +137,49 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
                 </tbody>
             </table>
         </div>
+
+        {hoaDon?.maPhieuGiamGia && (
+            <div className="p-2 mb-2 border rounded-lg bg-orange-200">
+                <p>
+                    Đã áp dụng phiếu giảm giá <span className="font-bold">{hoaDon.tenPhieuGiamGia}</span>: giảm 
+                    <span className="font-bold">  {hoaDon.hinhThucGiamGia === 1  
+                    ? UseFormatMoney(hoaDon.giaTriGiam):`${hoaDon.giaTriGiam } %`} </span>
+                     cho đơn hàng từ 
+                    <span className="font-bold">  {UseFormatMoney(hoaDon.soTienToiThieuHd)}</span>
+                    {hoaDon.hinhThucGiamGia === 0 && (
+                        <span className="font-bold">, giảm tối đa {UseFormatMoney(hoaDon.soTienGiamToiDa)}</span>
+                    )}
+                </p>
+            </div>
+        )}
+
+        {(hoaDon.phuPhi || hoaDon.phuPhi > 0) && (
+            <div className="flex space-x-1 items-center shadow rounded-lg mt-2 p-3 bg-orange-200">
+                <p>Đã trả </p>
+                <p className="text-red-500 font-bold">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(soTienDaThanhToan) }</p>
+                <p>bằng phí VNPay,</p>
+                {hoaDon.phuPhi > 0 && (
+                    <>
+                        <p>và phải trả thêm</p>
+                        <p className="text-red-500 font-bold">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(phuPhi) }
+                            </p>
+                        <p>khi nhận hàng</p>
+                    </>
+                )}
+
+                {hoaDon?.phuPhi < 0 && (
+                     <>
+                        <p>và Shop phải trả lại</p>
+                        <p className="text-red-500 font-bold">
+                            {UseFormatMoney(Math.abs(phuPhi))}
+                        </p>
+                    </>
+                )}
+                
+            </div>
+        )}
     </>
 }
 export default OrderInfo;
