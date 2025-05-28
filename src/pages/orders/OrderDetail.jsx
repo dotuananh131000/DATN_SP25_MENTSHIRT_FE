@@ -242,16 +242,31 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
     }
 
     //Tính tổng tiền khách thanh toán
-    const soTienGiam = Math.min(
-        hoaDon.hinhThucGiamGia === 0 
-            ? (hoaDon.tongTien * hoaDon.giaTriGiam) / 100 // Giảm theo %
-            : hoaDon.giaTriGiam, // Giảm số tiền cố định
-        hoaDon.soTienGiamToiDa, // Giới hạn không vượt quá số tiền giảm tối đa
-        hoaDon.tongTien // Không thể giảm quá tổng tiền
-    );
+    const tongTienHang = (gioHang) => {
+
+        if(gioHang.length <= 0) return 0;
+
+        return gioHang.reduce((tong, item) => {
+            return tong + item.thanhTien;
+        }, 0);
+    };
+
+    const soTienGiam = (order, tongTienHang) => {
+
+        if(!order.hinhThucGiamGia) return 0;
+
+        if(order.hinhThucGiamGia === 0) {
+            let tienGiam = (order.tongTien * order.giaTriGiam) / 100;
+            tienGiam = Math.min(tienGiam, order.soTienGiamToiDa);
+            return Math.min(tienGiam, tongTienHang);
+        }else {
+            return Math.min(order.giaTriGiam, tongTienHang);
+        }
+
+    }
 
     const phuPhi = hoaDon.phuPhi ? hoaDon.phuPhi : 0;
-    const soTienCanThanhToan = hoaDon.tongTien - soTienGiam + hoaDon.phiShip + phuPhi;
+    const soTienCanThanhToan = hoaDon.tongTien + phuPhi;
 
     //Chuyển trạng thái thàng đã thanh toán
     const fetchPaid = async () => {
@@ -349,7 +364,7 @@ function OrderDetail({hoaDon, setIsOrderDetail, fetchHoaDonById, fetchHoaDons, f
                 </div>
               </div>
             )}
-            <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} />
+            <OrderInfo hoaDon={hoaDon} lichSuThanhToan={lichSuThanhToan} gioHang={gioHang} />
             <Cart
                 hoaDon={hoaDon}
                 gioHang={gioHang}

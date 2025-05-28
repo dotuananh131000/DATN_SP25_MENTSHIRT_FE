@@ -31,6 +31,7 @@ const API_ENDPOINTS = {
 
   VOUCHERS: {
     BASE: `${API_BASE_URL}/phieu-giam-gia/hien-thi`,
+    GET_BY_ID: (id)=>  `${API_BASE_URL}/phieu-giam-gia/${id}`
   },
 
   CHANGEPASSWORD:(id) => `${API_BASE_URL}/nhan-vien/changePassword/${id}`,

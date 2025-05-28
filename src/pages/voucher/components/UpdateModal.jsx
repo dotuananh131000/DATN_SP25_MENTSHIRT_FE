@@ -296,7 +296,24 @@ const UpdateModal = ({ isOpen, onCancel, voucherId, fetchVouchers }) => {
                     step={1000}
                   />
                 </div>
-                <div className="flex flex-col">
+                {Number(voucher.hinhThucGiamGia) === 0 && (
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-600">
+                      Số tiền giảm tối đa
+                    </label>
+                    <input
+                      type="number"
+                      name="soTienGiamToiDa"
+                      value={voucher.soTienGiamToiDa}
+                      onChange={handleChange}
+                      className="input input-bordered w-full"
+                      placeholder="Nhập số tiền giảm tối đa"
+                      min={1000}
+                      step={1000}
+                    />
+                  </div>
+                )}
+                {/* <div className="flex flex-col">
                   <label className="text-sm font-medium text-gray-600">
                     Số tiền giảm tối đa
                   </label>
@@ -310,7 +327,7 @@ const UpdateModal = ({ isOpen, onCancel, voucherId, fetchVouchers }) => {
                     min={1000}
                     step={1000}
                   />
-                </div>
+                </div> */}
               </div>
 
               {/* Loại giảm và số lượng */}

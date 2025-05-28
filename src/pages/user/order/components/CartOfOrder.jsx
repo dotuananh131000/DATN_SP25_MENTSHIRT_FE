@@ -9,11 +9,33 @@ import { useRef } from "react";
 
 export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder }) {
 
+    const tongTienHang = (cartItems) => {
+
+        if(cartItems.length <= 0) return 0;
+
+        return cartItems.reduce((tong, item) => {
+            return tong + item.thanhTien;
+        }, 0);
+    };
+
+    const tongTien = tongTienHang(cartItems);
+    const soTienToiThieu = order?.soTienToiThieuHd || 0;
+    // console.log(tongTienHang(cartItems) < order?.soTienToiThieuHd );
+    // console.log(order);
+
     // Gọi hàm cập nhật số lượng sản phẩm
         const timeoutRef = useRef(null);
     
-        const giamSoLuong = (itemHDCT, soLuongMoi) => {
+        const giamSoLuong = (itemHDCT, soLuongMoi, tongTien, soTienToiThieu) => {
             if(soLuongMoi === 0) return;
+
+            const tienSauTru = tongTien - itemHDCT.donGia;
+
+            // Nếu tổng tiền hàng < điều kiện tối thiểu => báo lỗi và không cho cập nhật
+            if (soTienToiThieu > tienSauTru ) {
+                toast.error(`Không thể giảm số lượng. Đơn hàng cần tối thiểu ${UseFormatMoney(soTienToiThieu)} để giữ mã giảm giá.`);
+                return;
+            }
     
             setCartItems(prev =>
                 prev.map(item =>
@@ -58,6 +80,18 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
             }
     
             let khoangSoLuong = itemHDCT.soLuong - soLuongMoi;
+            if(khoangSoLuong > 0) {
+                const tongTien = tongTienHang(cartItems);
+                const soTienToiThieu = order?.soTienToiThieuHd || 0;
+
+                const tienSauTru = tongTien - itemHDCT.donGia;
+
+                // Nếu tổng tiền hàng < điều kiện tối thiểu => báo lỗi và không cho cập nhật
+                if (soTienToiThieu > tienSauTru) {
+                    toast.error(`Không thể giảm số lượng. Đơn hàng cần tối thiểu ${UseFormatMoney(soTienToiThieu)} để giữ mã giảm giá.`);
+                    return;
+                }
+            }
     
             let updateSLTon = itemHDCT.soLuongTon + khoangSoLuong
     
@@ -183,7 +217,7 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                                                 <FaCaretUp />
                                             </button>
                                             <button 
-                                            onClick={() => giamSoLuong(item, item.soLuong - 1)}
+                                            onClick={() => giamSoLuong(item, item.soLuong - 1, tongTien, soTienToiThieu)}
                                             className=" absolute bottom-1 text-lg active:text-orange-500 duration-150">
                                                 <FaCaretDown />
                                             </button>
@@ -236,6 +270,20 @@ export default function CartOfOrder ({cartItems, order, setCartItems, fetchOrder
                 </tbody>
             </table>
         </div>
+        {order?.maPhieuGiamGia && (
+            <div className="p-2 mt-2 border rounded-lg bg-orange-200">
+                <p>
+                    Đã áp dụng phiếu giảm giá <span className="font-bold">{order.tenPhieuGiamGia}</span>: giảm 
+                    <span className="font-bold">  {order.hinhThucGiamGia === 1  
+                    ? UseFormatMoney(order.giaTriGiam):`${order.giaTriGiam } %`} </span>
+                     cho đơn hàng từ 
+                    <span className="font-bold">  {UseFormatMoney(order.soTienToiThieuHd)}</span>
+                    {order.hinhThucGiamGia === 0 && (
+                        <span className="font-bold">, giảm tối đa {UseFormatMoney(order.soTienGiamToiDa)}</span>
+                    )}
+                </p>
+            </div>
+        )}
     </>
     
 }
