@@ -7,6 +7,16 @@ const voucherService = {
     return response.data;
   },
 
+  async getById(id) {
+    try {
+        const response = await apiClient.get(API_ENDPOINTS.VOUCHERS.GET_BY_ID(id));
+        return response.data;
+    }catch(err) {
+        console.error("Lỗi khi lấy phiếu giảm giá theo id", err);
+        throw err;
+    }
+  },
+
   async lisVoucherByKH(idKH) {
     
         try {

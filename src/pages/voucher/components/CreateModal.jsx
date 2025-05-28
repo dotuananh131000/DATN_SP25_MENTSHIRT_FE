@@ -210,6 +210,8 @@ const CreateModal = ({ isOpen, onCancel, setCreateModal, fetchVouchers }) => {
     return true;
   };
 
+  console.log(newVoucher)
+
   const handleCreateVoucher = async () => {
     if (!validateForm()) {
       return;
@@ -381,21 +383,23 @@ const CreateModal = ({ isOpen, onCancel, setCreateModal, fetchVouchers }) => {
                     step={1000}
                   />
                 </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600">
-                    Số tiền giảm tối đa
-                  </label>
-                  <input
-                    type="number"
-                    name="soTienGiamToiDa"
-                    value={newVoucher.soTienGiamToiDa}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                    placeholder="Nhập số tiền giảm tối đa"
-                    min={1000}
-                    step={1000}
-                  />
-                </div>
+                {Number(newVoucher.hinhThucGiamGia) === 0 && (
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-600">
+                      Số tiền giảm tối đa
+                    </label>
+                    <input
+                      type="number"
+                      name="soTienGiamToiDa"
+                      value={newVoucher.soTienGiamToiDa}
+                      onChange={handleChange}
+                      className="input input-bordered w-full"
+                      placeholder="Nhập số tiền giảm tối đa"
+                      min={1000}
+                      step={1000}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="py-3 grid grid-cols-2 gap-4">

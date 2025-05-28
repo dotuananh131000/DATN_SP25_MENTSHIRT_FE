@@ -1,14 +1,29 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { motion } from "framer-motion";
-function OrderInfo({hoaDon, lichSuThanhToan}){
+function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
    
-    const soTienGiam = Math.min(
-        hoaDon.hinhThucGiamGia === 0 
-            ? (hoaDon.tongTien * hoaDon.giaTriGiam) / 100 // Giảm theo %
-            : hoaDon.giaTriGiam, // Giảm số tiền cố định
-        hoaDon.soTienGiamToiDa, // Giới hạn không vượt quá số tiền giảm tối đa
-        hoaDon.tongTien // Không thể giảm quá tổng tiền
-    );
+    const tongTienHang = (gioHang) => {
+
+        if(gioHang.length <= 0) return 0;
+
+        return gioHang.reduce((tong, item) => {
+            return tong + item.thanhTien;
+        }, 0);
+    };
+
+    const soTienGiam = (order, tongTienHang) => {
+
+        if(!order.hinhThucGiamGia) return 0;
+
+        if(order.hinhThucGiamGia === 0) {
+            let tienGiam = (order.tongTien * order.giaTriGiam) / 100;
+            tienGiam = Math.min(tienGiam, order.soTienGiamToiDa);
+            return Math.min(tienGiam, tongTienHang);
+        }else {
+            return Math.min(order.giaTriGiam, tongTienHang);
+        }
+
+    }
 
     const itemsInfo = (text, content) => {
         return <div className="w-1/4 border border-gray-200 shadow text-center rounded-lg p-4">
@@ -23,6 +38,7 @@ function OrderInfo({hoaDon, lichSuThanhToan}){
             <p className="text-lg text-orange-500">{content}</p>
         </div>
     }
+
     return <>
         <motion.div className="w-full bg-white rounded-lg shadow p-4 mb-4"
             initial={{ opacity: 0, y: 10 }}
@@ -38,7 +54,7 @@ function OrderInfo({hoaDon, lichSuThanhToan}){
             </Breadcrumb>
             <div className="flex justify-between items-center space-x-4 p-4">
                 {itemsInfo("Mã hóa đơn",hoaDon.maHoaDon)}
-                {itemsInfo("Giảm giá",new Intl.NumberFormat("vi-VN", {style: "currency",currency: "VND",}).format(soTienGiam))}
+                {itemsInfo("Giảm giá",new Intl.NumberFormat("vi-VN", {style: "currency",currency: "VND",}).format(soTienGiam(hoaDon, tongTienHang(gioHang))))}
                 {itemsInfo("Phí vận chuyển",
                     new Intl.NumberFormat("vi-VN", {style: "currency",currency: "VND",}).format(hoaDon.phiShip))}
                 {itemsInfo("Tổng tiền",
