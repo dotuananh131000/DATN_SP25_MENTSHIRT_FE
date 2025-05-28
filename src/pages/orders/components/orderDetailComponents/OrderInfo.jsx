@@ -13,10 +13,10 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
 
     const soTienGiam = (order, tongTienHang) => {
 
-        if(!order.hinhThucGiamGia) return 0;
+        if(!order.maPhieuGiamGia) return 0;
 
         if(order.hinhThucGiamGia === 0) {
-            let tienGiam = (order.tongTien * order.giaTriGiam) / 100;
+            let tienGiam = (tongTienHang * order.giaTriGiam) / 100;
             tienGiam = Math.min(tienGiam, order.soTienGiamToiDa);
             return Math.min(tienGiam, tongTienHang);
         }else {
@@ -24,7 +24,7 @@ function OrderInfo({hoaDon, lichSuThanhToan, gioHang}){
         }
 
     }
-
+    
     const itemsInfo = (text, content) => {
         return <div className="w-1/4 border border-gray-200 shadow text-center rounded-lg p-4">
             <h1 className="text-md text-gray-500">{text}</h1>

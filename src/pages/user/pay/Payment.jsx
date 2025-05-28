@@ -269,7 +269,7 @@ function Payment() {
 
     if(voucher.hinhThucGiamGia === 1){
       //Giảm theo số tiền
-      return Math.min(voucher.giaTriGiam, voucher.soTienGiamToiDa);
+      return voucher.giaTriGiam;
     } else if (voucher.hinhThucGiamGia === 0){
       //Giảm theo phần trăm
       const discountAmount = (totalAmount * voucher.giaTriGiam) / 100;
@@ -280,6 +280,9 @@ function Payment() {
   }
   const voucherDiscount = Math.min(caculatorDiscount(selectedVoucher, totalAmount),totalAmount);
   const finalTotal = totalAmount + shippingFee - voucherDiscount ;
+
+  console.log(caculatorDiscount(selectedVoucher, totalAmount));
+
 
   // Xử lý thay đổi input
   const handleInputChange = (e) => {
@@ -755,7 +758,7 @@ function Payment() {
                 </div>
                 {selectedVoucher && voucherDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span className="text-sm">Giảm giá ({selectedVoucher.hinhThucGiamGia ===1
+                    <span className="text-sm">Giảm giá ({selectedVoucher.hinhThucGiamGia === 1
                                                         ?`${selectedVoucher.giaTriGiam.toLocaleString()} đ`
                                                         :`${selectedVoucher.giaTriGiam.toLocaleString()} %`}):</span>
                     <span className="text-sm font-medium">-{voucherDiscount.toLocaleString()}đ</span>

@@ -252,7 +252,7 @@ function PayMentOfBill ( {order, setOrder, cartItems, customer} ) {
                                       Giá trị giảm: {item.giaTriGiam}{item.hinhThucGiamGia === 1 ? 
                                       "đ" : "%" } <br />
                                       Số tiền tối thiểu hóa đơn: {UseFormatMoney(item.soTienToiThieuHd)} <br />
-                                      Số tiền giảm tối đa: {UseFormatMoney(item.soTienGiamToiDa)} <br />
+                                      Số tiền giảm tối đa: {UseFormatMoney(item?.soTienGiamToiDa || 0)} <br />
                                       Ngày kết thúc: {UseFormatDate(item.thoiGianHetHan)}
                                       </p>
                                     </td>
