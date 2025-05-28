@@ -123,10 +123,12 @@ const UpdateModal = ({ isOpen, onCancel, voucherId, fetchVouchers }) => {
       return false;
     }
 
-    // Số tiền giảm tối đa: >= 1,000 VND
-    if (isNaN(soTienGiamToiDa) || soTienGiamToiDa < 1000) {
-      toast.error("Số tiền giảm tối đa phải từ 1,000 VND trở lên.");
-      return false;
+    // Số tiền giảm tối đa: >= 1,000
+    if(hinhThucGiamGia == "0") {
+      if (isNaN(soTienGiamToiDa) || soTienGiamToiDa < 1000) {
+          toast.error("Số tiền giảm tối đa phải từ 1,000 VND trở lên.");
+          return false;
+      }
     }
 
     // Kiểm tra nếu giảm giá theo phần trăm thì số tiền giảm tối đa không được thấp hơn số tiền giảm thực tế

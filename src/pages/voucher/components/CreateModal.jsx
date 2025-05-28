@@ -175,10 +175,13 @@ const CreateModal = ({ isOpen, onCancel, setCreateModal, fetchVouchers }) => {
     }
 
     // Số tiền giảm tối đa: >= 1,000
-    if (isNaN(soTienGiamToiDa) || soTienGiamToiDa < 1000) {
-      toast.error("Số tiền giảm tối đa phải từ 1,000 VND trở lên.");
-      return false;
+    if(hinhThucGiamGia == "0") {
+      if (isNaN(soTienGiamToiDa) || soTienGiamToiDa < 1000) {
+            toast.error("Số tiền giảm tối đa phải từ 1,000 VND trở lên.");
+            return false;
+          }
     }
+    
 
     // Kiểm tra nếu giảm giá theo phần trăm thì số tiền giảm tối đa không được thấp hơn số tiền tối thiểu hóa đơn
     if (

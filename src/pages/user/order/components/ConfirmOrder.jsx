@@ -20,10 +20,10 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
 
     const tinhSoTienGiam = (order, tongTienHang) => {
 
-        if(!order.hinhThucGiamGia) return 0;
+        if(!order.maPhieuGiamGia) return 0;
 
         if(order.hinhThucGiamGia === 0) {
-            let tienGiam = (order.tongTien * order.giaTriGiam) / 100;
+            let tienGiam = (tongTienHang * order.giaTriGiam) / 100;
             tienGiam = Math.min(tienGiam, order.soTienGiamToiDa);
             return Math.min(tienGiam, tongTienHang);
         }else {
@@ -51,16 +51,30 @@ export default function ConfirmOrder({order, historyPayment, setOrder, cartItems
 
     return <>
         {(order.phuPhi || order.phuPhi > 0) && (
-            <div className="flex space-x-1 items-center shadow rounded-lg mt-4 p-3 bg-orange-100">
+            <div className="flex space-x-1 items-center shadow rounded-lg mt-2 p-3 bg-orange-200">
                 <p>Đã trả </p>
                 <p className="text-red-500 font-bold">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(soTienDaThanhToan) }</p>
                 <p>bằng phí VNPay,</p>
-                <p>và phải trả thêm</p>
-                <p className="text-red-500 font-bold">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(phuPhi) }
-                    </p>
-                <p>khi nhận hàng</p>
+                {order.phuPhi > 0 && (
+                    <>
+                        <p>và phải trả thêm</p>
+                        <p className="text-red-500 font-bold">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(phuPhi) }
+                            </p>
+                        <p>khi nhận hàng</p>
+                    </>
+                )}
+
+                {order.phuPhi < 0 && (
+                     <>
+                        <p>và Shop phải trả lại</p>
+                        <p className="text-red-500 font-bold">
+                            {UseFormatMoney(Math.abs(phuPhi))}
+                        </p>
+                    </>
+                )}
+                
             </div>
         )}
         <div className="grid grid-cols-3 mt-4 ">
